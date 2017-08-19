@@ -1,0 +1,66 @@
+/*
+Copyright 2017 Hermann Krumrey
+
+This file is part of bundesliga-tippspiel-android.
+
+    bundesliga-tippspiel-android is an Android app that allows a user to
+    manage their bets on the bundesliga-tippspiel website.
+
+    bundesliga-tippspiel-android is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    bundesliga-tippspiel-android is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+ext {
+    version = "4.1.3"
+    versionCode = 413
+}
+
+buildscript {
+
+    ext.kotlin_version = '1.1.4-2'
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.gms:google-services:3.0.0'
+    }
+}
+apply plugin: 'kotlin'
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+task version() {
+    println rootProject.ext.version
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}

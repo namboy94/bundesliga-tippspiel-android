@@ -1,0 +1,15 @@
+DE:
+
+Diese App speichert lediglich den Benutzernamen und einen API Key des Nutzers auf
+der Webseite https://hk-tippspiel.com. Diese Webseite wird von den selben Entwicklern
+wie dieser App betrieben. Die Webseite benötigt zur registrierung die Angabe einer
+Email Addresse, eines Nutzernamen und eines Passworts. Das Password wird mittels kryptographischen
+Verfahren (Salting und Hashing mit Verwendung des BCrypt/Blowfish Algorithmus) behandelt und
+erst anschließend in der Datenbank gespeichert, um die Sicherheit der Passwörter zu gewährleisten.
+
+EN:
+
+This App saves the username and API Key of a user of the website https://hk-tippspiel.com.
+The website is run by the same developers as this app. The website itself requires an email
+address, a username and a password to create an account. The password is stored cryptographically
+salted and hashed using the BCrypt/Blowfish algorithm to ensure the safety of the passwords.

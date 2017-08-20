@@ -21,4 +21,12 @@ along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/license
 -->
 <resources>
     <string name="app_name">Hk-Bets</string>
+    <string name="login_screen_title">Login</string>
+    <string name="login_screen_username">Username</string>
+    <string name="login_screen_password">Password</string>
+    <string name="login_screen_remember_me">Remember Me?</string>
+    <string name="login_screen_button_title">Login</string>
+    <string name="login_screen_logo_description">The Logo of the Website</string>
+    <string name="login_error_title">Login Failed</string>
+    <string name="login_error_body">Wrong username or password</string>
 </resources>

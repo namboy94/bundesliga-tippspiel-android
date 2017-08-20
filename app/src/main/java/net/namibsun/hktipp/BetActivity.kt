@@ -20,48 +20,24 @@ This file is part of bundesliga-tippspiel-android.
     along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/licenses/>.
 */
 
-ext {
-    version = "4.1.3"
-    versionCode = 413
-}
+package net.namibsun.hktipp
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 
-buildscript {
+/**
+ * The Main Activity of the Application.
+ */
+class BetActivity : AppCompatActivity() {
 
-    ext.kotlin_version = '1.1.4-2'
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:3.0.0'
-    }
-}
-apply plugin: 'kotlin'
+    /**
+     * Initializes the App's Main Activity View.
+     * @param savedInstanceState: The Instance Information of the app.
+     */
+    override fun onCreate(savedInstanceState: Bundle?) {
 
-allprojects {
-    repositories {
-        jcenter()
-        maven { url "https://jitpack.io" }
+        super.onCreate(savedInstanceState)
+        this.setContentView(R.layout.bets)
     }
-}
 
-task version() {
-    println rootProject.ext.version
-}
-repositories {
-    mavenCentral()
-}
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
-}
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+
 }

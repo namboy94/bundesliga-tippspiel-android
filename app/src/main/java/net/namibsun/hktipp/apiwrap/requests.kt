@@ -1,5 +1,7 @@
 package net.namibsun.hktipp.apiwrap
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -7,9 +9,7 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONObject
 import java.io.IOException
-
-@Throws(IOException::class)
-fun post(endpoint: String, data: JSONObject): JSONObject = post(endpoint, data.toString())
+import java.net.URL
 
 @Throws(IOException::class)
 fun post(endpoint: String, data: String): JSONObject {
@@ -29,3 +29,24 @@ fun post(endpoint: String, data: String): JSONObject {
     return JSONObject(responseBody)
 
 }
+
+@Throws(IOException::class)
+fun post(endpoint: String, data: String, username: String, apiKey: String): JSONObject {
+
+    val json = JSONObject(data)
+    json.put("username", username)
+    json.put("api_key", apiKey)
+    Log.e("LOG", json.toString())
+    val result = post(endpoint, json.toString())
+
+    if (result.get("status") == "success") {
+        return result
+    }
+    else {
+        throw IOException("unauthorized")
+    }
+
+}
+
+fun downloadImage(url: String) : Bitmap =
+        BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())

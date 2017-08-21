@@ -29,4 +29,9 @@ along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/license
     <string name="login_screen_logo_description">The Logo of the Website</string>
     <string name="login_error_title">Login Failed</string>
     <string name="login_error_body">Wrong username or password</string>
+    <string name="bet_submit_button">Submit</string>
+    <string name="home_team_logo_description">The Home Team\'s Logo</string>
+    <string name="away_team_logo_description">The Away Team\'s Logo</string>
+    <string name="right_arrow"><![CDATA[>]]></string>
+    <string name="left_arrow"><![CDATA[<]]></string>
 </resources>

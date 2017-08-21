@@ -28,6 +28,7 @@ import android.content.SharedPreferences
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.CheckBox
 import android.widget.EditText
 import net.namibsun.hktipp.apiwrap.post
@@ -77,8 +78,10 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    private fun switchToBetsActivity() {
-        this.startActivity(Intent(this, BetActivity::class.java))
+    private fun switchToBetsActivity(bundle: Bundle) {
+        val intent = Intent(this, BetActivity::class.java)
+        intent.putExtras(bundle)
+        this.startActivity(intent)
     }
 
     private fun showLoginErrorDialog() {
@@ -98,7 +101,7 @@ class LoginActivity : AppCompatActivity() {
 
             val username = params[0]
             val password = params[1]
-            val api_key = params[2]
+            var api_key = params[2]
 
             val response = if (api_key != "" && password == "******") {
                 val json = "{\"username\":\"$username\", \"api_key\":\"$api_key\"}"
@@ -109,8 +112,13 @@ class LoginActivity : AppCompatActivity() {
                 post("request_api_key", json)
             }
 
+            Log.e("LOG", response.toString())
 
             if (response.get("status") == "success") {
+
+                if (response.has("key")) {
+                    api_key = response.getString("key")
+                }
 
                 if ((findViewById(R.id.login_screen_remember) as CheckBox).isChecked) {
                     val editor = prefs!!.edit()
@@ -118,8 +126,11 @@ class LoginActivity : AppCompatActivity() {
                     editor.putString("username", username)
                     editor.apply()
                 }
+                val bundle = Bundle()
+                bundle.putString("username", username)
+                bundle.putString("api_key", api_key)
 
-                runOnUiThread({ switchToBetsActivity() })
+                runOnUiThread({ switchToBetsActivity(bundle) })
             }
             else {
                 runOnUiThread({ showLoginErrorDialog() })

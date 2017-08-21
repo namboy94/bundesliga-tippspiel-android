@@ -39,7 +39,6 @@ along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/license
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/bet_home_team_edit"
-                android:digits="0123456789"
                 android:inputType="numberDecimal" />
 
         </android.support.v7.widget.CardView>

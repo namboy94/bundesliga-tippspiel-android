@@ -27,6 +27,7 @@ import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import net.namibsun.hktipp.apiwrap.downloadImage
@@ -79,6 +80,20 @@ class BetActivity : AppCompatActivity() {
 
         this.findViewById(R.id.bets_submit_button).setOnClickListener {
             BetPlacer().execute()
+        }
+
+        // Set button actions to go to next or previous matchday
+        this.findViewById(R.id.bets_previous_button).setOnClickListener {
+            if (this.matchDay > 1) {
+                this.matchDay--
+                DataGetter().execute()
+            }
+        }
+        this.findViewById(R.id.bets_next_button).setOnClickListener {
+            if (this.matchDay < 34) {
+                this.matchDay++
+                DataGetter().execute()
+            }
         }
 
         // Get Data for current matchday
@@ -142,12 +157,10 @@ class BetActivity : AppCompatActivity() {
          */
         override fun doInBackground(vararg params: Void?): Void? {
 
-            // Clear previous Views:
-            this@BetActivity.betViews = mutableListOf()
-            this@BetActivity.renderBetViews()
-
-            // Start Progress Spinner
+            // Clear previous Views and start Progress Spinner
             this@BetActivity.runOnUiThread({
+                this@BetActivity.betViews = mutableListOf()
+                this@BetActivity.renderBetViews()
                 this@BetActivity.findViewById(R.id.bets_progress).visibility = View.VISIBLE
             })
 
@@ -182,8 +195,9 @@ class BetActivity : AppCompatActivity() {
                     // Search for bet that is associated with match and set the bet data
                     (0..(bets.length() - 1))
                             .map { bets.getJSONObject(it) }
-                            .filter { it.getInt("id") == matchId }
+                            .filter { it.getJSONObject("match").getInt("id") == matchId }
                             .forEach {
+                                Log.e("SE", "Setting");
                                 matchView.setBetData(
                                     it.getInt("home_score"),
                                     it.getInt("away_score")

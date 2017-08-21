@@ -63,7 +63,7 @@ fun post(endpoint: String, data: String, username: String, apiKey: String): JSON
     Log.e("LOG", json.toString())
     val result = post(endpoint, json.toString())
 
-    if (result.get("status") == "success") {
+    if (result.get("status") == "success" || result.get("status") == "success_with_errors") {
         return result
     }
     else {

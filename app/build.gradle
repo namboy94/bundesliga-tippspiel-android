@@ -1,7 +1,7 @@
 /*
-Copyright 2017 Hermann Krumrey
+    Copyright 2017 Hermann Krumrey
 
-This file is part of bundesliga-tippspiel-android.
+    This file is part of bundesliga-tippspiel-android.
 
     bundesliga-tippspiel-android is an Android app that allows a user to
     manage their bets on the bundesliga-tippspiel website.

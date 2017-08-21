@@ -151,16 +151,17 @@ class LoginActivity : AppCompatActivity() {
                 }
 
                 // Store the username and API key if remember box is checked
-                if ((findViewById(R.id.login_screen_remember) as CheckBox).isChecked) {
-                    val editor = prefs!!.edit()
+                val check = this@LoginActivity.findViewById(R.id.login_screen_remember) as CheckBox
+                if (check.isChecked) {
+                    val editor = this@LoginActivity.prefs!!.edit()
                     editor.putString("api_key", apiKey)
                     editor.putString("username", username)
                     editor.apply()
                 }
-                runOnUiThread({ switchToBetsActivity(username, apiKey) })
+                this@LoginActivity.runOnUiThread({ switchToBetsActivity(username, apiKey) })
             }
             else {  // Login failed
-                runOnUiThread({ showLoginErrorDialog() })
+                this@LoginActivity.runOnUiThread({ showLoginErrorDialog() })
             }
             return null
         }

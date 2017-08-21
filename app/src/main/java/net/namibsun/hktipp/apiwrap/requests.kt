@@ -48,6 +48,8 @@ fun post(endpoint: String, data: String): JSONObject {
     val response = client.newCall(request).execute()
     val responseBody = response.body()!!.string()
 
+    Log.e("RES", responseBody)
+
     return JSONObject(responseBody)
 
 }

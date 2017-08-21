@@ -21,10 +21,13 @@
 */
 
 package net.namibsun.hktipp
+import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
+import android.view.View
 import android.widget.LinearLayout
 import net.namibsun.hktipp.apiwrap.downloadImage
 import net.namibsun.hktipp.apiwrap.getBets
@@ -35,16 +38,34 @@ import org.json.JSONArray
 import java.io.IOException
 
 /**
- * The Main Activity of the Application.
+ * This activity allows a user to place bets, as well as view already placed bets
  */
 class BetActivity : AppCompatActivity() {
 
+    /**
+     * The Bet Views for the currently selected match day
+     */
     private var betViews = mutableListOf<BetView>()
+
+    /**
+     * The username of the logged in user
+     */
     private var username: String? = null
+
+    /**
+     * The API Key of the logged in user
+     */
     private var apiKey: String? = null
 
     /**
-     * Initializes the App's Main Activity View.
+     * The Match Day to be displayed. -1 indicates that the current match day should be used
+     */
+    private var matchDay: Int = -1
+
+    /**
+     * Initializes the Activity. Sets the OnClickListeners for the buttons and starts
+     * fetching bet and match data asynchronously.
+     * Sets the username and apiKey instance variables
      * @param savedInstanceState: The Instance Information of the app.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,12 +81,31 @@ class BetActivity : AppCompatActivity() {
             BetPlacer().execute()
         }
 
+        // Get Data for current matchday
         DataGetter().execute()
 
     }
 
+    /**
+     * Returns to the LoginActivity and optionally deletes any stored credentials
+     * @param deleteStoredCredentials: Will delete all stored credentials if set to true
+     */
+    private fun logOut(deleteStoredCredentials: Boolean = false) {
 
-    fun renderBetViews() {
+        if (deleteStoredCredentials) {
+            val editor = this.getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE).edit()
+            editor.clear()
+            editor.apply()
+        }
+
+        this.startActivity(Intent(this, LoginActivity::class.java))
+    }
+
+    /**
+     * Removes all current bets from the activity, then adds all of the BetViews
+     * found in the [betViews] variable
+     */
+    private fun renderBetViews() {
 
         val list = this.findViewById(R.id.bets_list) as LinearLayout
         list.removeAllViews()
@@ -75,15 +115,55 @@ class BetActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Shows an error dialog indicating that fetching the data has failed.
+     * Once the user dismisses the message, they will be returned to the login screen
+     */
+    private fun showDataFetchingErrorDialogAndLogout() {
+
+        val errorDialogBuilder = AlertDialog.Builder(this)
+        errorDialogBuilder.setTitle(getString(R.string.bets_fetching_error_title))
+        errorDialogBuilder.setMessage(getString(R.string.bets_fetching_error_body))
+        errorDialogBuilder.setCancelable(false)
+        errorDialogBuilder.setPositiveButton("Ok") { dialog, _ -> dialog!!.dismiss() }
+        errorDialogBuilder.create()
+        errorDialogBuilder.show()
+        this.logOut()
+    }
+
+    /**
+     * AsyncTask which fetches the match and bet data for the currently selected matchday
+     */
     inner class DataGetter: AsyncTask<Void, Void, Void>() {
 
+        /**
+         * First fetches the match data, then the bets data. Downloads the Team Logos, then
+         * initializes the Bet Views for each match and renders them on the UI thread afterwards
+         */
         override fun doInBackground(vararg params: Void?): Void? {
+
+            // Clear previous Views:
+            this@BetActivity.betViews = mutableListOf()
+            this@BetActivity.renderBetViews()
+
+            // Start Progress Spinner
+            this@BetActivity.runOnUiThread({
+                this@BetActivity.findViewById(R.id.bets_progress).visibility = View.VISIBLE
+            })
 
             try {
 
-                val matches = getMatches(this@BetActivity.username!!, this@BetActivity.apiKey!!)
-                val bets = getBets(this@BetActivity.username!!, this@BetActivity.apiKey!!)
+                val username = this@BetActivity.username!!
+                val apiKey = this@BetActivity.apiKey!!
+                val matchday = this@BetActivity.matchDay
 
+                val matches = getMatches(username, apiKey, matchday)
+                val bets = getBets(username, apiKey, matchday)
+
+                // Update Matchday
+                this@BetActivity.matchDay = matches.getJSONObject(0).getInt("matchday")
+
+                // Initialize the BetViews
                 for (i in 0..(matches.length() -1)) {
                     val match = matches.getJSONObject(i)
                     val matchId = match.getInt("id")
@@ -99,29 +179,44 @@ class BetActivity : AppCompatActivity() {
                             awayTeam.getString("shortname"),
                             homeTeamLogo, awayTeamLogo)
 
-                    @Suppress("LoopToCallChain")
-                    for (j in 0..(bets.length() - 1)) {
-                        val bet = bets.getJSONObject(j)
-                        if (bet.getInt("id") == matchId) {
-                            matchView.setBetData(bet.getInt("home_score"), bet.getInt("away_score"))
-                        }
-                    }
+                    // Search for bet that is associated with match and set the bet data
+                    (0..(bets.length() - 1))
+                            .map { bets.getJSONObject(it) }
+                            .filter { it.getInt("id") == matchId }
+                            .forEach {
+                                matchView.setBetData(
+                                    it.getInt("home_score"),
+                                    it.getInt("away_score")
+                                )
+                            }
                     this@BetActivity.betViews.add(matchView)
                 }
 
-                runOnUiThread({
+                this@BetActivity.runOnUiThread({
                     this@BetActivity.renderBetViews()
+
+                    // Stop Progress Spinner
+                    this@BetActivity.findViewById(R.id.bets_progress).visibility = View.INVISIBLE
                 })
 
-            } catch (e: IOException) {
-                Log.e("A", e.message)
+            } catch (e: IOException) {  // If failed to fetch data, log out
+                this@BetActivity.runOnUiThread({
+                    this@BetActivity.showDataFetchingErrorDialogAndLogout()
+                })
             }
 
             return null
         }
     }
 
+    /**
+     * AsyncTask that places bets for the currently entered bet values
+     */
     inner class BetPlacer: AsyncTask<Void, Void, Void>() {
+
+        /**
+         * Places all eligible bets
+         */
         override fun doInBackground(vararg params: Void?): Void? {
 
             val json = JSONArray()
@@ -130,16 +225,8 @@ class BetActivity : AppCompatActivity() {
                     .forEach { json.put(it) }
 
             placeBets(this@BetActivity.username!!, this@BetActivity.apiKey!!, json)
-
-            // TODO REMOVE
-            betViews = mutableListOf()
-            runOnUiThread({})
-
-
             DataGetter().execute()
             return null
         }
-
     }
-
 }

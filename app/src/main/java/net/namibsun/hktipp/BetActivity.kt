@@ -36,7 +36,6 @@ import net.namibsun.hktipp.apiwrap.getMatches
 import net.namibsun.hktipp.apiwrap.placeBets
 import net.namibsun.hktipp.views.BetView
 import org.json.JSONArray
-import org.w3c.dom.Text
 import java.io.IOException
 
 /**
@@ -48,7 +47,7 @@ class BetActivity : AppCompatActivity() {
      * The Bet Views for the currently selected match day
      */
     //private var betViews = mutableListOf<BetView>()
-    private var betViews =mutableMapOf<Int, List<BetView>>()
+    private var betViews = mutableMapOf<Int, List<BetView>>()
 
     /**
      * The username of the logged in user
@@ -178,7 +177,7 @@ class BetActivity : AppCompatActivity() {
     /**
      * AsyncTask which fetches the match and bet data for the currently selected matchday
      */
-    inner class DataGetter: AsyncTask<Void, Void, Void>() {
+    inner class DataGetter : AsyncTask<Void, Void, Void>() {
 
         /**
          * First fetches the match data, then the bets data. Downloads the Team Logos, then
@@ -211,7 +210,7 @@ class BetActivity : AppCompatActivity() {
                 this@BetActivity.matchDay = matches.getJSONObject(0).getInt("matchday")
 
                 // Initialize the BetViews
-                for (i in 0..(matches.length() -1)) {
+                for (i in 0..(matches.length() - 1)) {
                     val match = matches.getJSONObject(i)
                     val matchId = match.getInt("id")
                     val homeTeam = match.getJSONObject("home_team")
@@ -251,7 +250,7 @@ class BetActivity : AppCompatActivity() {
                     this@BetActivity.findViewById(R.id.bets_progress).visibility = View.INVISIBLE
                 })
 
-            } catch (e: IOException) {  // If failed to fetch data, log out
+            } catch (e: IOException) { // If failed to fetch data, log out
                 this@BetActivity.runOnUiThread({
                     this@BetActivity.showDataFetchingErrorDialogAndLogout()
                 })
@@ -264,7 +263,7 @@ class BetActivity : AppCompatActivity() {
     /**
      * Class that downloads the Logos of the BetViews
      */
-    inner class LogoFetcher: AsyncTask<List<BetView>, Void, Void>() {
+    inner class LogoFetcher : AsyncTask<List<BetView>, Void, Void>() {
 
         /**
          * Downloads the BetView's logos in sequence and applies them as soon as they are available
@@ -290,7 +289,7 @@ class BetActivity : AppCompatActivity() {
     /**
      * AsyncTask that places bets for the currently entered bet values
      */
-    inner class BetPlacer: AsyncTask<Void, Void, Void>() {
+    inner class BetPlacer : AsyncTask<Void, Void, Void>() {
 
         /**
          * Places all eligible bets

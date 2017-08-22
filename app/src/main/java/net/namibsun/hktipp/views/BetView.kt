@@ -35,11 +35,10 @@ import net.namibsun.hktipp.R
 import org.json.JSONObject
 import java.net.URL
 
-
 /**
  * A custom view that displays a single matchup and editable fields for bets
  */
-class BetView: CardView {
+class BetView : CardView {
 
     /**
      * The Match ID for the bet's match
@@ -189,7 +188,7 @@ class BetView: CardView {
             json.put("home_score", homeScore)
             json.put("away_score", awayScore)
             json.put("match_id", this.matchId)
-            json  // return
+            json // return
 
         } catch (e: NumberFormatException) {
             null

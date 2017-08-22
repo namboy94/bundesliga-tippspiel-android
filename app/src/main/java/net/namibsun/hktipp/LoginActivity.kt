@@ -120,7 +120,7 @@ class LoginActivity : AppCompatActivity() {
     /**
      * Async Task that tries to log in to the bundesliga-tippspiel website
      */
-    inner class LoginTask: AsyncTask<String, Void, Void>() {
+    inner class LoginTask : AsyncTask<String, Void, Void>() {
 
         /**
          * Attempts to log in
@@ -143,7 +143,7 @@ class LoginActivity : AppCompatActivity() {
                 post("request_api_key", json)
             }
 
-            if (response.get("status") == "success") {  // Login successful
+            if (response.get("status") == "success") { // Login successful
 
                 // Update API Key if applicable
                 if (response.has("key")) {
@@ -160,12 +160,10 @@ class LoginActivity : AppCompatActivity() {
                 }
                 this@LoginActivity.runOnUiThread({ switchToBetsActivity(username, apiKey) })
             }
-            else {  // Login failed
+            else { // Login failed
                 this@LoginActivity.runOnUiThread({ showLoginErrorDialog() })
             }
             return null
         }
     }
 }
-
-

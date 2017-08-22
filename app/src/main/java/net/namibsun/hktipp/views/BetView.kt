@@ -70,14 +70,21 @@ class BetView: CardView {
      * @param awayTeam: The Name of the Away Team which will be displayed
      * @param homeLogo: A Bitmap of the Home Team Logo
      * @param awayLogo: A Bitmap of the Home Team Logo
+     * @param hasStarted: Indicates if the match hs already started or not
      */
     fun setMatchData(id: Int, homeTeam: String, awayTeam: String,
-                     homeLogo: Bitmap, awayLogo: Bitmap) {
+                     homeLogo: Bitmap, awayLogo: Bitmap, hasStarted: Boolean) {
         (this.findViewById(R.id.bet_home_team_title) as TextView).text = homeTeam
         (this.findViewById(R.id.bet_away_team_title) as TextView).text = awayTeam
         (this.findViewById(R.id.bet_home_team_logo) as ImageView).setImageBitmap(homeLogo)
         (this.findViewById(R.id.bet_away_team_logo) as ImageView).setImageBitmap(awayLogo)
         this.matchId = id
+
+        // Disable editing if match has started
+        if (hasStarted) {
+            (this.findViewById(R.id.bet_home_team_edit) as EditText).isEnabled = false
+            (this.findViewById(R.id.bet_away_team_edit) as EditText).isEnabled = false
+        }
     }
 
     /**

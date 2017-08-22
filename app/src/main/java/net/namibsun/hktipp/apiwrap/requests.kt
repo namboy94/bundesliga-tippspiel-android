@@ -31,6 +31,7 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONObject
 import java.io.IOException
+import java.net.SocketTimeoutException
 import java.net.URL
 
 @Throws(IOException::class)
@@ -57,17 +58,20 @@ fun post(endpoint: String, data: String): JSONObject {
 @Throws(IOException::class)
 fun post(endpoint: String, data: String, username: String, apiKey: String): JSONObject {
 
-    val json = JSONObject(data)
-    json.put("username", username)
-    json.put("api_key", apiKey)
-    Log.e("LOG", json.toString())
-    val result = post(endpoint, json.toString())
+    try {
+        val json = JSONObject(data)
+        json.put("username", username)
+        json.put("api_key", apiKey)
+        Log.e("LOG", json.toString())
+        val result = post(endpoint, json.toString())
 
-    if (result.get("status") == "success" || result.get("status") == "success_with_errors") {
-        return result
-    }
-    else {
-        throw IOException("unauthorized")
+        if (result.get("status") == "success" || result.get("status") == "success_with_errors") {
+            return result
+        } else {
+            throw IOException("unauthorized")
+        }
+    } catch (e: SocketTimeoutException) {
+        throw IOException("timeout")
     }
 
 }

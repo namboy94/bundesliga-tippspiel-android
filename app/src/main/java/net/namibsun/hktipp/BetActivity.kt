@@ -190,7 +190,8 @@ class BetActivity : AppCompatActivity() {
                             matchId,
                             homeTeam.getString("shortname"),
                             awayTeam.getString("shortname"),
-                            homeTeamLogo, awayTeamLogo)
+                            homeTeamLogo, awayTeamLogo,
+                            match.getBoolean("started"))
 
                     // Search for bet that is associated with match and set the bet data
                     (0..(bets.length() - 1))

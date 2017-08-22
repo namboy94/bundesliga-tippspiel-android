@@ -154,6 +154,21 @@ class BetActivity : AppCompatActivity() {
     }
 
     /**
+     * Shows an error dialog indicating that betting failed
+     */
+    private fun showBetErrorDialog() {
+
+        val errorDialogBuilder = AlertDialog.Builder(this)
+        errorDialogBuilder.setTitle(getString(R.string.bets_betting_error_title))
+        errorDialogBuilder.setMessage(getString(R.string.bets_betting_error_body))
+        errorDialogBuilder.setCancelable(true)
+        errorDialogBuilder.setPositiveButton("Ok") { dialog, _ -> dialog!!.dismiss() }
+        errorDialogBuilder.create()
+        errorDialogBuilder.show()
+        this.logOut()
+    }
+
+    /**
      * AsyncTask which fetches the match and bet data for the currently selected matchday
      */
     inner class DataGetter: AsyncTask<Void, Void, Void>() {
@@ -280,8 +295,12 @@ class BetActivity : AppCompatActivity() {
                     .mapNotNull { it.getBetJson() }
                     .forEach { json.put(it) }
 
-            placeBets(this@BetActivity.username!!, this@BetActivity.apiKey!!, json)
-            DataGetter().execute()
+            val result = placeBets(this@BetActivity.username!!, this@BetActivity.apiKey!!, json)
+            if (!result) {
+                this@BetActivity.runOnUiThread { this@BetActivity.showBetErrorDialog() }
+            } else {
+                DataGetter().execute()
+            }
             return null
         }
     }

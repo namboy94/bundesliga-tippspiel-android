@@ -24,6 +24,7 @@ package net.namibsun.hktipp.views
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.support.v7.widget.CardView
 import android.util.AttributeSet
 import android.view.View
@@ -31,8 +32,8 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import net.namibsun.hktipp.R
-import net.namibsun.hktipp.apiwrap.downloadImage
 import org.json.JSONObject
+import java.net.URL
 
 
 /**
@@ -124,11 +125,14 @@ class BetView: CardView {
      * UI thread. Only downloads bitmaps if none have been downloaded beforehand
      */
     fun downloadLogoBitmaps() {
+
         if (this.homeLogoBitmap == null) {
-            this.homeLogoBitmap = downloadImage(this.homeLogoUrl!!)
+            this.homeLogoBitmap = BitmapFactory.decodeStream(
+                    URL(this.homeLogoUrl!!).openConnection().getInputStream())
         }
         if (this.awayLogoBitmap == null) {
-            this.awayLogoBitmap = downloadImage(this.awayLogoUrl!!)
+            this.awayLogoBitmap = BitmapFactory.decodeStream(
+                    URL(this.awayLogoUrl!!).openConnection().getInputStream())
         }
     }
 

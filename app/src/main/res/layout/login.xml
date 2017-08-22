@@ -89,7 +89,7 @@ along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/license
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/login_screen_card"
-        android:layout_margin="20dp"
+        android:layout_margin="75dp"
         android:src="@drawable/logo"
         android:contentDescription="@string/login_screen_logo_description" />
 

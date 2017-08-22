@@ -26,6 +26,18 @@ import android.util.Log
 import org.json.JSONArray
 import org.json.JSONObject
 
+/**
+ * Module that contains wrappers around bundesliga-tippspiel APIs
+ */
+
+/**
+ * Fetches all the match data for the specified match day
+ * @param username: The requesting user's username
+ * @param apiKey: The API key of the user
+ * @param matchday: The match day for which to fetch the match data.
+ *                  Defaults to -1, which will fetch the current match day
+ * @return: The match data for the matchday
+ */
 fun getMatches(username: String, apiKey: String, matchday: Int = -1): JSONArray {
     val json = if (matchday == -1) "{}" else "{\"matchday\":\"$matchday\"}"
     val res = post("get_matches_for_matchday", json, username, apiKey)
@@ -33,13 +45,31 @@ fun getMatches(username: String, apiKey: String, matchday: Int = -1): JSONArray 
     return res.getJSONArray("data")
 }
 
+/**
+ * Retrieves a user's bet data for a specified match day
+ * @param username: The user's username
+ * @param apiKey: The user's api key
+ * @param matchday: The match day for which to fetch the bet data.
+ *                  Defaults to -1 which would fetch the bet data for the current match day
+ * @return: The Bet Data
+ */
 fun getBets(username: String, apiKey: String, matchday: Int = -1): JSONArray {
     val json = if (matchday == -1) "{}" else "{\"matchday\":\"$matchday\"}"
     return post("get_user_bets_for_matchday", json, username, apiKey).getJSONArray("data")
 }
 
-fun placeBets(username: String, apiKey: String, bets: JSONArray): JSONObject {
+/**
+ * Places bets for a user
+ * @param username: The user's username
+ * @param apiKey: The user's API key
+ * @param bets: The bets to place. Must be a JsonArray of JsonObjects with the attributes
+ *              `home_score`, `away_score` and `match_id`
+ * @return: true if the bets where places successfully, false otherwise
+ */
+fun placeBets(username: String, apiKey: String, bets: JSONArray): Boolean {
     val betsJson = JSONObject()
     betsJson.put("bets", bets)
-    return post("place_bets", betsJson.toString(), username, apiKey)
+    val response = post("place_bets", betsJson.toString(), username, apiKey)
+    val status = response.getString("status")
+    return status.startsWith("success")
 }

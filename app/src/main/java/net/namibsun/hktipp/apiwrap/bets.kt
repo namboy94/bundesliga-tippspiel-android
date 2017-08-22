@@ -22,7 +22,6 @@
 
 package net.namibsun.hktipp.apiwrap
 
-import android.util.Log
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -41,7 +40,6 @@ import org.json.JSONObject
 fun getMatches(username: String, apiKey: String, matchday: Int = -1): JSONArray {
     val json = if (matchday == -1) "{}" else "{\"matchday\":\"$matchday\"}"
     val res = post("get_matches_for_matchday", json, username, apiKey)
-    Log.e("LOG", res.toString())
     return res.getJSONArray("data")
 }
 

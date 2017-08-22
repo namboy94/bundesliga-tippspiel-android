@@ -40,6 +40,14 @@ along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/license
         android:layout_height="match_parent"
         android:id="@+id/bets_inner_layout">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/bets_matchday_title_default"
+            android:textSize="30sp"
+            android:gravity="center"
+            android:id="@+id/bets_title"/>
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"

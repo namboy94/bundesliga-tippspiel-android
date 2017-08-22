@@ -30,11 +30,13 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.TextView
 import net.namibsun.hktipp.apiwrap.getBets
 import net.namibsun.hktipp.apiwrap.getMatches
 import net.namibsun.hktipp.apiwrap.placeBets
 import net.namibsun.hktipp.views.BetView
 import org.json.JSONArray
+import org.w3c.dom.Text
 import java.io.IOException
 
 /**
@@ -123,12 +125,17 @@ class BetActivity : AppCompatActivity() {
 
     /**
      * Removes all current bets from the activity, then adds all of the BetViews
-     * found in the [betViews] variable for the current matchday
+     * found in the [betViews] variable for the current matchday.
+     * Also changes the matchday title to the current matchday
      */
     private fun renderBetViews() {
 
+        val title = this.findViewById(R.id.bets_title) as TextView
         val list = this.findViewById(R.id.bets_list) as LinearLayout
         val bets = this.betViews[this.matchDay]
+
+        title.text = this.resources.getString(R.string.bets_matchday_title, this.matchDay)
+
         if (bets != null) {
             list.removeAllViews()
             for (view in bets) {

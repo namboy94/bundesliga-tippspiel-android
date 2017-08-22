@@ -37,9 +37,12 @@ along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/license
     <string name="right_arrow"><![CDATA[>]]></string>
     <string name="left_arrow"><![CDATA[<]]></string>
 
+    <string name="bets_matchday_title">Match Day %d</string>
+    <string name="bets_matchday_title_default">Match Day</string>
     <string name="bets_fetching_error_title">Failed to Fetch bets.</string>
     <string name="bets_fetching_error_body">You will now be logged out of the application</string>
     <string name="bets_betting_error_title">Betting failed</string>
     <string name="bets_betting_error_body">Your bet could not be processed</string>
+
 
 </resources>

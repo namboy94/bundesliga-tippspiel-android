@@ -36,7 +36,7 @@ lint:
   script:
     # - echo $GOOGLE_SERVICES_JSON > app/google-services.json
     - gradle ktlint
-    - gradle lint
+    # - gradle lint
 
 build_app:
   stage: build

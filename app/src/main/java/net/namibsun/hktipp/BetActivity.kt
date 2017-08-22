@@ -30,7 +30,6 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
-import net.namibsun.hktipp.apiwrap.downloadImage
 import net.namibsun.hktipp.apiwrap.getBets
 import net.namibsun.hktipp.apiwrap.getMatches
 import net.namibsun.hktipp.apiwrap.placeBets
@@ -46,7 +45,8 @@ class BetActivity : AppCompatActivity() {
     /**
      * The Bet Views for the currently selected match day
      */
-    private var betViews = mutableListOf<BetView>()
+    //private var betViews = mutableListOf<BetView>()
+    private var betViews =mutableMapOf<Int, List<BetView>>()
 
     /**
      * The username of the logged in user
@@ -88,12 +88,17 @@ class BetActivity : AppCompatActivity() {
                 this.matchDay--
                 DataGetter().execute()
             }
+            this.findViewById(R.id.bets_previous_button).isEnabled = this.matchDay != 1
+            this.findViewById(R.id.bets_next_button).isEnabled = this.matchDay != 34
         }
         this.findViewById(R.id.bets_next_button).setOnClickListener {
             if (this.matchDay < 34) {
                 this.matchDay++
                 DataGetter().execute()
+
             }
+            this.findViewById(R.id.bets_previous_button).isEnabled = this.matchDay != 1
+            this.findViewById(R.id.bets_next_button).isEnabled = this.matchDay != 34
         }
 
         // Get Data for current matchday
@@ -118,16 +123,18 @@ class BetActivity : AppCompatActivity() {
 
     /**
      * Removes all current bets from the activity, then adds all of the BetViews
-     * found in the [betViews] variable
+     * found in the [betViews] variable for the current matchday
      */
     private fun renderBetViews() {
 
         val list = this.findViewById(R.id.bets_list) as LinearLayout
-        list.removeAllViews()
-        for (view in this.betViews) {
-            list.addView(view)
+        val bets = this.betViews[this.matchDay]
+        if (bets != null) {
+            list.removeAllViews()
+            for (view in bets) {
+                list.addView(view)
+            }
         }
-
     }
 
     /**
@@ -159,12 +166,17 @@ class BetActivity : AppCompatActivity() {
 
             // Clear previous Views and start Progress Spinner
             this@BetActivity.runOnUiThread({
-                this@BetActivity.betViews = mutableListOf()
-                this@BetActivity.renderBetViews()
+                if (this@BetActivity.matchDay != -1) {
+                    this@BetActivity.betViews[this@BetActivity.matchDay] = mutableListOf()
+                    this@BetActivity.renderBetViews()
+                }
                 this@BetActivity.findViewById(R.id.bets_progress).visibility = View.VISIBLE
             })
 
             try {
+
+                val previousBetViews = betViews[this@BetActivity.matchDay]
+                val newBetViews = mutableListOf<BetView>()
 
                 val username = this@BetActivity.username!!
                 val apiKey = this@BetActivity.apiKey!!
@@ -182,33 +194,36 @@ class BetActivity : AppCompatActivity() {
                     val matchId = match.getInt("id")
                     val homeTeam = match.getJSONObject("home_team")
                     val awayTeam = match.getJSONObject("away_team")
-                    val homeTeamLogo = downloadImage(homeTeam.getString("icon"))
-                    val awayTeamLogo = downloadImage(awayTeam.getString("icon"))
+                    val homeTeamLogo = homeTeam.getString("icon")
+                    val awayTeamLogo = awayTeam.getString("icon")
 
                     val matchView = BetView(this@BetActivity)
                     matchView.setMatchData(
                             matchId,
                             homeTeam.getString("shortname"),
                             awayTeam.getString("shortname"),
-                            homeTeamLogo, awayTeamLogo,
-                            match.getBoolean("started"))
+                            match.getBoolean("started"),
+                            homeTeamLogo,
+                            awayTeamLogo)
 
                     // Search for bet that is associated with match and set the bet data
                     (0..(bets.length() - 1))
                             .map { bets.getJSONObject(it) }
                             .filter { it.getJSONObject("match").getInt("id") == matchId }
                             .forEach {
-                                Log.e("SE", "Setting");
+                                Log.e("SE", "Setting")
                                 matchView.setBetData(
                                     it.getInt("home_score"),
                                     it.getInt("away_score")
                                 )
                             }
-                    this@BetActivity.betViews.add(matchView)
+                    newBetViews.add(matchView)
                 }
+                betViews[this@BetActivity.matchDay] = newBetViews
 
                 this@BetActivity.runOnUiThread({
                     this@BetActivity.renderBetViews()
+                    LogoFetcher().execute(previousBetViews)
 
                     // Stop Progress Spinner
                     this@BetActivity.findViewById(R.id.bets_progress).visibility = View.INVISIBLE
@@ -218,6 +233,32 @@ class BetActivity : AppCompatActivity() {
                 this@BetActivity.runOnUiThread({
                     this@BetActivity.showDataFetchingErrorDialogAndLogout()
                 })
+            }
+
+            return null
+        }
+    }
+
+    /**
+     * Class that downloads the Logos of the BetViews
+     */
+    inner class LogoFetcher: AsyncTask<List<BetView>, Void, Void>() {
+
+        /**
+         * Downloads the BetView's logos in sequence and applies them as soon as they are available
+         */
+        override fun doInBackground(vararg params: List<BetView>?): Void? {
+
+            val oldBetViews = params[0]
+            for (betView in this@BetActivity.betViews[this@BetActivity.matchDay]!!) {
+
+                oldBetViews?.
+                        filter { it.matchId == betView.matchId }?.
+                        map { it.getLogoBitmaps() }?.
+                        forEach { betView.setLogoBitmaps(it) }
+
+                betView.downloadLogoBitmaps()
+                this@BetActivity.runOnUiThread { betView.applyLogoBitmaps() }
             }
 
             return null
@@ -235,7 +276,7 @@ class BetActivity : AppCompatActivity() {
         override fun doInBackground(vararg params: Void?): Void? {
 
             val json = JSONArray()
-            this@BetActivity.betViews
+            this@BetActivity.betViews[this@BetActivity.matchDay]!!
                     .mapNotNull { it.getBetJson() }
                     .forEach { json.put(it) }
 

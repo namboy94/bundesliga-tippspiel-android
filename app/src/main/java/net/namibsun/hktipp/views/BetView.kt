@@ -31,6 +31,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import net.namibsun.hktipp.R
+import net.namibsun.hktipp.apiwrap.downloadImage
 import org.json.JSONObject
 
 
@@ -42,7 +43,27 @@ class BetView: CardView {
     /**
      * The Match ID for the bet's match
      */
-    private var matchId: Int? = null
+    public var matchId: Int? = null
+
+    /**
+     * The URL to the home team's logo
+     */
+    private var homeLogoUrl: String? = null
+
+    /**
+     * The URL to the away team's logo
+     */
+    private var awayLogoUrl: String? = null
+
+    /**
+     * The Home Team Logo Bitmap
+     */
+    private var homeLogoBitmap: Bitmap? = null
+
+    /**
+     * The Away Team Logo Bitmap
+     */
+    private var awayLogoBitmap: Bitmap? = null
 
     /**
      * Constructors of the View that inflate the bet.xml layout
@@ -68,17 +89,18 @@ class BetView: CardView {
      * @param id: The Match ID
      * @param homeTeam: The Name of the Home Team which will be displayed
      * @param awayTeam: The Name of the Away Team which will be displayed
-     * @param homeLogo: A Bitmap of the Home Team Logo
-     * @param awayLogo: A Bitmap of the Home Team Logo
      * @param hasStarted: Indicates if the match hs already started or not
+     * @param homeLogoUrl: The URL to the home team's logo
+     * @param awayLogoUrl: The URL to the away team's logo
      */
-    fun setMatchData(id: Int, homeTeam: String, awayTeam: String,
-                     homeLogo: Bitmap, awayLogo: Bitmap, hasStarted: Boolean) {
+    fun setMatchData(id: Int, homeTeam: String, awayTeam: String, hasStarted: Boolean,
+                     homeLogoUrl: String, awayLogoUrl: String) {
+
+        this.matchId = id
         (this.findViewById(R.id.bet_home_team_title) as TextView).text = homeTeam
         (this.findViewById(R.id.bet_away_team_title) as TextView).text = awayTeam
-        (this.findViewById(R.id.bet_home_team_logo) as ImageView).setImageBitmap(homeLogo)
-        (this.findViewById(R.id.bet_away_team_logo) as ImageView).setImageBitmap(awayLogo)
-        this.matchId = id
+        this.homeLogoUrl = homeLogoUrl
+        this.awayLogoUrl = awayLogoUrl
 
         // Disable editing if match has started
         if (hasStarted) {
@@ -95,6 +117,49 @@ class BetView: CardView {
     fun setBetData(homeTeamScore: Int, awayTeamScore: Int) {
         (this.findViewById(R.id.bet_home_team_edit) as EditText).setText(homeTeamScore.toString())
         (this.findViewById(R.id.bet_away_team_edit) as EditText).setText(awayTeamScore.toString())
+    }
+
+    /**
+     * Downloads the Logos of the BetView's teams. This should be run in another thread than the
+     * UI thread. Only downloads bitmaps if none have been downloaded beforehand
+     */
+    fun downloadLogoBitmaps() {
+        if (this.homeLogoBitmap == null) {
+            this.homeLogoBitmap = downloadImage(this.homeLogoUrl!!)
+        }
+        if (this.awayLogoBitmap == null) {
+            this.awayLogoBitmap = downloadImage(this.awayLogoUrl!!)
+        }
+    }
+
+    /**
+     * Sets the Bitmaps of the team's logos
+     */
+    fun applyLogoBitmaps() {
+        val homeImage = this.findViewById(R.id.bet_home_team_logo) as ImageView
+        val awayImage = this.findViewById(R.id.bet_away_team_logo) as ImageView
+        homeImage.setImageBitmap(this.homeLogoBitmap)
+        awayImage.setImageBitmap(this.awayLogoBitmap)
+    }
+
+    /**
+     * Retrieves the Logo Bitmaps for reuse in another BetView
+     * @return: A Map of Bitmaps with 'home' and 'away' as keys
+     */
+    fun getLogoBitmaps() : Map<String, Bitmap?> {
+        val map = mutableMapOf<String, Bitmap?>()
+        map["home"] = this.homeLogoBitmap
+        map["away"] = this.awayLogoBitmap
+        return map
+    }
+
+    /**
+     * Sets the BetView's logo bitmaps
+     * @param bitmaps: The bitmaps to set
+     */
+    fun setLogoBitmaps(bitmaps: Map<String, Bitmap?>) {
+        this.homeLogoBitmap = bitmaps["home"]
+        this.awayLogoBitmap = bitmaps["away"]
     }
 
     /**
@@ -126,5 +191,4 @@ class BetView: CardView {
             null
         }
     }
-
 }

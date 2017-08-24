@@ -65,7 +65,7 @@ build_app:
     # - echo $GOOGLE_SERVICES_JSON > app/google-services.json
     - ./gradlew assembleRelease -Pandroid.injected.signing.store.file=androidkey -Pandroid.injected.signing.store.password=$ANDROIDKEY_PASS -Pandroid.injected.signing.key.alias=$ANDROIDKEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROIDKEY_PASS
     - mv app/build/outputs/apk/app-release.apk artifacts/hktipp-$(gradle version -q).apk
-    - rm androidkey app/google-services.json
+    - rm androidkey # app/google-services.json
   artifacts:
      paths:
       - artifacts/

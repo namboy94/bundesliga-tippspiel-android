@@ -21,4 +21,28 @@ along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/license
 -->
 <resources>
     <string name="app_name">Hk-Bets</string>
+
+    <string name="login_screen_title">Login</string>
+    <string name="login_screen_username">Username</string>
+    <string name="login_screen_password">Password</string>
+    <string name="login_screen_remember_me">Remember Me?</string>
+    <string name="login_screen_button_title">Login</string>
+    <string name="login_screen_logo_description">The Logo of the Website</string>
+    <string name="login_error_title">Login Failed</string>
+    <string name="login_error_body">Wrong username or password</string>
+
+    <string name="bet_submit_button">Submit</string>
+    <string name="home_team_logo_description">The Home Team\'s Logo</string>
+    <string name="away_team_logo_description">The Away Team\'s Logo</string>
+    <string name="right_arrow"><![CDATA[>]]></string>
+    <string name="left_arrow"><![CDATA[<]]></string>
+
+    <string name="bets_matchday_title">Match Day %d</string>
+    <string name="bets_matchday_title_default">Match Day</string>
+    <string name="bets_fetching_error_title">Failed to Fetch bets.</string>
+    <string name="bets_fetching_error_body">You will now be logged out of the application</string>
+    <string name="bets_betting_error_title">Betting failed</string>
+    <string name="bets_betting_error_body">Your bet could not be processed</string>
+
+
 </resources>

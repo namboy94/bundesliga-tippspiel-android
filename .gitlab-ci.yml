@@ -46,9 +46,7 @@ build_test:
       - master
       - develop
   script:
-    - ls gradle
     - gradle wrapper
-    - ls gradle
     - echo $ANDROIDKEY | base64 -d > androidkey
     # - echo $GOOGLE_SERVICES_JSON > app/google-services.json
     - ./gradlew assembleRelease -Pandroid.injected.signing.store.file=androidkey -Pandroid.injected.signing.store.password=$ANDROIDKEY_PASS -Pandroid.injected.signing.key.alias=$ANDROIDKEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROIDKEY_PASS
@@ -62,6 +60,7 @@ build_app:
     - linux-buildserver
   script:
     - mkdir -p artifacts
+    - gradle wrapper
     - echo $ANDROIDKEY | base64 -d > androidkey
     # - echo $GOOGLE_SERVICES_JSON > app/google-services.json
     - ./gradlew assembleRelease -Pandroid.injected.signing.store.file=androidkey -Pandroid.injected.signing.store.password=$ANDROIDKEY_PASS -Pandroid.injected.signing.key.alias=$ANDROIDKEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROIDKEY_PASS

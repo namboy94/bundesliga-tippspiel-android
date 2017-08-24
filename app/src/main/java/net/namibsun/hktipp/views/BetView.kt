@@ -26,6 +26,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.support.v7.widget.CardView
+import android.view.View
 
 import android.widget.EditText
 import android.widget.ImageView
@@ -64,10 +65,23 @@ class BetView(context: Context,
     public fun getLogoBitmaps() : MutableMap<String, Bitmap?> = this.logoBitmaps
 
     /**
+     * Retrieves the team data from this BetView
+     * @return a tuple of the home team's data and the away team's data
+     */
+    @Suppress("RedundantVisibilityModifier")
+    public fun getTeamData() : Map<String, JSONObject> =
+            mapOf(
+                    "home" to this.matchData.getJSONObject("home_team"),
+                    "away" to this.matchData.getJSONObject("away_team")
+            )
+
+    /**
      * Initializes the Bet View. Initializes all the text data and downloads/displays the
      * Logos of the teams
      */
     init {
+
+        View.inflate(context, R.layout.bet, this)
 
         val homeTeam = this.matchData.getJSONObject("home_team")
         val awayTeam = this.matchData.getJSONObject("away_team")
@@ -87,7 +101,7 @@ class BetView(context: Context,
         }
 
         // Disable editing if match has started
-        if (this.matchData.getBoolean("has_started")) {
+        if (this.matchData.getBoolean("started")) {
             (this.findViewById(R.id.bet_home_team_edit) as EditText).isEnabled = false
             (this.findViewById(R.id.bet_away_team_edit) as EditText).isEnabled = false
         }

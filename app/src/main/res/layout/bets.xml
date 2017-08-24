@@ -75,7 +75,7 @@ along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/license
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/left_arrow"
-                android:id="@+id/bets_previous_button"/>
+                android:id="@+id/bets_prev_button"/>
 
             <Button
                 android:layout_width="wrap_content"

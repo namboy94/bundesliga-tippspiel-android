@@ -26,143 +26,92 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.support.v7.widget.CardView
-import android.util.AttributeSet
-import android.view.View
+
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import net.namibsun.hktipp.R
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.runOnUiThread
 import org.json.JSONObject
 import java.net.URL
 
 /**
- * A custom view that displays a single matchup and editable fields for bets
+ * A custom view that displays a single matchup and editable fields for bets.
+ * @param context: The context/activity for which to display this bet
+ * @param matchData: The match data to display. A JSONObject fetched from the API
+ * @param betData: The existing bet data. Can be null if not bet data exists yet
+ * @param logoBitmaps: A Map of Bitmaps that contain the team logos for this map.
+ *                     Can be used to reduce loading times
  */
-class BetView : CardView {
+class BetView(context: Context,
+              private val matchData: JSONObject,
+              private val betData: JSONObject?,
+              private val logoBitmaps:
+              MutableMap<String, Bitmap?> = mutableMapOf("home" to null, "away" to null))
+    : CardView(context, null) {
 
     /**
-     * The Match ID for the bet's match
+     * The Match ID of this BetView
      */
-    public var matchId: Int? = null
+    val matchId = matchData.getInt("id")
 
     /**
-     * The URL to the home team's logo
+     * Getter method for retrieving the view's logo bitmaps
+     * @return: A Map of logo bitmaps with the keys `home` and `away`
      */
-    private var homeLogoUrl: String? = null
+    @Suppress("RedundantVisibilityModifier")
+    public fun getLogoBitmaps() : MutableMap<String, Bitmap?> = this.logoBitmaps
 
     /**
-     * The URL to the away team's logo
+     * Initializes the Bet View. Initializes all the text data and downloads/displays the
+     * Logos of the teams
      */
-    private var awayLogoUrl: String? = null
+    init {
 
-    /**
-     * The Home Team Logo Bitmap
-     */
-    private var homeLogoBitmap: Bitmap? = null
+        val homeTeam = this.matchData.getJSONObject("home_team")
+        val awayTeam = this.matchData.getJSONObject("away_team")
 
-    /**
-     * The Away Team Logo Bitmap
-     */
-    private var awayLogoBitmap: Bitmap? = null
+        // Display Team names
+        val homeTeamTitle = (this.findViewById(R.id.bet_home_team_title) as TextView)
+        val awayTeamTitle = (this.findViewById(R.id.bet_away_team_title) as TextView)
+        homeTeamTitle.text = homeTeam.getString("shortname")
+        awayTeamTitle.text = awayTeam.getString("shortname")
 
-    /**
-     * Constructors of the View that inflate the bet.xml layout
-     * Once the view is created, to really make use of the functionality of the BetView,
-     * [setMatchData] and [setBetData] should be called afterwards
-     * @param context: The Context/Activity in which the view will be displayed
-     */
-    constructor(context: Context): this(context, null)
-
-    /**
-     * Constructors of the View that inflate the bet.xml layout
-     * Once the view is created, to really make use of the functionality of the BetView,
-     * [setMatchData] and [setBetData] should be called afterwards
-     * @param context: The Context/Activity in which the view will be displayed
-     * @param attrs: The XML Attribute Set provided for the View
-     */
-    constructor(context: Context, attrs: AttributeSet?): super(context, attrs) {
-        View.inflate(this.context, R.layout.bet, this)
-    }
-
-    /**
-     * Sets the Match Data. Will populate all match-related elements of the view
-     * @param id: The Match ID
-     * @param homeTeam: The Name of the Home Team which will be displayed
-     * @param awayTeam: The Name of the Away Team which will be displayed
-     * @param hasStarted: Indicates if the match hs already started or not
-     * @param homeLogoUrl: The URL to the home team's logo
-     * @param awayLogoUrl: The URL to the away team's logo
-     */
-    fun setMatchData(id: Int, homeTeam: String, awayTeam: String, hasStarted: Boolean,
-                     homeLogoUrl: String, awayLogoUrl: String) {
-
-        this.matchId = id
-        (this.findViewById(R.id.bet_home_team_title) as TextView).text = homeTeam
-        (this.findViewById(R.id.bet_away_team_title) as TextView).text = awayTeam
-        this.homeLogoUrl = homeLogoUrl
-        this.awayLogoUrl = awayLogoUrl
+        // Set existing bet data
+        if (this.betData != null) {
+            val homeTeamEdit = (this.findViewById(R.id.bet_home_team_edit) as EditText)
+            val awayTeamEdit = (this.findViewById(R.id.bet_away_team_edit) as EditText)
+            homeTeamEdit.setText(this.betData.getInt("home_score").toString())
+            awayTeamEdit.setText(this.betData.getInt("away_score").toString())
+        }
 
         // Disable editing if match has started
-        if (hasStarted) {
+        if (this.matchData.getBoolean("has_started")) {
             (this.findViewById(R.id.bet_home_team_edit) as EditText).isEnabled = false
             (this.findViewById(R.id.bet_away_team_edit) as EditText).isEnabled = false
         }
-    }
 
-    /**
-     * Sets the current values of the user's bet data
-     * @param homeTeamScore: The score of the home team
-     * @param awayTeamScore: The score of the away team
-     */
-    fun setBetData(homeTeamScore: Int, awayTeamScore: Int) {
-        (this.findViewById(R.id.bet_home_team_edit) as EditText).setText(homeTeamScore.toString())
-        (this.findViewById(R.id.bet_away_team_edit) as EditText).setText(awayTeamScore.toString())
-    }
-
-    /**
-     * Downloads the Logos of the BetView's teams. This should be run in another thread than the
-     * UI thread. Only downloads bitmaps if none have been downloaded beforehand
-     */
-    fun downloadLogoBitmaps() {
-
-        if (this.homeLogoBitmap == null) {
-            this.homeLogoBitmap = BitmapFactory.decodeStream(
-                    URL(this.homeLogoUrl!!).openConnection().getInputStream())
-        }
-        if (this.awayLogoBitmap == null) {
-            this.awayLogoBitmap = BitmapFactory.decodeStream(
-                    URL(this.awayLogoUrl!!).openConnection().getInputStream())
-        }
-    }
-
-    /**
-     * Sets the Bitmaps of the team's logos
-     */
-    fun applyLogoBitmaps() {
+        // Download/Display the Logos
+        val homeLogoUrl = homeTeam.getString("icon")
+        val awayLogoUrl = awayTeam.getString("icon")
         val homeImage = this.findViewById(R.id.bet_home_team_logo) as ImageView
         val awayImage = this.findViewById(R.id.bet_away_team_logo) as ImageView
-        homeImage.setImageBitmap(this.homeLogoBitmap)
-        awayImage.setImageBitmap(this.awayLogoBitmap)
-    }
 
-    /**
-     * Retrieves the Logo Bitmaps for reuse in another BetView
-     * @return: A Map of Bitmaps with 'home' and 'away' as keys
-     */
-    fun getLogoBitmaps() : Map<String, Bitmap?> {
-        val map = mutableMapOf<String, Bitmap?>()
-        map["home"] = this.homeLogoBitmap
-        map["away"] = this.awayLogoBitmap
-        return map
-    }
+        context.doAsync {
+            if (this@BetView.logoBitmaps["home"] == null) {
 
-    /**
-     * Sets the BetView's logo bitmaps
-     * @param bitmaps: The bitmaps to set
-     */
-    fun setLogoBitmaps(bitmaps: Map<String, Bitmap?>) {
-        this.homeLogoBitmap = bitmaps["home"]
-        this.awayLogoBitmap = bitmaps["away"]
+                this@BetView.logoBitmaps["home"] = BitmapFactory.decodeStream(
+                        URL(homeLogoUrl).openConnection().getInputStream())
+                this@BetView.logoBitmaps["away"] = BitmapFactory.decodeStream(
+                        URL(awayLogoUrl).openConnection().getInputStream())
+            }
+
+            this@BetView.context.runOnUiThread {
+                homeImage.setImageBitmap(this@BetView.logoBitmaps["home"])
+                awayImage.setImageBitmap(this@BetView.logoBitmaps["away"])
+            }
+        }
     }
 
     /**

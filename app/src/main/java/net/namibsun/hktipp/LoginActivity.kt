@@ -26,7 +26,12 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.CheckBox
 import android.widget.EditText
-import net.namibsun.hktipp.helper.*
+import net.namibsun.hktipp.helper.showErrorDialog
+import net.namibsun.hktipp.helper.getApiKeyFromSharedPreferences
+import net.namibsun.hktipp.helper.getUsernameFromPreferences
+import net.namibsun.hktipp.helper.storeApiKeyInSharedPreferences
+import net.namibsun.hktipp.helper.storeUsernameInSharedPreferences
+import net.namibsun.hktipp.helper.post
 import org.jetbrains.anko.doAsync
 import org.json.JSONObject
 

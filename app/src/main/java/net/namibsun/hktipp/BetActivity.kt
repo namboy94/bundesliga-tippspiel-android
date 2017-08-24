@@ -28,7 +28,11 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import net.namibsun.hktipp.helper.*
+import net.namibsun.hktipp.helper.getMatches
+import net.namibsun.hktipp.helper.getBets
+import net.namibsun.hktipp.helper.showErrorDialog
+import net.namibsun.hktipp.helper.logout
+import net.namibsun.hktipp.helper.placeBets
 import net.namibsun.hktipp.views.BetView
 import org.jetbrains.anko.doAsync
 import org.json.JSONArray
@@ -119,7 +123,7 @@ class BetActivity : AppCompatActivity() {
 
         // Clear previous Views and start Progress Spinner
         this.runOnUiThread {
-            if (this.matchDay != -1) {  // We don;t have to clear if no data was fetched before
+            if (this.matchDay != -1) { // We don't have to clear if no data was fetched before
                 this.betViews[this.matchDay] = mutableListOf()
                 this.renderBetViews()
             }

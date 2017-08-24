@@ -20,7 +20,7 @@
     along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package net.namibsun.hktipp.apiwrap
+package net.namibsun.hktipp.helper
 
 import okhttp3.MediaType
 import okhttp3.OkHttpClient

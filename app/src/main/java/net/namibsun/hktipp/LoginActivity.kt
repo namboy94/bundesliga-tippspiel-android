@@ -21,16 +21,16 @@
 */
 
 package net.namibsun.hktipp
-import android.app.AlertDialog
-import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
-import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.CheckBox
 import android.widget.EditText
-import net.namibsun.hktipp.apiwrap.post
+import net.namibsun.hktipp.helper.getDefaultSharedPreferences
+import net.namibsun.hktipp.helper.post
+import net.namibsun.hktipp.helper.showErrorDialog
+import org.jetbrains.anko.doAsync
 
 /**
  * The Login Screen that enables the user to log in to the bundesliga-tippspiel
@@ -55,7 +55,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         this.setContentView(R.layout.login)
 
-        this.prefs = this.getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE)
+        this.prefs = getDefaultSharedPreferences(this)
 
         this.findViewById(R.id.login_screen_button).setOnClickListener { this.login() }
 
@@ -74,96 +74,76 @@ class LoginActivity : AppCompatActivity() {
 
     /**
      * Attempts to log in the user. Will fetch the username, password/api key from either the
-     * EditTexts or from the shared preferences, then start the LoginTask AsyncTask.
+     * EditTexts or from the shared preferences, then asynchronously attempt to either log in
+     * using a password or authorize and existing API Key
      */
     private fun login() {
 
-        val usernameEdit = this.findViewById(R.id.login_screen_username) as EditText
-        val passwordEdit = this.findViewById(R.id.login_screen_password) as EditText
-        val username = usernameEdit.text.toString()
-        val password = passwordEdit.text.toString()
-        val api_key = this.prefs!!.getString("api_key", "")
+        val username = (this.findViewById(R.id.login_screen_username) as EditText).text.toString()
+        val password = (this.findViewById(R.id.login_screen_password) as EditText).text.toString()
+        var apiKey = this.prefs!!.getString("api_key", "")
+        Log.i("LoginActivity", "$username trying to log in.")
 
-        LoginTask().execute(username, password, api_key)
-    }
-
-    /**
-     * Switches to the Bets Activity.
-     * @param username: The username with which the user logged in
-     * @param apiKey: The API key used for authentication
-     */
-    private fun switchToBetsActivity(username: String, apiKey: String) {
-
-        val bundle = Bundle()
-        bundle.putString("username", username)
-        bundle.putString("api_key", apiKey)
-
-        val intent = Intent(this, BetActivity::class.java)
-        intent.putExtras(bundle)
-        this.startActivity(intent)
-    }
-
-    /**
-     * Shows an error dialog indicating that the login process failed
-     */
-    private fun showLoginErrorDialog() {
-
-        val errorDialogBuilder = AlertDialog.Builder(this)
-        errorDialogBuilder.setTitle(getString(R.string.login_error_title))
-        errorDialogBuilder.setMessage(getString(R.string.login_error_body))
-        errorDialogBuilder.setCancelable(true)
-        errorDialogBuilder.setPositiveButton("Ok") { dialog, _ -> dialog!!.dismiss() }
-        errorDialogBuilder.create()
-        errorDialogBuilder.show()
-    }
-
-    /**
-     * Async Task that tries to log in to the bundesliga-tippspiel website
-     */
-    inner class LoginTask : AsyncTask<String, Void, Void>() {
-
-        /**
-         * Attempts to log in
-         * @param params: The parameters provided by the [login] method
-         */
-        override fun doInBackground(vararg params: String?): Void? {
-
-            // Get the parameters
-            val username = params[0]!!
-            val password = params[1]!!
-            var apiKey = params[2]!!
+        this@LoginActivity.doAsync {
 
             // Log in or authorize the existing API Key
             val response = if (apiKey != "" && password == "******") {
+                Log.i("LoginActivity", "Authorizing existing API key")
                 val json = "{\"username\":\"$username\", \"api_key\":\"$apiKey\"}"
                 post("authorize", json)
             }
             else {
+                Log.i("LoginActivity", "Attempting to log in using password")
                 val json = "{\"username\":\"$username\", \"password\":\"$password\"}"
                 post("request_api_key", json)
             }
 
-            if (response.get("status") == "success") { // Login successful
-
-                // Update API Key if applicable
-                if (response.has("key")) {
-                    apiKey = response.getString("key")
-                }
-
-                // Store the username and API key if remember box is checked
-                val check = this@LoginActivity.findViewById(R.id.login_screen_remember) as CheckBox
-                if (check.isChecked) {
-                    val editor = this@LoginActivity.prefs!!.edit()
-                    editor.putString("api_key", apiKey)
-                    editor.putString("username", username)
-                    editor.apply()
-                }
-                this@LoginActivity.runOnUiThread({ switchToBetsActivity(username, apiKey) })
+            // Update API Key if applicable
+            if (response.has("key")) {
+                apiKey = response.getString("key")
             }
-            else { // Login failed
-                this@LoginActivity.runOnUiThread({ showLoginErrorDialog() })
+
+            this@LoginActivity.handleLoginResponse(response.getString("status"), username, apiKey)
+
+        }
+    }
+
+    /**
+     * Handles the login response generated in the [login] method.
+     * On success, this method stores the username and API key in the shared preferences, then
+     * starts the Bet Activity
+     * If the attempt was not successful, an error dialog will be shown
+     * @param response: The 'status' of the JSON response of the login/authorization attempt
+     * @param username: The username of the user tying to log in
+     *
+     */
+    private fun handleLoginResponse(response: String, username: String, apiKey: String) {
+
+        if (response == "success") { // Login successful
+
+            Log.i("LoginActivity", "Login Successful")
+
+            // Store the username and API key if remember box is checked
+            val check = this@LoginActivity.findViewById(R.id.login_screen_remember) as CheckBox
+            if (check.isChecked) {
+                Log.i("LoginActivity", "Storing credentials in shared preferences")
+                val editor = this@LoginActivity.prefs!!.edit()
+                editor.putString("api_key", apiKey)
+                editor.putString("username", username)
+                editor.apply()
             }
-            return null
+            this@LoginActivity.runOnUiThread {
+                net.namibsun.hktipp.helper.switchActivity(
+                        this@LoginActivity, BetActivity::class.java, username, apiKey)
+            }
+        }
+        else { // Login failed
+
+            Log.i("LoginActivity", "Login Failed")
+            this@LoginActivity.runOnUiThread {
+                showErrorDialog(this@LoginActivity,
+                        R.string.login_error_title, R.string.login_error_body)
+            }
         }
     }
 }

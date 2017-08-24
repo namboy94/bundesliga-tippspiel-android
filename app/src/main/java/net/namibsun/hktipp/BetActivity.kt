@@ -27,13 +27,12 @@ import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import net.namibsun.hktipp.apiwrap.getBets
-import net.namibsun.hktipp.apiwrap.getMatches
-import net.namibsun.hktipp.apiwrap.placeBets
+import net.namibsun.hktipp.helper.getBets
+import net.namibsun.hktipp.helper.getMatches
+import net.namibsun.hktipp.helper.placeBets
 import net.namibsun.hktipp.views.BetView
 import org.jetbrains.anko.doAsync
 import org.json.JSONArray
@@ -233,7 +232,6 @@ class BetActivity : AppCompatActivity() {
                             .map { bets.getJSONObject(it) }
                             .filter { it.getJSONObject("match").getInt("id") == matchId }
                             .forEach {
-                                Log.e("SE", "Setting")
                                 matchView.setBetData(
                                     it.getInt("home_score"),
                                     it.getInt("away_score")

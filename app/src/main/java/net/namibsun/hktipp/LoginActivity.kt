@@ -34,7 +34,6 @@ import net.namibsun.hktipp.helper.storeApiKeyInSharedPreferences
 import net.namibsun.hktipp.helper.storeUsernameInSharedPreferences
 import net.namibsun.hktipp.helper.post
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.runOnUiThread
 import org.json.JSONObject
 
 /**
@@ -83,6 +82,7 @@ class LoginActivity : AppCompatActivity() {
         val apiKey = getApiKeyFromSharedPreferences(this@LoginActivity)
         Log.i("LoginActivity", "$username trying to log in.")
 
+        this.setUiElementEnabledState(false)
         val animation = AnimationUtils.loadAnimation(this, R.anim.rotate)
         this.findViewById(R.id.login_screen_logo).startAnimation(animation)
 
@@ -101,6 +101,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             this@LoginActivity.runOnUiThread {
+                this@LoginActivity.setUiElementEnabledState(true)
                 this@LoginActivity.findViewById(R.id.login_screen_logo).clearAnimation()
             }
             this@LoginActivity.handleLoginResponse(response, username, apiKey)
@@ -151,4 +152,17 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
+    /**
+     * Enables or disables all user-editable UI elements
+     * @param state: Sets the enabled state of the elements
+     */
+    private fun setUiElementEnabledState(state: Boolean) {
+        this.findViewById(R.id.login_screen_logo).isEnabled = state
+        this.findViewById(R.id.login_screen_button).isEnabled = state
+        this.findViewById(R.id.login_screen_username).isEnabled = state
+        this.findViewById(R.id.login_screen_password).isEnabled = state
+        this.findViewById(R.id.login_screen_remember).isEnabled = state
+    }
+
 }

@@ -36,6 +36,7 @@ import net.namibsun.hktipp.helper.logout
 import net.namibsun.hktipp.helper.placeBets
 import net.namibsun.hktipp.views.BetView
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.find
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
@@ -96,6 +97,7 @@ class BetActivity : AppCompatActivity() {
      */
     private fun adjustMatchday(incrementing: Boolean) {
 
+        this.setUiElementEnabledState(false)
         Log.i("BetActivity", "Switching matchday")
 
         if ((this.matchDay in 1..33 && incrementing) || (this.matchDay in 2..34 && !incrementing)) {
@@ -150,8 +152,9 @@ class BetActivity : AppCompatActivity() {
                 this@BetActivity.runOnUiThread {
                     this@BetActivity.initializeBetViews(matches, bets)
                     this@BetActivity.renderBetViews()
-                    // Stop Progress Spinner
+                    // Stop Progress Spinner and re-enable UI elements
                     this@BetActivity.findViewById(R.id.bets_progress).visibility = View.INVISIBLE
+                    this@BetActivity.setUiElementEnabledState(true)
                 }
 
             } catch (e: IOException) { // If failed to fetch data, log out
@@ -267,12 +270,19 @@ class BetActivity : AppCompatActivity() {
      */
     private fun placeBets() {
 
+        Log.i("BetActivity", "Placing Bets")
+
+        this.setUiElementEnabledState(false)
         val json = JSONArray()
 
         // Turns the Bet Views into JSON objects that will be POSTED to the API
         this.betViews[this.matchDay]!!
                 .mapNotNull { it.getBetJson() }
                 .forEach { json.put(it) }
+
+        this.betViews[this.matchDay] = mutableListOf()
+        this.renderBetViews()
+        this.findViewById(R.id.bets_progress).visibility = View.VISIBLE
 
         this.doAsync {
             val result = placeBets(this@BetActivity.username!!, this@BetActivity.apiKey!!, json)
@@ -284,6 +294,23 @@ class BetActivity : AppCompatActivity() {
                     this@BetActivity.updateData()
                 }
             }
+        }
+    }
+
+    /**
+     * Enables or disables all user-editable UI elements
+     * @param state: Sets the enabled state of the elements
+     */
+    private fun setUiElementEnabledState(state: Boolean) {
+        this.findViewById(R.id.bets_submit_button).isEnabled = state
+        if (state) {
+            this.findViewById(R.id.bets_prev_button).setOnClickListener {
+                this.adjustMatchday(false) }
+            this.findViewById(R.id.bets_next_button).setOnClickListener {
+                this.adjustMatchday(true) }
+        } else {
+            this.findViewById(R.id.bets_next_button).setOnClickListener { }
+            this.findViewById(R.id.bets_prev_button).setOnClickListener { }
         }
     }
 }

@@ -36,7 +36,6 @@ import net.namibsun.hktipp.helper.logout
 import net.namibsun.hktipp.helper.placeBets
 import net.namibsun.hktipp.views.BetView
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.find
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException

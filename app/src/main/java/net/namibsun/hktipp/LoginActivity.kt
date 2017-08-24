@@ -21,16 +21,14 @@
 */
 
 package net.namibsun.hktipp
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.CheckBox
 import android.widget.EditText
-import net.namibsun.hktipp.helper.getDefaultSharedPreferences
-import net.namibsun.hktipp.helper.post
-import net.namibsun.hktipp.helper.showErrorDialog
+import net.namibsun.hktipp.helper.*
 import org.jetbrains.anko.doAsync
+import org.json.JSONObject
 
 /**
  * The Login Screen that enables the user to log in to the bundesliga-tippspiel
@@ -39,11 +37,6 @@ import org.jetbrains.anko.doAsync
  * instead of a password
  */
 class LoginActivity : AppCompatActivity() {
-
-    /**
-     * The shared preferences used to store the username and api key
-     */
-    private var prefs: SharedPreferences? = null
 
     /**
      * Initializes the Login Activity. Sets the OnClickListener of the
@@ -55,19 +48,17 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         this.setContentView(R.layout.login)
 
-        this.prefs = getDefaultSharedPreferences(this)
-
         this.findViewById(R.id.login_screen_button).setOnClickListener { this.login() }
 
         // Set input elements with stored data
-        if (this.prefs!!.getString("api_key", "") != "") {
+        if (getApiKeyFromSharedPreferences(this) != null) {
             (this.findViewById(R.id.login_screen_password) as EditText).setText("******")
             // We set the password to "******" if the stored api key should be used
             // So basically, this WILL be problematic if a user has the password "******"
             // TODO Find another way of doing this without descriminating against "******"-passwords
         }
-        val username = this.prefs!!.getString("username", "")
-        if (username != "") {
+        val username = getUsernameFromPreferences(this)
+        if (username != null) {
             (this.findViewById(R.id.login_screen_username) as EditText).setText(username)
         }
     }
@@ -81,7 +72,7 @@ class LoginActivity : AppCompatActivity() {
 
         val username = (this.findViewById(R.id.login_screen_username) as EditText).text.toString()
         val password = (this.findViewById(R.id.login_screen_password) as EditText).text.toString()
-        var apiKey = this.prefs!!.getString("api_key", "")
+        val apiKey = getApiKeyFromSharedPreferences(this@LoginActivity)
         Log.i("LoginActivity", "$username trying to log in.")
 
         this@LoginActivity.doAsync {
@@ -98,12 +89,7 @@ class LoginActivity : AppCompatActivity() {
                 post("request_api_key", json)
             }
 
-            // Update API Key if applicable
-            if (response.has("key")) {
-                apiKey = response.getString("key")
-            }
-
-            this@LoginActivity.handleLoginResponse(response.getString("status"), username, apiKey)
+            this@LoginActivity.handleLoginResponse(response, username, apiKey)
 
         }
     }
@@ -113,13 +99,20 @@ class LoginActivity : AppCompatActivity() {
      * On success, this method stores the username and API key in the shared preferences, then
      * starts the Bet Activity
      * If the attempt was not successful, an error dialog will be shown
-     * @param response: The 'status' of the JSON response of the login/authorization attempt
+     * @param response: The JSON response of the login/authorization attempt
      * @param username: The username of the user tying to log in
-     *
+     * @param apiKey: The stored API key, which can be null if no API key was stored
      */
-    private fun handleLoginResponse(response: String, username: String, apiKey: String) {
+    private fun handleLoginResponse(response: JSONObject, username: String, apiKey: String?) {
 
-        if (response == "success") { // Login successful
+        if (response.getString("status") == "success") { // Login successful
+
+            // Check for valid API key
+            val validApiKey = if (response.has("key")) {
+                response.getString("key") // Login API Action
+            } else {
+                apiKey!! // Authorize API Action
+            }
 
             Log.i("LoginActivity", "Login Successful")
 
@@ -127,14 +120,12 @@ class LoginActivity : AppCompatActivity() {
             val check = this@LoginActivity.findViewById(R.id.login_screen_remember) as CheckBox
             if (check.isChecked) {
                 Log.i("LoginActivity", "Storing credentials in shared preferences")
-                val editor = this@LoginActivity.prefs!!.edit()
-                editor.putString("api_key", apiKey)
-                editor.putString("username", username)
-                editor.apply()
+                storeUsernameInSharedPreferences(this@LoginActivity, username)
+                storeApiKeyInSharedPreferences(this@LoginActivity, validApiKey)
             }
             this@LoginActivity.runOnUiThread {
                 net.namibsun.hktipp.helper.switchActivity(
-                        this@LoginActivity, BetActivity::class.java, username, apiKey)
+                        this@LoginActivity, BetActivity::class.java, username, validApiKey)
             }
         }
         else { // Login failed

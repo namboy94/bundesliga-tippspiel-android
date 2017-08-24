@@ -112,14 +112,14 @@ class LoginActivity : AppCompatActivity() {
 
         if (response.getString("status") == "success") { // Login successful
 
+            Log.i("LoginActivity", "Login Successful")
+
             // Check for valid API key
             val validApiKey = if (response.has("key")) {
                 response.getString("key") // Login API Action
             } else {
                 apiKey!! // Authorize API Action
             }
-
-            Log.i("LoginActivity", "Login Successful")
 
             // Store the username and API key if remember box is checked
             val check = this@LoginActivity.findViewById(R.id.login_screen_remember) as CheckBox
@@ -136,6 +136,7 @@ class LoginActivity : AppCompatActivity() {
         else { // Login failed
 
             Log.i("LoginActivity", "Login Failed")
+
             this@LoginActivity.runOnUiThread {
                 showErrorDialog(this@LoginActivity,
                         R.string.login_error_title, R.string.login_error_body)

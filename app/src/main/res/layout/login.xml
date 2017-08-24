@@ -44,6 +44,8 @@ along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/license
                 android:text="@string/login_screen_title"
                 android:gravity="center"
                 android:layout_marginBottom="5dp"
+                android:background="@color/title_bg"
+                android:textColor="@color/title_text"
                 android:textSize="40sp"/>
 
             <EditText
@@ -76,21 +78,39 @@ along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/license
                 android:id="@+id/login_screen_button"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="25dp"
+                android:paddingStart="75dp"
+                android:paddingLeft="75dp"
+                android:paddingEnd="75dp"
+                android:paddingRight="75dp"
                 android:text="@string/login_screen_button_title"
+                android:background="@color/button_bg"
+                android:textColor="@color/button_text"
                 android:gravity="center"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                 />
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
 
-    <ImageView
-        android:id="@+id/login_screen_logo"
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/login_screen_card"
-        android:layout_margin="75dp"
-        android:src="@drawable/logo"
-        android:contentDescription="@string/login_screen_logo_description" />
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/grass"
+        android:layout_below="@+id/login_screen_card">
+
+        <ImageView
+            android:id="@+id/login_screen_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:src="@drawable/logo"
+            android:layout_gravity="center"
+            android:contentDescription="@string/login_screen_logo_description" />
+
+    </FrameLayout>
+
 
 </RelativeLayout>

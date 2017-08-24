@@ -96,6 +96,8 @@ class BetActivity : AppCompatActivity() {
      */
     private fun adjustMatchday(incrementing: Boolean) {
 
+        Log.i("BetActivity", "Switching matchday")
+
         if ((this.matchDay in 1..33 && incrementing) || (this.matchDay in 2..34 && !incrementing)) {
 
             if (incrementing) {
@@ -117,12 +119,15 @@ class BetActivity : AppCompatActivity() {
      */
     private fun updateData() {
 
+        Log.i("BetActivity", "Updating Data")
+
         val username = this.username!!
         val apiKey = this.apiKey!!
         val matchday = this.matchDay
 
         // Clear previous Views and start Progress Spinner
         this.runOnUiThread {
+            Log.d("BetActivity", "Clearing old views")
             if (this.matchDay != -1) { // We don't have to clear if no data was fetched before
                 this.betViews[this.matchDay] = mutableListOf()
                 this.renderBetViews()
@@ -136,25 +141,27 @@ class BetActivity : AppCompatActivity() {
 
                 val matches = getMatches(username, apiKey, matchday)
                 val bets = getBets(username, apiKey, matchday)
+                Log.i("BetActivity", "Data successfully fetched")
 
                 // Update Matchday (Only has an effect if matchday == -1). Also reset BetViews
                 this@BetActivity.matchDay = matches.getJSONObject(0).getInt("matchday")
                 this@BetActivity.betViews[this@BetActivity.matchDay] = mutableListOf()
 
-                this@BetActivity.runOnUiThread({
+                this@BetActivity.runOnUiThread {
                     this@BetActivity.initializeBetViews(matches, bets)
                     this@BetActivity.renderBetViews()
                     // Stop Progress Spinner
                     this@BetActivity.findViewById(R.id.bets_progress).visibility = View.INVISIBLE
-                })
+                }
 
             } catch (e: IOException) { // If failed to fetch data, log out
-                this@BetActivity.runOnUiThread({
+                Log.e("BetActivity", "Failed to fetch data")
+                this@BetActivity.runOnUiThread {
                     showErrorDialog(this@BetActivity,
                             R.string.bets_fetching_error_title,
                             R.string.bets_fetching_error_body, false)
                     logout(this@BetActivity)
-                })
+                }
             }
         }
     }
@@ -166,6 +173,8 @@ class BetActivity : AppCompatActivity() {
      */
     private fun initializeBetViews(matches: JSONArray, bets: JSONArray) {
 
+        Log.i("BetActivity", "Initializing bet views")
+
         // Initialize the BetViews
         for (i in 0..(matches.length() - 1)) {
 
@@ -176,8 +185,9 @@ class BetActivity : AppCompatActivity() {
             @Suppress("LoopToCallChain")
             for (j in 0..(bets.length() - 1)) {
                 val bet = bets.getJSONObject(j)
-                if (bet.getJSONObject("match").getInt("id") == bet.getInt("id")) {
+                if (bet.getJSONObject("match").getInt("id") == matchData.getInt("id")) {
                     betData = bet
+                    Log.d("BetActivity", "Bet Data Found for match ${matchData.getInt("id")}")
                 }
             }
 
@@ -195,7 +205,7 @@ class BetActivity : AppCompatActivity() {
      */
     private fun findLogos(match: JSONObject) : MutableMap<String, Bitmap?> {
 
-        Log.d("BetActivity", "Searching for logos")
+        Log.d("BetActivity", "Searching for logos for match ${match.getInt("id")}")
 
         val homeTeamId = match.getJSONObject("home_team").getInt("id")
         val awayTeamId = match.getJSONObject("away_team").getInt("id")
@@ -212,17 +222,17 @@ class BetActivity : AppCompatActivity() {
 
                 for (identifier in listOf("home", "away")) {
                     if (homeTeamId == teams[identifier]!!.getInt("id")) {
-                        Log.i("BetActivity", "Home Team Logo Found")
+                        Log.d("BetActivity", "Home Team Logo Found for team $homeTeamId")
                         bitmaps["home"] = oldBetView.getLogoBitmaps()[identifier]
 
                     } else if (awayTeamId == teams[identifier]!!.getInt("id")) {
-                        Log.i("BetActivity", "Away Team Logo Found")
+                        Log.d("BetActivity", "Away Team Logo Found for team $awayTeamId")
                         bitmaps["away"] = oldBetView.getLogoBitmaps()[identifier]
                     }
                 }
             }
         } else {
-            Log.d("BetActivity", "No old logos found")
+            Log.d("BetActivity", "No old logos found for match ${match.getInt("id")}")
         }
 
         return bitmaps
@@ -235,6 +245,8 @@ class BetActivity : AppCompatActivity() {
      * Also changes the matchday title to the current matchday
      */
     private fun renderBetViews() {
+
+        Log.d("BetActivity", "Rendering Views")
 
         val title = this.findViewById(R.id.bets_title) as TextView
         val list = this.findViewById(R.id.bets_list) as LinearLayout

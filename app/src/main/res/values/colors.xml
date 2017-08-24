@@ -20,5 +20,8 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
-    <color name="title_green">#a2b97c</color>
+    <color name="title_bg">#a2b97c</color>
+    <color name="title_text">#333333</color>
+    <color name="button_bg">#337ab7</color>
+    <color name="button_text">#ffffff</color>
 </resources>

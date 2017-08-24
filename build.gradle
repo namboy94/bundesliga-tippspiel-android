@@ -21,8 +21,8 @@
 */
 
 ext {
-    version = "4.1.3"
-    versionCode = 413
+    version = "0.0.1"
+    versionCode = 000001
 }
 
 buildscript {

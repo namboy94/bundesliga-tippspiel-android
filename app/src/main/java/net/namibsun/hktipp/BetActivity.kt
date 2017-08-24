@@ -35,6 +35,7 @@ import net.namibsun.hktipp.apiwrap.getBets
 import net.namibsun.hktipp.apiwrap.getMatches
 import net.namibsun.hktipp.apiwrap.placeBets
 import net.namibsun.hktipp.views.BetView
+import org.jetbrains.anko.doAsync
 import org.json.JSONArray
 import java.io.IOException
 
@@ -273,13 +274,17 @@ class BetActivity : AppCompatActivity() {
             val oldBetViews = params[0]
             for (betView in this@BetActivity.betViews[this@BetActivity.matchDay]!!) {
 
+                // Set the previously downloaded bets
                 oldBetViews?.
                         filter { it.matchId == betView.matchId }?.
                         map { it.getLogoBitmaps() }?.
                         forEach { betView.setLogoBitmaps(it) }
 
-                betView.downloadLogoBitmaps()
-                this@BetActivity.runOnUiThread { betView.applyLogoBitmaps() }
+                doAsync {
+                    betView.downloadLogoBitmaps()
+                    this@BetActivity.runOnUiThread { betView.applyLogoBitmaps() }
+                }
+
             }
 
             return null

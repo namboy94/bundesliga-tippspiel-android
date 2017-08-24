@@ -42,8 +42,10 @@ build_test:
   stage: test
   tags:
     - linux-buildserver
+  only:
+      - master
+      - develop
   script:
-    - mkdir -p artifacts
     - echo $ANDROIDKEY | base64 -d > androidkey
     # - echo $GOOGLE_SERVICES_JSON > app/google-services.json
     - ./gradlew assembleRelease -Pandroid.injected.signing.store.file=androidkey -Pandroid.injected.signing.store.password=$ANDROIDKEY_PASS -Pandroid.injected.signing.key.alias=$ANDROIDKEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROIDKEY_PASS

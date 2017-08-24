@@ -24,6 +24,7 @@ package net.namibsun.hktipp
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.animation.AnimationUtils
 import android.widget.CheckBox
 import android.widget.EditText
 import net.namibsun.hktipp.helper.showErrorDialog
@@ -33,6 +34,7 @@ import net.namibsun.hktipp.helper.storeApiKeyInSharedPreferences
 import net.namibsun.hktipp.helper.storeUsernameInSharedPreferences
 import net.namibsun.hktipp.helper.post
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.runOnUiThread
 import org.json.JSONObject
 
 /**
@@ -54,13 +56,14 @@ class LoginActivity : AppCompatActivity() {
         this.setContentView(R.layout.login)
 
         this.findViewById(R.id.login_screen_button).setOnClickListener { this.login() }
+        this.findViewById(R.id.login_screen_logo).setOnClickListener { this.login() }
 
         // Set input elements with stored data
         if (getApiKeyFromSharedPreferences(this) != null) {
             (this.findViewById(R.id.login_screen_password) as EditText).setText("******")
             // We set the password to "******" if the stored api key should be used
             // So basically, this WILL be problematic if a user has the password "******"
-            // TODO Find another way of doing this without descriminating against "******"-passwords
+            // TODO Find another way of doing this without discriminating against "******"-passwords
         }
         val username = getUsernameFromPreferences(this)
         if (username != null) {
@@ -80,6 +83,9 @@ class LoginActivity : AppCompatActivity() {
         val apiKey = getApiKeyFromSharedPreferences(this@LoginActivity)
         Log.i("LoginActivity", "$username trying to log in.")
 
+        val animation = AnimationUtils.loadAnimation(this, R.anim.rotate)
+        this.findViewById(R.id.login_screen_logo).startAnimation(animation)
+
         this@LoginActivity.doAsync {
 
             // Log in or authorize the existing API Key
@@ -94,8 +100,10 @@ class LoginActivity : AppCompatActivity() {
                 post("request_api_key", json)
             }
 
+            this@LoginActivity.runOnUiThread {
+                this@LoginActivity.findViewById(R.id.login_screen_logo).clearAnimation()
+            }
             this@LoginActivity.handleLoginResponse(response, username, apiKey)
-
         }
     }
 

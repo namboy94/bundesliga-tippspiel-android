@@ -1,8 +1,7 @@
 .idea/
+*.iml
 bundesliga-tippspiel-android.iml
 local.properties
-app/app.iml
-
 .gradle/
 app/build/
 build/

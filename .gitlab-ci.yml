@@ -6,6 +6,9 @@ stages:
   - docs
   - finalize
 
+variables:
+  ANDROID_HOME: "$ANDROID_SDK_LOCATION"
+
 github_mirror:
   stage: mirror
   tags:

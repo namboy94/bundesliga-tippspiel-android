@@ -40,6 +40,8 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
     <string name="bets_fetching_error_body">Du wirst jetzt ausgeloggt</string>
     <string name="bets_betting_error_title">Tippen fehlgeschlagen</string>
     <string name="bets_betting_error_body">Deine Tipps konnten nicht verarbeitet werden</string>
+
     <string name="leaderboard_button_title">Rangliste</string>
+    <string name="leaderboard_title">Rangliste</string>
 
 </resources>

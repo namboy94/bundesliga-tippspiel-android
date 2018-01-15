@@ -37,6 +37,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
             </intent-filter>
         </activity>
         <activity android:name=".BetActivity" android:configChanges="orientation|screenSize"/>
+        <activity android:name=".LeaderboardActivity" android:configChanges="orientation|screenSize"/>
     </application>
 
 </manifest>

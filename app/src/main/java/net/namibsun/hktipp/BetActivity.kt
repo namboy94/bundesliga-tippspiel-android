@@ -82,6 +82,12 @@ class BetActivity : AppCompatActivity() {
         this.findViewById(R.id.bets_prev_button).setOnClickListener { this.adjustMatchday(false) }
         this.findViewById(R.id.bets_next_button).setOnClickListener { this.adjustMatchday(true) }
 
+        // Set listener for Leaderboard Activity button
+        this.findViewById(R.id.leaderboard_button).setOnClickListener {
+            net.namibsun.hktipp.helper.switchActivity(
+                    this, LeaderboardActivity::class.java, this.username, this.apiKey)
+        }
+
         // Get Data for current matchday
         this.updateData()
     }

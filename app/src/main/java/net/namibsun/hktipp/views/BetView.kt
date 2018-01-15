@@ -19,6 +19,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -34,6 +35,7 @@ import org.jetbrains.anko.runOnUiThread
 import org.json.JSONObject
 import java.net.URL
 
+@SuppressLint("ViewConstructor")
 /**
  * A custom view that displays a single matchup and editable fields for bets.
  * @param context: The context/activity for which to display this bet
@@ -52,7 +54,7 @@ class BetView(context: Context,
     /**
      * The Match ID of this BetView
      */
-    val matchId = matchData.getInt("id")
+    private val matchId = matchData.getInt("id")
 
     /**
      * Getter method for retrieving the view's logo bitmaps

@@ -18,8 +18,8 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 */
 
 ext {
-    version = "0.2.2"
-    versionCode = 000202
+    version = "0.2.3"
+    versionCode = 000203
 }
 
 // Define class paths

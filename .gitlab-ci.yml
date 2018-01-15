@@ -45,7 +45,8 @@ build_app:
     - mv app/build/outputs/apk/app-release.apk artifacts/hktipp-$(gradle version -q).apk
     - rm androidkey app/androidkey
   artifacts:
-     paths:
+    expire_in: 1 week
+    paths:
       - artifacts/
 
 upload_release_to_github:

@@ -59,14 +59,14 @@ class BetView(context: Context,
      * @return: A Map of logo bitmaps with the keys `home` and `away`
      */
     @Suppress("RedundantVisibilityModifier")
-    public fun getLogoBitmaps() : MutableMap<String, Bitmap?> = this.logoBitmaps
+    public fun getLogoBitmaps(): MutableMap<String, Bitmap?> = this.logoBitmaps
 
     /**
      * Retrieves the team data from this BetView
      * @return a tuple of the home team's data and the away team's data
      */
     @Suppress("RedundantVisibilityModifier")
-    public fun getTeamData() : Map<String, JSONObject> =
+    public fun getTeamData(): Map<String, JSONObject> =
             mapOf(
                     "home" to this.matchData.getJSONObject("home_team"),
                     "away" to this.matchData.getJSONObject("away_team")
@@ -149,7 +149,6 @@ class BetView(context: Context,
             json.put("away_score", awayScore)
             json.put("match_id", this.matchId)
             json // return
-
         } catch (e: NumberFormatException) {
             null
         }

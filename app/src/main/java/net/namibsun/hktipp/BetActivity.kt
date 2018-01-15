@@ -84,7 +84,6 @@ class BetActivity : AppCompatActivity() {
 
         // Get Data for current matchday
         this.updateData()
-
     }
 
     /**
@@ -152,7 +151,6 @@ class BetActivity : AppCompatActivity() {
                     this@BetActivity.findViewById(R.id.bets_progress).visibility = View.INVISIBLE
                     this@BetActivity.setUiElementEnabledState(true)
                 }
-
             } catch (e: IOException) { // If failed to fetch data, log out
                 Log.e("BetActivity", "Failed to fetch data")
                 this@BetActivity.runOnUiThread {
@@ -202,8 +200,7 @@ class BetActivity : AppCompatActivity() {
      * @param match: The match to get logos for
      * @return: A Map of strings pointing to the appropriate bitmaps
      */
-    private fun findLogos(match: JSONObject) : MutableMap<String, Bitmap?> {
-
+    private fun findLogos(match: JSONObject): MutableMap<String, Bitmap?> {
         Log.d("BetActivity", "Searching for logos for match ${match.getInt("id")}")
 
         val homeTeamId = match.getJSONObject("home_team").getInt("id")
@@ -223,7 +220,6 @@ class BetActivity : AppCompatActivity() {
                     if (homeTeamId == teams[identifier]!!.getInt("id")) {
                         Log.d("BetActivity", "Home Team Logo Found for team $homeTeamId")
                         bitmaps["home"] = oldBetView.getLogoBitmaps()[identifier]
-
                     } else if (awayTeamId == teams[identifier]!!.getInt("id")) {
                         Log.d("BetActivity", "Away Team Logo Found for team $awayTeamId")
                         bitmaps["away"] = oldBetView.getLogoBitmaps()[identifier]
@@ -235,7 +231,6 @@ class BetActivity : AppCompatActivity() {
         }
 
         return bitmaps
-
     }
 
     /**

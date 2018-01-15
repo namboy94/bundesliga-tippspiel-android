@@ -27,7 +27,7 @@ import android.content.SharedPreferences
  * @param context: The context for which to fetch the shared preferences
  * @return: The shared preferences
  */
-fun getDefaultSharedPreferences(context: Context) : SharedPreferences =
+fun getDefaultSharedPreferences(context: Context): SharedPreferences =
         context.getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE)
 
 /**
@@ -35,7 +35,7 @@ fun getDefaultSharedPreferences(context: Context) : SharedPreferences =
  * @param context: The context for which to fetch the username
  * @return: The username stored in the shared preferences, or null if no username was store
  */
-fun getUsernameFromPreferences(context: Context) : String? =
+fun getUsernameFromPreferences(context: Context): String? =
         getDefaultSharedPreferences(context).getString("username", null)
 
 /**
@@ -43,7 +43,7 @@ fun getUsernameFromPreferences(context: Context) : String? =
  * @param context: The context for which to fetch the API key
  * @return: The API Key store in the shared preferences, or null if none was stored
  */
-fun getApiKeyFromSharedPreferences(context: Context) : String? =
+fun getApiKeyFromSharedPreferences(context: Context): String? =
         getDefaultSharedPreferences(context).getString("api_key", null)
 
 /**
@@ -66,5 +66,4 @@ fun storeApiKeyInSharedPreferences(context: Context, apiKey: String) {
     val editor = getDefaultSharedPreferences(context).edit()
     editor.putString("api_key", apiKey)
     editor.apply()
-
 }

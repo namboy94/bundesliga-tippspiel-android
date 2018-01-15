@@ -90,8 +90,7 @@ class LoginActivity : AppCompatActivity() {
                 Log.i("LoginActivity", "Authorizing existing API key")
                 val json = "{\"username\":\"$username\", \"api_key\":\"$apiKey\"}"
                 post("authorize", json)
-            }
-            else {
+            } else {
                 Log.i("LoginActivity", "Attempting to log in using password")
                 val json = "{\"username\":\"$username\", \"password\":\"$password\"}"
                 post("request_api_key", json)
@@ -138,8 +137,7 @@ class LoginActivity : AppCompatActivity() {
                 net.namibsun.hktipp.helper.switchActivity(
                         this@LoginActivity, BetActivity::class.java, username, validApiKey)
             }
-        }
-        else { // Login failed
+        } else { // Login failed
 
             Log.i("LoginActivity", "Login Failed")
 
@@ -161,5 +159,4 @@ class LoginActivity : AppCompatActivity() {
         this.findViewById(R.id.login_screen_password).isEnabled = state
         this.findViewById(R.id.login_screen_remember).isEnabled = state
     }
-
 }

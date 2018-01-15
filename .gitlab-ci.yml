@@ -40,9 +40,10 @@ build_app:
     - mkdir -p artifacts
     - gradle wrapper
     - echo $ANDROIDKEY | base64 -d > androidkey
+    - echo $ANDROIDKEY | base64 -d > app/androidkey
     - ./gradlew assembleRelease -Pandroid.injected.signing.store.file=androidkey -Pandroid.injected.signing.store.password=$ANDROIDKEY_PASS -Pandroid.injected.signing.key.alias=$ANDROIDKEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROIDKEY_PASS
     - mv app/build/outputs/apk/app-release.apk artifacts/hktipp-$(gradle version -q).apk
-    - rm androidkey
+    - rm androidkey app/androidkey
   artifacts:
      paths:
       - artifacts/

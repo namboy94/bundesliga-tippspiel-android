@@ -27,6 +27,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
     <string name="login_screen_logo_description">Das Logo der Webseite</string>
     <string name="login_error_title">Anmelden fehlgeschlagen</string>
     <string name="login_error_body">Falscher Nutzername oder falsches Passwort angegeben</string>
+    <string name="no_account_button_title">Kein Account?</string>
 
     <string name="bet_submit_button">Tippen</string>
     <string name="home_team_logo_description">Das Heimteam Logo</string>

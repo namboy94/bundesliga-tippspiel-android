@@ -18,6 +18,8 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 */
 
 package net.namibsun.hktipp
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -64,6 +66,12 @@ class LoginActivity : AppCompatActivity() {
         val username = getUsernameFromPreferences(this)
         if (username != null) {
             (this.findViewById(R.id.login_screen_username) as EditText).setText(username)
+        }
+
+        this.findViewById(R.id.login_screen_register_button).setOnClickListener {
+            val uri = Uri.parse("https://hk-tippspiel.com/signup.php")
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            this.startActivity(intent)
         }
     }
 

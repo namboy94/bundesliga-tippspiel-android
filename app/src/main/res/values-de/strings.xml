@@ -44,4 +44,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
     <string name="leaderboard_button_title">Rangliste</string>
     <string name="leaderboard_title">Rangliste</string>
 
+    <string name="leaderboard_position_dummy">1</string>
+    <string name="leaderboard_username_dummy">Username</string>
+    <string name="leaderboard_points_dummy">100</string>
 </resources>

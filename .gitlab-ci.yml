@@ -35,7 +35,7 @@ build_app:
     - develop
   tags:
     - gradle
-    - android_sdk
+    - android_sdk_26
   script:
     - mkdir -p artifacts
     - gradle wrapper

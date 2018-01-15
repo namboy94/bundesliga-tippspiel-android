@@ -86,7 +86,6 @@ upload_play_store_beta:
   script:
     - pip install --upgrade google-api-python-client pyOpenSSL --user
     - git clone https://gitlab.namibsun.net/namboy94/ci-scripts.git
-    - git clone https://gitlab.namibsun.net/namboy94/play-upload.git
     - python ci-scripts/changelog-reader/changelog-reader.py -c CHANGELOG -d en-US
     - python ci-scripts/changelog-reader/changelog-reader.py -c CHANGELOG-de -d de-DE
     - echo $PLAY_UPLOAD_SECRET | base64 -d > key.p12

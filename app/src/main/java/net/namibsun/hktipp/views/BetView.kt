@@ -1,27 +1,25 @@
 /*
-    Copyright 2017 Hermann Krumrey
+Copyright 2017-2018 Hermann Krumrey<hermann@krumreyh.com>
 
-    This file is part of bundesliga-tippspiel-android.
+This file is part of bundesliga-tippspiel-android.
 
-    bundesliga-tippspiel-android is an Android app that allows a user to
-    manage their bets on the bundesliga-tippspiel website.
+bundesliga-tippspiel-android is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    bundesliga-tippspiel-android is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+bundesliga-tippspiel-android is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    bundesliga-tippspiel-android is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package net.namibsun.hktipp.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -37,6 +35,7 @@ import org.jetbrains.anko.runOnUiThread
 import org.json.JSONObject
 import java.net.URL
 
+@SuppressLint("ViewConstructor")
 /**
  * A custom view that displays a single matchup and editable fields for bets.
  * @param context: The context/activity for which to display this bet
@@ -55,21 +54,21 @@ class BetView(context: Context,
     /**
      * The Match ID of this BetView
      */
-    val matchId = matchData.getInt("id")
+    private val matchId = matchData.getInt("id")
 
     /**
      * Getter method for retrieving the view's logo bitmaps
      * @return: A Map of logo bitmaps with the keys `home` and `away`
      */
     @Suppress("RedundantVisibilityModifier")
-    public fun getLogoBitmaps() : MutableMap<String, Bitmap?> = this.logoBitmaps
+    public fun getLogoBitmaps(): MutableMap<String, Bitmap?> = this.logoBitmaps
 
     /**
      * Retrieves the team data from this BetView
      * @return a tuple of the home team's data and the away team's data
      */
     @Suppress("RedundantVisibilityModifier")
-    public fun getTeamData() : Map<String, JSONObject> =
+    public fun getTeamData(): Map<String, JSONObject> =
             mapOf(
                     "home" to this.matchData.getJSONObject("home_team"),
                     "away" to this.matchData.getJSONObject("away_team")
@@ -152,7 +151,6 @@ class BetView(context: Context,
             json.put("away_score", awayScore)
             json.put("match_id", this.matchId)
             json // return
-
         } catch (e: NumberFormatException) {
             null
         }

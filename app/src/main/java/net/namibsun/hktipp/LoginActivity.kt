@@ -1,23 +1,20 @@
 /*
-    Copyright 2017 Hermann Krumrey
+Copyright 2017-2018 Hermann Krumrey<hermann@krumreyh.com>
 
-    This file is part of bundesliga-tippspiel-android.
+This file is part of bundesliga-tippspiel-android.
 
-    bundesliga-tippspiel-android is an Android app that allows a user to
-    manage their bets on the bundesliga-tippspiel website.
+bundesliga-tippspiel-android is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    bundesliga-tippspiel-android is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+bundesliga-tippspiel-android is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    bundesliga-tippspiel-android is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package net.namibsun.hktipp
@@ -93,8 +90,7 @@ class LoginActivity : AppCompatActivity() {
                 Log.i("LoginActivity", "Authorizing existing API key")
                 val json = "{\"username\":\"$username\", \"api_key\":\"$apiKey\"}"
                 post("authorize", json)
-            }
-            else {
+            } else {
                 Log.i("LoginActivity", "Attempting to log in using password")
                 val json = "{\"username\":\"$username\", \"password\":\"$password\"}"
                 post("request_api_key", json)
@@ -141,8 +137,7 @@ class LoginActivity : AppCompatActivity() {
                 net.namibsun.hktipp.helper.switchActivity(
                         this@LoginActivity, BetActivity::class.java, username, validApiKey)
             }
-        }
-        else { // Login failed
+        } else { // Login failed
 
             Log.i("LoginActivity", "Login Failed")
 
@@ -164,5 +159,4 @@ class LoginActivity : AppCompatActivity() {
         this.findViewById(R.id.login_screen_password).isEnabled = state
         this.findViewById(R.id.login_screen_remember).isEnabled = state
     }
-
 }

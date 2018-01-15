@@ -1,23 +1,20 @@
 /*
-    Copyright 2017 Hermann Krumrey
+Copyright 2017-2018 Hermann Krumrey<hermann@krumreyh.com>
 
-    This file is part of bundesliga-tippspiel-android.
+This file is part of bundesliga-tippspiel-android.
 
-    bundesliga-tippspiel-android is an Android app that allows a user to
-    manage their bets on the bundesliga-tippspiel website.
+bundesliga-tippspiel-android is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    bundesliga-tippspiel-android is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+bundesliga-tippspiel-android is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    bundesliga-tippspiel-android is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with bundesliga-tippspiel-android. If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package net.namibsun.hktipp
@@ -85,9 +82,14 @@ class BetActivity : AppCompatActivity() {
         this.findViewById(R.id.bets_prev_button).setOnClickListener { this.adjustMatchday(false) }
         this.findViewById(R.id.bets_next_button).setOnClickListener { this.adjustMatchday(true) }
 
+        // Set listener for Leaderboard Activity button
+        this.findViewById(R.id.leaderboard_button).setOnClickListener {
+            net.namibsun.hktipp.helper.switchActivity(
+                    this, LeaderboardActivity::class.java, this.username, this.apiKey)
+        }
+
         // Get Data for current matchday
         this.updateData()
-
     }
 
     /**
@@ -155,7 +157,6 @@ class BetActivity : AppCompatActivity() {
                     this@BetActivity.findViewById(R.id.bets_progress).visibility = View.INVISIBLE
                     this@BetActivity.setUiElementEnabledState(true)
                 }
-
             } catch (e: IOException) { // If failed to fetch data, log out
                 Log.e("BetActivity", "Failed to fetch data")
                 this@BetActivity.runOnUiThread {
@@ -205,8 +206,7 @@ class BetActivity : AppCompatActivity() {
      * @param match: The match to get logos for
      * @return: A Map of strings pointing to the appropriate bitmaps
      */
-    private fun findLogos(match: JSONObject) : MutableMap<String, Bitmap?> {
-
+    private fun findLogos(match: JSONObject): MutableMap<String, Bitmap?> {
         Log.d("BetActivity", "Searching for logos for match ${match.getInt("id")}")
 
         val homeTeamId = match.getJSONObject("home_team").getInt("id")
@@ -226,7 +226,6 @@ class BetActivity : AppCompatActivity() {
                     if (homeTeamId == teams[identifier]!!.getInt("id")) {
                         Log.d("BetActivity", "Home Team Logo Found for team $homeTeamId")
                         bitmaps["home"] = oldBetView.getLogoBitmaps()[identifier]
-
                     } else if (awayTeamId == teams[identifier]!!.getInt("id")) {
                         Log.d("BetActivity", "Away Team Logo Found for team $awayTeamId")
                         bitmaps["away"] = oldBetView.getLogoBitmaps()[identifier]
@@ -238,7 +237,6 @@ class BetActivity : AppCompatActivity() {
         }
 
         return bitmaps
-
     }
 
     /**

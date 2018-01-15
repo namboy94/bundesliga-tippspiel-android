@@ -7,20 +7,12 @@ stages:
   - finalize
 
 variables:
-  GITLAB_ACCESS_TOKEN: "$GITLAB_ACCESS_TOKEN"
-  GITHUB_ACCESS_TOKEN: "$GITHUB_ACCESS_TOKEN"
   ANDROID_HOME: "$ANDROID_SDK_LOCATION"
-  ANDROIDKEY: "$ANDROIDKEY"
-  ANDROIDKEY_ALIAS: "$ANDROIDKEY_ALIAS"
-  ANDROIDKEY_PASS: "$ANDROIDKEY_PASS"
-  # GOOGLE_SERVICES_JSON: "$GOOGLE_SERVICES_JSON"
-  PLAY_UPLOAD_SECRET: "$PLAY_UPLOAD_SECRET"
-  PLAY_UPLOAD_EMAIL: "$PLAY_UPLOAD_EMAIL"
 
 github_mirror:
   stage: mirror
   tags:
-    - linux-buildserver
+    - github_namboy94_push
   script:
     - git checkout master
     - git pull
@@ -32,111 +24,71 @@ github_mirror:
 lint:
   stage: test
   tags:
-    - linux-buildserver
+    - gradle
   script:
-    # - echo $GOOGLE_SERVICES_JSON > app/google-services.json
-    - gradle ktlint
-    # - gradle lint
-
-build_test:
-  stage: test
-  tags:
-    - linux-buildserver
-  only:
-      - master
-      - develop
-  script:
-    - gradle wrapper
-    - echo $ANDROIDKEY | base64 -d > androidkey
-    # - echo $GOOGLE_SERVICES_JSON > app/google-services.json
-    - ./gradlew assembleRelease -Pandroid.injected.signing.store.file=androidkey -Pandroid.injected.signing.store.password=$ANDROIDKEY_PASS -Pandroid.injected.signing.key.alias=$ANDROIDKEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROIDKEY_PASS
-
+    - gradle ktlint -q
 
 build_app:
   stage: build
   only:
     - master
+    - develop
   tags:
-    - linux-buildserver
+    - gradle
+    - android_sdk_26
   script:
     - mkdir -p artifacts
     - gradle wrapper
     - echo $ANDROIDKEY | base64 -d > androidkey
-    # - echo $GOOGLE_SERVICES_JSON > app/google-services.json
+    - echo $ANDROIDKEY | base64 -d > app/androidkey
     - ./gradlew assembleRelease -Pandroid.injected.signing.store.file=androidkey -Pandroid.injected.signing.store.password=$ANDROIDKEY_PASS -Pandroid.injected.signing.key.alias=$ANDROIDKEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROIDKEY_PASS
     - mv app/build/outputs/apk/app-release.apk artifacts/hktipp-$(gradle version -q).apk
-    - rm androidkey # app/google-services.json
+    - rm androidkey app/androidkey
   artifacts:
-     paths:
+    expire_in: 1 week
+    paths:
       - artifacts/
 
-upload_gitlab_release:
+upload_release_to_github:
   stage: release
   only:
     - master
   tags:
-    - linux-buildserver
+    - python
+    - gradle
   script:
     - mkdir -p artifacts
-    - git clone https://gitlab.namibsun.net/namboy94/gitlab-release-uploader.git
-    - git clone https://gitlab.namibsun.net/namboy94/changelog-reader.git
-    - python changelog-reader/changelog-reader.py -c CHANGELOG -d  current_changelog
-    - python gitlab-release-uploader/gitlab-release-uploader.py namboy94 bundesliga-tippspiel-android $GITLAB_ACCESS_TOKEN
-      $(gradle version -q) current_changelog artifacts -b master -u https://gitlab.namibsun.net
-
-upload_github_release:
-  stage: release
-  only:
-    - master
-  tags:
-    - linux-buildserver
-  script:
-    - mkdir -p artifacts
-    - git clone https://gitlab.namibsun.net/namboy94/github-release-uploader.git
-    - git clone https://gitlab.namibsun.net/namboy94/changelog-reader.git
-    - python changelog-reader/changelog-reader.py -c CHANGELOG -d current_changelog
-    - python github-release-uploader/github-release-uploader.py namboy94 bundesliga-tippspiel-android $GITHUB_ACCESS_TOKEN
+    - git clone https://gitlab.namibsun.net/namboy94/ci-scripts.git
+    - python ci-scripts/src/changelog-reader/changelog-reader.py -c CHANGELOG -d current_changelog
+    - python ci-scripts/src/github-release-uploader/github-release-uploader.py namboy94 bundesliga-tippspiel-android $GITHUB_ACCESS_TOKEN
       $(gradle version -q) current_changelog artifacts -b master
+
+upload_release_to_gitlab:
+  stage: release
+  only:
+    - master
+  tags:
+    - python
+    - gradle
+  script:
+    - mkdir -p artifacts
+    - git clone https://gitlab.namibsun.net/namboy94/ci-scripts.git
+    - python ci-scripts/src/changelog-reader/changelog-reader.py -c CHANGELOG -d  current_changelog
+    - python ci-scripts/src/gitlab-release-uploader/gitlab-release-uploader.py namboy94 bundesliga-tippspiel-android $GITLAB_ACCESS_TOKEN
+      $(gradle version -q) current_changelog artifacts -b master -u https://gitlab.namibsun.net
 
 upload_play_store_beta:
   stage: release
   only:
     - master
   tags:
-    - linux-buildserver
+    - python
   script:
     - pip install --upgrade google-api-python-client pyOpenSSL --user
-    - git clone https://gitlab.namibsun.net/namboy94/changelog-reader.git
+    - git clone https://gitlab.namibsun.net/namboy94/ci-scripts.git
     - git clone https://gitlab.namibsun.net/namboy94/play-upload.git
-    - python changelog-reader/changelog-reader.py -c CHANGELOG -d en-US
-    - python changelog-reader/changelog-reader.py -c CHANGELOG-de -d de-DE
+    - python ci-scripts/changelog-reader/changelog-reader.py -c CHANGELOG -d en-US
+    - python ci-scripts/changelog-reader/changelog-reader.py -c CHANGELOG-de -d de-DE
     - echo $PLAY_UPLOAD_SECRET | base64 -d > key.p12
     - python play-upload/play-upload.py net.namibsun.hktipp production $PLAY_UPLOAD_EMAIL key.p12 artifacts/*.apk --changes="en-US,de-DE"
     - rm key.p12
-
-gitstats:
-  stage: docs
-  tags:
-    - linux-buildserver
-  only:
-    - master
-    - develop
-  script:
-    - gitstats . gitstats
-    - rsync -av gitstats/ /var/www/gitstats.namibsun.net/public_html/gitstats/bundesliga-tippspiel-android --delete-before
-    - git_stats generate
-    - rsync -av git_stats/ /var/www/gitstats.namibsun.net/public_html/git_stats/bundesliga-tippspiel-android --delete-before
-
-update_site_indexes:
-  stage: finalize
-  tags:
-    - linux-buildserver
-  script:
-    - git clone https://gitlab.namibsun.net/namboy94/html-index-generator.git
-    - cd html-index-generator
-    - python html-index-generator.py /var/www/coverage.namibsun.net/public_html
-      /var/www/coverage.namibsun.net/public_html/index.html
-    - python html-index-generator.py /var/www/docs.namibsun.net/public_html
-      /var/www/docs.namibsun.net/public_html/index.html
-    - python html-index-generator.py /var/www/gitstats.namibsun.net/public_html
-      /var/www/gitstats.namibsun.net/public_html/index.html

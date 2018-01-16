@@ -19,6 +19,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -37,6 +38,7 @@ import org.jetbrains.anko.doAsync
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
+import java.io.Serializable
 
 /**
  * This activity allows a user to place bets, as well as view already placed bets
@@ -74,8 +76,8 @@ class BetActivity : AppCompatActivity() {
         this.setContentView(R.layout.bets)
         super.onCreate(savedInstanceState)
 
-        this.username = intent.extras.getString("username")
-        this.apiKey = intent.extras.getString("api_key")
+        this.username = this.intent.extras.getString("username")
+        this.apiKey = this.intent.extras.getString("api_key")
 
         this.findViewById(R.id.bets_submit_button).setOnClickListener { this.placeBets() }
 
@@ -207,6 +209,18 @@ class BetActivity : AppCompatActivity() {
                     matchDataObj,
                     betDataObj
             )
+
+            betView.setOnClickListener {
+                val intent = Intent(this@BetActivity, SingleMatchActivity::class.java)
+                val bundle = Bundle()
+                bundle.putString("username", this@BetActivity.username)
+                bundle.putString("api_key", this@BetActivity.apiKey)
+                bundle.putSerializable("match_data", matchDataObj as Serializable)
+                bundle.putSerializable("bet_data", betDataObj as Serializable)
+                intent.putExtras(bundle)
+                this@BetActivity.startActivity(intent)
+            }
+
             this.betViews[this.matchDay]!!.add(betView)
         }
         this.betViews[-1] = this.betViews[this.matchDay]!! // Store betViews for logo purposes

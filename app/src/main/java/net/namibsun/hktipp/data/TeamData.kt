@@ -26,30 +26,30 @@ import java.io.Serializable
  * Data class that models a team's data
  * @param data: The JSON data to parse
  */
-data class TeamData(val data: JSONObject) : Serializable {
+class TeamData(data: JSONObject) : Serializable {
 
     /**
      * The ID of the team in the database
      */
-    val id = this.data.getInt("id")
+    val id = data.getInt("id")
 
     /**
      * The name of the team
      */
-    val name = this.data.getString("name")!!
+    val name = data.getString("name")!!
 
     /**
      * The shortform version of the team's name
      */
-    val shortName = this.data.getString("shortname")!!
+    val shortName = data.getString("shortname")!!
 
     /**
      * The team's 3-letter abbreviation
      */
-    val abbreviation = this.data.getString("abbreviation")!!
+    val abbreviation = data.getString("abbreviation")!!
 
     /**
      * The path to the team's icon
      */
-    val iconPath = this.data.getString("icon")!!
+    val iconPath = data.getString("icon")!!
 }

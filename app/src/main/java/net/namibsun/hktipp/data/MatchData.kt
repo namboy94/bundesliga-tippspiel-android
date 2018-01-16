@@ -26,60 +26,60 @@ import java.io.Serializable
  * Data class that models a match
  * @param data: The JSON data to parse
  */
-data class MatchData(val data: JSONObject) : Serializable {
+class MatchData(data: JSONObject) : Serializable {
 
     /**
      * The ID of the match
      */
-    val id = this.data.getInt("id")
+    val id = data.getInt("id")
 
     /**
      * The home team's data
      */
-    val homeTeam = TeamData(this.data.getJSONObject("home_team")!!)
+    val homeTeam = TeamData(data.getJSONObject("home_team")!!)
 
     /**
      * The away team's data
      */
-    val awayTeam = TeamData(this.data.getJSONObject("away_team")!!)
+    val awayTeam = TeamData(data.getJSONObject("away_team")!!)
 
     /**
      * The home team's half-time score
      */
-    val homeHtScore = this.data.getInt("home_ht_score")
+    val homeHtScore = data.getInt("home_ht_score")
 
     /**
      * The away team's half-time score
      */
-    val awayHtScore = this.data.getInt("away_ht_score")
+    val awayHtScore = data.getInt("away_ht_score")
 
     /**
      * The home team's full-time score
      */
-    val homeFtScore = this.data.getInt("home_ft_score")
+    val homeFtScore = data.getInt("home_ft_score")
 
     /**
      * The away team's full-time score
      */
-    val awayFtScore = this.data.getInt("away_ft_score")
+    val awayFtScore = data.getInt("away_ft_score")
 
     /**
      * The match day of the match
      */
-    val matchDay = this.data.getInt("matchday")
+    val matchDay = data.getInt("matchday")
 
     /**
      * The kickoff time of the match
      */
-    val kickoff = this.data.getString("kickoff")
+    val kickoff = data.getString("kickoff")
 
     /**
      * Indicates if the match has started already
      */
-    val started = this.data.getBoolean("started")
+    val started = data.getBoolean("started")
 
     /**
      * Indicates if the match is finished or not
      */
-    val finished = this.data.getBoolean("finished")
+    val finished = data.getBoolean("finished")
 }

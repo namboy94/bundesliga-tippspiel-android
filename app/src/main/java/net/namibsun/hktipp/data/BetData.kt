@@ -26,25 +26,25 @@ import java.io.Serializable
  * Data class that models a bet
  * @param data: The JSON to parse
  */
-data class BetData(val data: JSONObject) : Serializable {
+class BetData(data: JSONObject) : Serializable {
 
     /**
      * The ID of the bet
      */
-    val id = this.data.getInt("id")
+    val id = data.getInt("id")
 
     /**
      * The score bet on the home team
      */
-    val homeScore = this.data.getInt("home_score")
+    val homeScore = data.getInt("home_score")
 
     /**
      * The score bet on the away team
      */
-    val awayScore = this.data.getInt("away_score")
+    val awayScore = data.getInt("away_score")
 
     /**
      * The bet's match data
      */
-    val match = MatchData(this.data.getJSONObject("match"))
+    val match = MatchData(data.getJSONObject("match"))
 }

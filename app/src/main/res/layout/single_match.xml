@@ -18,10 +18,11 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:id="@+id/leaderboard_outer_layout">
 
     <LinearLayout
@@ -33,7 +34,8 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@color/button_bg"
-            android:id="@+id/home_team_logo"/>
+            android:id="@+id/home_team_logo"
+            android:contentDescription="@string/home_team_logo_caption" />
 
         <TextView
             android:layout_width="0dp"
@@ -41,7 +43,6 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
             android:layout_weight="1"
             android:gravity="center"
             android:textSize="40sp"
-            android:text="10"
             android:id="@+id/home_team_score"/>
 
         <TextView
@@ -50,7 +51,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
             android:layout_weight="1"
             android:gravity="center"
             android:textSize="50sp"
-            android:text=":"/>
+            android:text="@string/points_divider"/>
 
         <TextView
             android:layout_width="0dp"
@@ -58,15 +59,54 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
             android:layout_weight="1"
             android:gravity="center"
             android:textSize="40sp"
-            android:text="10"
             android:id="@+id/away_team_score"/>
 
         <ImageView
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@color/cardview_dark_background"
-            android:id="@+id/away_team_logo"/>
+            android:src="@color/button_bg"
+            android:id="@+id/away_team_logo"
+            android:contentDescription="@string/away_team_logo_caption" />
 
     </LinearLayout>
 
-</RelativeLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/title_bg"
+        android:text="@string/match_goals_title"
+        android:textSize="30sp"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/match_goals_list">
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/title_bg"
+        android:textSize="30sp"
+        android:text="@string/match_bets_title"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/match_bets_list">
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

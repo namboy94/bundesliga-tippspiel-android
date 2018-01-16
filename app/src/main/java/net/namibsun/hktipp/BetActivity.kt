@@ -216,7 +216,6 @@ class BetActivity : AppCompatActivity() {
                 bundle.putString("username", this@BetActivity.username)
                 bundle.putString("api_key", this@BetActivity.apiKey)
                 bundle.putSerializable("match_data", matchDataObj as Serializable)
-                bundle.putSerializable("bet_data", betDataObj as Serializable)
                 intent.putExtras(bundle)
                 this@BetActivity.startActivity(intent)
             }

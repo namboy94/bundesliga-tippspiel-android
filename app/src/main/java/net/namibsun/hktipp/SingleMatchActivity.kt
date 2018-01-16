@@ -22,8 +22,8 @@ package net.namibsun.hktipp
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import net.namibsun.hktipp.data.BetData
 import net.namibsun.hktipp.data.MatchData
 import net.namibsun.hktipp.singletons.Logos
 import org.jetbrains.anko.doAsync
@@ -33,8 +33,15 @@ import org.jetbrains.anko.doAsync
  */
 class SingleMatchActivity : AppCompatActivity() {
 
+    /**
+     * The match data to display
+     */
     private var matchData: MatchData? = null
-    private var betData: BetData? = null
+
+    /**
+     * Variable that indicates if the activity is currently active or not
+     */
+    private var active = false
 
     /**
      * Displays the match data
@@ -46,22 +53,34 @@ class SingleMatchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         this.matchData = this.intent.extras.get("match_data") as MatchData
-        this.betData = this.intent.extras.get("bet_data") as BetData
 
-        val homeScore = if (this.matchData!!.started) {
-            "${this.matchData!!.homeFtScore}"
+        this.displayCurrentScores()
+        this.loadLogos()
+        this.loadGoals()
+        this.loadBets()
+        this.startUpdateChecker()
+    }
+
+    /**
+     * Displays the current match score
+     */
+    private fun displayCurrentScores() {
+
+        if (this.matchData!!.started) {
+            val homeScore = "${this.matchData!!.homeFtScore}"
+            val awayScore = "${this.matchData!!.awayFtScore}"
+            (this.findViewById(R.id.home_team_score) as TextView).text = homeScore
+            (this.findViewById(R.id.away_team_score) as TextView).text = awayScore
         } else {
-            "-"
+            (this.findViewById(R.id.home_team_score) as TextView).text = "-"
+            (this.findViewById(R.id.away_team_score) as TextView).text = "-"
         }
-        val awayScore = if (this.matchData!!.started) {
-            "${this.matchData!!.awayFtScore}"
-        } else {
-            "-"
-        }
+    }
 
-        (this.findViewById(R.id.home_team_score) as TextView).text = homeScore
-        (this.findViewById(R.id.away_team_score) as TextView).text = awayScore
-
+    /**
+     * Loads the logo bitmaps into the image views reserved for them
+     */
+    private fun loadLogos() {
         this.doAsync {
             val homeLogo = this@SingleMatchActivity.findViewById(R.id.home_team_logo) as ImageView
             val awayLogo = this@SingleMatchActivity.findViewById(R.id.away_team_logo) as ImageView
@@ -71,6 +90,43 @@ class SingleMatchActivity : AppCompatActivity() {
             this@SingleMatchActivity.runOnUiThread {
                 homeLogo.setImageBitmap(homeBitmap)
                 awayLogo.setImageBitmap(awayBitmap)
+            }
+        }
+    }
+
+    /**
+     * Retrieves goals for the game using the API
+     */
+    private fun loadGoals() {
+        val goalList = this.findViewById(R.id.match_goals_list) as LinearLayout
+        this.doAsync {
+            this@SingleMatchActivity.runOnUiThread {
+                goalList.removeAllViews()
+            }
+        }
+    }
+
+    /**
+     * Retrieves the bets for the game by other users using the API
+     */
+    private fun loadBets() {
+        val betList = this.findViewById(R.id.match_bets_list) as LinearLayout
+        this.doAsync {
+            this@SingleMatchActivity.runOnUiThread {
+                betList.removeAllViews()
+            }
+        }
+    }
+
+    /**
+     * Starts a Async Task that periodically checks the current score while this
+     * activity is active
+     */
+    private fun startUpdateChecker() {
+        this.active = true
+        this.doAsync {
+            while (this@SingleMatchActivity.active) {
+                Thread.sleep(60000)
             }
         }
     }

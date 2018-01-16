@@ -19,7 +19,6 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -28,7 +27,11 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import net.namibsun.hktipp.data.BetData
 import net.namibsun.hktipp.data.MatchData
-import net.namibsun.hktipp.helper.*
+import net.namibsun.hktipp.helper.getMatches
+import net.namibsun.hktipp.helper.getBets
+import net.namibsun.hktipp.helper.showErrorDialog
+import net.namibsun.hktipp.helper.logout
+import net.namibsun.hktipp.helper.placeBets
 import net.namibsun.hktipp.views.BetView
 import org.jetbrains.anko.doAsync
 import org.json.JSONArray
@@ -202,50 +205,11 @@ class BetActivity : AppCompatActivity() {
             val betView = BetView(
                     this@BetActivity,
                     matchDataObj,
-                    betDataObj,
-                    this.findLogos(matchData)
+                    betDataObj
             )
             this.betViews[this.matchDay]!!.add(betView)
         }
         this.betViews[-1] = this.betViews[this.matchDay]!! // Store betViews for logo purposes
-    }
-
-    /**
-     * Checks for previously downloaded logos in the betViews[-1] list.
-     * @param match: The match to get logos for
-     * @return: A Map of strings pointing to the appropriate bitmaps
-     */
-    private fun findLogos(match: JSONObject): MutableMap<String, Bitmap?> {
-        Log.d("BetActivity", "Searching for logos for match ${match.getInt("id")}")
-
-        val homeTeamId = match.getJSONObject("home_team").getInt("id")
-        val awayTeamId = match.getJSONObject("away_team").getInt("id")
-
-        val bitmaps = mutableMapOf<String, Bitmap?>("home" to null, "away" to null)
-
-        // Check for existing logos, but only when some have already been stored
-        if (this.betViews[-1] != null) {
-
-            @Suppress("LoopToCallChain")
-            for (oldBetView in this.betViews[-1]!!) {
-
-                val teams = oldBetView.getTeamData()
-
-                for (identifier in listOf("home", "away")) {
-                    if (homeTeamId == teams[identifier]!!.id) {
-                        Log.d("BetActivity", "Home Team Logo Found for team $homeTeamId")
-                        bitmaps["home"] = oldBetView.getLogoBitmaps()[identifier]
-                    } else if (awayTeamId == teams[identifier]!!.id) {
-                        Log.d("BetActivity", "Away Team Logo Found for team $awayTeamId")
-                        bitmaps["away"] = oldBetView.getLogoBitmaps()[identifier]
-                    }
-                }
-            }
-        } else {
-            Log.d("BetActivity", "No old logos found for match ${match.getInt("id")}")
-        }
-
-        return bitmaps
     }
 
     /**

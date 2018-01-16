@@ -21,8 +21,6 @@ package net.namibsun.hktipp.views
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.support.v7.widget.CardView
 import android.view.View
 import android.widget.EditText
@@ -32,10 +30,10 @@ import net.namibsun.hktipp.R
 import net.namibsun.hktipp.data.BetData
 import net.namibsun.hktipp.data.MatchData
 import net.namibsun.hktipp.data.TeamData
+import net.namibsun.hktipp.singletons.Logos
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.runOnUiThread
 import org.json.JSONObject
-import java.net.URL
 
 @SuppressLint("ViewConstructor")
 /**
@@ -43,21 +41,9 @@ import java.net.URL
  * @param context: The context/activity for which to display this bet
  * @param matchData: The match data to display. A JSONObject fetched from the API
  * @param betData: The existing bet data. Can be null if not bet data exists yet
- * @param logoBitmaps: A Map of Bitmaps that contain the team logos for this map.
- *                     Can be used to reduce loading times
  */
-class BetView(context: Context,
-              private val matchData: MatchData,
-              private val betData: BetData?,
-              private val logoBitmaps:
-              MutableMap<String, Bitmap?> = mutableMapOf("home" to null, "away" to null))
+class BetView(context: Context, private val matchData: MatchData, private val betData: BetData?)
     : CardView(context, null) {
-
-    /**
-     * Getter method for retrieving the view's logo bitmaps
-     * @return: A Map of logo bitmaps with the keys `home` and `away`
-     */
-    fun getLogoBitmaps(): MutableMap<String, Bitmap?> = this.logoBitmaps
 
     /**
      * Retrieves the team data from this BetView
@@ -102,23 +88,12 @@ class BetView(context: Context,
         val awayImage = this.findViewById<ImageView>(R.id.bet_away_team_logo)
 
         context.doAsync {
-            if (this@BetView.logoBitmaps["home"] == null) {
-
-                this@BetView.logoBitmaps["home"] = BitmapFactory.decodeStream(
-                        URL(this@BetView.matchData.homeTeam.iconPath)
-                                .openConnection()
-                                .getInputStream()
-                )
-                this@BetView.logoBitmaps["away"] = BitmapFactory.decodeStream(
-                        URL(this@BetView.matchData.awayTeam.iconPath)
-                                .openConnection()
-                                .getInputStream()
-                )
-            }
+            val homeTeamLogoBitmap = Logos.getLogo(this@BetView.matchData.homeTeam)
+            val awayTeamLogoBitmap = Logos.getLogo(this@BetView.matchData.awayTeam)
 
             this@BetView.context.runOnUiThread {
-                homeImage.setImageBitmap(this@BetView.logoBitmaps["home"])
-                awayImage.setImageBitmap(this@BetView.logoBitmaps["away"])
+                homeImage.setImageBitmap(homeTeamLogoBitmap)
+                awayImage.setImageBitmap(awayTeamLogoBitmap)
             }
         }
     }

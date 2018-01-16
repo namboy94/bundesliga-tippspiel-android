@@ -24,8 +24,8 @@ class LeaderboardEntryView(context: Context, position: String, username: String,
      */
     init {
         View.inflate(context, R.layout.leaderboard_entry, this)
-        (this.findViewById(R.id.leaderboard_entry_position) as TextView).text = position
-        (this.findViewById(R.id.leaderboard_entry_username) as TextView).text = username
-        (this.findViewById(R.id.leaderboard_entry_points) as TextView).text = points
+        this.findViewById<TextView>(R.id.leaderboard_entry_position).text = position
+        this.findViewById<TextView>(R.id.leaderboard_entry_username).text = username
+        this.findViewById<TextView>(R.id.leaderboard_entry_points).text = points
     }
 }

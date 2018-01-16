@@ -54,7 +54,7 @@ fun switchActivity(context: Context, target: Class<*>,
  */
 fun logout(context: Context, deleteCredentials: Boolean = false) {
     if (deleteCredentials) {
-        val editor = getDefaultSharedPreferences(context).edit().clear().apply()
+        getDefaultSharedPreferences(context).edit().clear().apply()
     }
 
     context.startActivity(Intent(context, LoginActivity::class.java))

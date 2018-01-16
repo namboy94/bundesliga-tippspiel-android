@@ -26,11 +26,9 @@ import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import net.namibsun.hktipp.helper.getMatches
-import net.namibsun.hktipp.helper.getBets
-import net.namibsun.hktipp.helper.showErrorDialog
-import net.namibsun.hktipp.helper.logout
-import net.namibsun.hktipp.helper.placeBets
+import net.namibsun.hktipp.data.BetData
+import net.namibsun.hktipp.data.MatchData
+import net.namibsun.hktipp.helper.*
 import net.namibsun.hktipp.views.BetView
 import org.jetbrains.anko.doAsync
 import org.json.JSONArray
@@ -195,7 +193,18 @@ class BetActivity : AppCompatActivity() {
             }
 
             // Add Bet Views
-            val betView = BetView(this@BetActivity, matchData, betData, this.findLogos(matchData))
+            val matchDataObj = MatchData(matchData)
+            val betDataObj = if (betData == null) {
+                null
+            } else {
+                BetData(betData)
+            }
+            val betView = BetView(
+                    this@BetActivity,
+                    matchDataObj,
+                    betDataObj,
+                    this.findLogos(matchData)
+            )
             this.betViews[this.matchDay]!!.add(betView)
         }
         this.betViews[-1] = this.betViews[this.matchDay]!! // Store betViews for logo purposes
@@ -223,10 +232,10 @@ class BetActivity : AppCompatActivity() {
                 val teams = oldBetView.getTeamData()
 
                 for (identifier in listOf("home", "away")) {
-                    if (homeTeamId == teams[identifier]!!.getInt("id")) {
+                    if (homeTeamId == teams[identifier]!!.id) {
                         Log.d("BetActivity", "Home Team Logo Found for team $homeTeamId")
                         bitmaps["home"] = oldBetView.getLogoBitmaps()[identifier]
-                    } else if (awayTeamId == teams[identifier]!!.getInt("id")) {
+                    } else if (awayTeamId == teams[identifier]!!.id) {
                         Log.d("BetActivity", "Away Team Logo Found for team $awayTeamId")
                         bitmaps["away"] = oldBetView.getLogoBitmaps()[identifier]
                     }

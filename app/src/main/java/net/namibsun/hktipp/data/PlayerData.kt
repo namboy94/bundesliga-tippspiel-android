@@ -23,34 +23,23 @@ import org.json.JSONObject
 import java.io.Serializable
 
 /**
- * Data class that models a bet
- * @param data: The JSON to parse
+ * Class that models a player
+ * @param data: The JSON data to parse
  */
-class BetData(data: JSONObject) : Serializable {
+class PlayerData(data: JSONObject) : Serializable {
 
     /**
-     * The ID of the bet
+     * The ID of the player
      */
     val id = data.getInt("id")
 
     /**
-     * The score bet on the home team
+     * The name of the player
      */
-    val homeScore = data.getInt("home_score")
+    val name = data.getString("name")!!
 
     /**
-     * The score bet on the away team
+     * The team this player is associated with
      */
-    val awayScore = data.getInt("away_score")
-
-    /**
-     * The bet's match data
-     */
-    val match = MatchData(data.getJSONObject("match"))
-
-    /**
-     * The points scored with this bet. -1 indicates that the bet has not been
-     * evaluated yet
-     */
-    var points = -1
+    val team = TeamData(data.getJSONObject("team"))
 }

@@ -25,6 +25,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import net.namibsun.hktipp.data.MatchData
+import net.namibsun.hktipp.helper.getBetsForMatch
+import net.namibsun.hktipp.helper.getGoalsForMatch
 import net.namibsun.hktipp.singletons.Logos
 import org.jetbrains.anko.doAsync
 
@@ -44,6 +46,16 @@ class SingleMatchActivity : AppCompatActivity() {
     private var active = false
 
     /**
+     * The username to use with authentication actions
+     */
+    private var username: String? = null
+
+    /**
+     * The API key to use with authentication actions
+     */
+    private var apiKey: String? = null
+
+    /**
      * Displays the match data
      * @param savedInstanceState: The saved instance state
      */
@@ -52,6 +64,8 @@ class SingleMatchActivity : AppCompatActivity() {
         this.setContentView(R.layout.single_match)
         super.onCreate(savedInstanceState)
 
+        this.username = this.intent.extras.getString("username")
+        this.apiKey = this.intent.extras.getString("api_key")
         this.matchData = this.intent.extras.get("match_data") as MatchData
 
         this.displayCurrentScores()
@@ -100,8 +114,15 @@ class SingleMatchActivity : AppCompatActivity() {
     private fun loadGoals() {
         val goalList = this.findViewById(R.id.match_goals_list) as LinearLayout
         this.doAsync {
+            val goals = getGoalsForMatch(
+                    this@SingleMatchActivity.username!!,
+                    this@SingleMatchActivity.apiKey!!,
+                    this@SingleMatchActivity.matchData!!.id
+            )
             this@SingleMatchActivity.runOnUiThread {
                 goalList.removeAllViews()
+                for (goal in goals) {
+                }
             }
         }
     }
@@ -112,8 +133,15 @@ class SingleMatchActivity : AppCompatActivity() {
     private fun loadBets() {
         val betList = this.findViewById(R.id.match_bets_list) as LinearLayout
         this.doAsync {
+            val bets = getBetsForMatch(
+                    this@SingleMatchActivity.username!!,
+                    this@SingleMatchActivity.apiKey!!,
+                    this@SingleMatchActivity.matchData!!.id
+            )
             this@SingleMatchActivity.runOnUiThread {
                 betList.removeAllViews()
+                for (bet in bets) {
+                }
             }
         }
     }
@@ -127,6 +155,9 @@ class SingleMatchActivity : AppCompatActivity() {
         this.doAsync {
             while (this@SingleMatchActivity.active) {
                 Thread.sleep(60000)
+                this@SingleMatchActivity.loadGoals()
+                this@SingleMatchActivity.loadBets()
+                this@SingleMatchActivity.displayCurrentScores()
             }
         }
     }

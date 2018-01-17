@@ -19,6 +19,8 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp.helper
 
+import net.namibsun.hktipp.data.BetData
+import net.namibsun.hktipp.data.GoalData
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -67,4 +69,38 @@ fun placeBets(username: String, apiKey: String, bets: JSONArray): Boolean {
     val response = post("place_bets", betsJson.toString(), username, apiKey)
     val status = response.getString("status")
     return status.startsWith("success")
+}
+
+/**
+ * Retrieves goal data from the API
+ * @param username: The username used for authentication
+ * @param apiKey: The API key used for authentication
+ * @param matchId: The ID of the match for which to retrieve the goals
+ * @return A List of GoalData objects for the specified match
+ */
+fun getGoalsForMatch(username: String, apiKey: String, matchId: Int): List<GoalData> {
+    val postJson = JSONObject()
+    postJson.put("match_id", matchId)
+    val response = post("get_goal_data_for_match", postJson.toString(), username, apiKey)
+    val goals = response.getJSONArray("data")
+    return (0..(goals.length() - 1)).map {
+        GoalData(goals.getJSONObject(it))
+    }
+}
+
+/**
+ * Retrieves bets for a match
+ * @param username: The username used for authentication
+ * @param apiKey: The API Key used for authentication
+ * @param matchId: The ID of the match for which to retrieve the bets
+ * @return A list of bets
+ */
+fun getBetsForMatch(username: String, apiKey: String, matchId: Int): List<BetData> {
+    val postJson = JSONObject()
+    postJson.put("match_id", matchId)
+    val response = post("get_bets_for_match", postJson.toString(), username, apiKey)
+    val bets = response.getJSONArray("data")
+    return (0..(bets.length() - 1)).map {
+        BetData(bets.getJSONObject(it))
+    }
 }

@@ -31,7 +31,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:layout_weight="1"
@@ -39,7 +39,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
             android:text="@string/dummy_string"/>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:layout_weight="10"
@@ -47,7 +47,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
             android:text="@string/dummy_string"/>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:layout_weight="1"
@@ -55,7 +55,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
             android:text="@string/dummy_string"/>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:layout_weight="1"

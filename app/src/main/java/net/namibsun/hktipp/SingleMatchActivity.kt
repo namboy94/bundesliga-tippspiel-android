@@ -21,6 +21,7 @@ package net.namibsun.hktipp
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -70,17 +71,35 @@ class SingleMatchActivity : AppCompatActivity() {
         this.apiKey = this.intent.extras.getString("api_key")
         this.matchData = this.intent.extras.get("match_data") as MatchData
 
-        this.displayCurrentScores()
-        this.loadLogos()
-        this.loadGoals()
-        this.loadBets()
+        this.update()
+
+        this.findViewById(R.id.single_match_update_button).setOnClickListener {
+            this@SingleMatchActivity.update(true)
+        }
+
         // this.startUpdateChecker()
     }
 
     /**
-     * Displays the current match score
+     * Updates all of the UI elements
+     * @param scoreUpdate: Forces an update of the score widgets with new data if set to true
      */
-    private fun displayCurrentScores() {
+    private fun update(scoreUpdate: Boolean = false) {
+        this@SingleMatchActivity.loadLogos()
+        this@SingleMatchActivity.loadGoals()
+        this@SingleMatchActivity.loadBets()
+        this@SingleMatchActivity.displayCurrentScores(scoreUpdate)
+    }
+
+    /**
+     * Displays the current match score
+     * @param reload: Reloads new data from the API instead of using stored values
+     */
+    private fun displayCurrentScores(reload: Boolean = false) {
+
+        if (reload) {
+            // TODO fetch stuff
+        }
 
         if (this.matchData!!.started) {
             val homeScore = "${this.matchData!!.homeFtScore}"
@@ -115,6 +134,8 @@ class SingleMatchActivity : AppCompatActivity() {
      */
     private fun loadGoals() {
         val goalList = this.findViewById(R.id.match_goals_list) as LinearLayout
+        goalList.removeAllViews()
+        this.findViewById(R.id.single_match_goals_progress).visibility = View.VISIBLE
         this.doAsync {
             val goals = getGoalsForMatch(
                     this@SingleMatchActivity.username!!,
@@ -122,7 +143,8 @@ class SingleMatchActivity : AppCompatActivity() {
                     this@SingleMatchActivity.matchData!!.id
             )
             this@SingleMatchActivity.runOnUiThread {
-                goalList.removeAllViews()
+                this@SingleMatchActivity.findViewById(R.id.single_match_goals_progress).visibility =
+                        View.INVISIBLE
                 goals.map {
                     SingleMatchGoalView(this@SingleMatchActivity, it)
                 }.forEach { goalList.addView(it) }
@@ -135,6 +157,8 @@ class SingleMatchActivity : AppCompatActivity() {
      */
     private fun loadBets() {
         val betList = this.findViewById(R.id.match_bets_list) as LinearLayout
+        betList.removeAllViews()
+        this.findViewById(R.id.single_match_bets_progress).visibility = View.VISIBLE
         this.doAsync {
             val bets = getBetsForMatch(
                     this@SingleMatchActivity.username!!,
@@ -142,7 +166,8 @@ class SingleMatchActivity : AppCompatActivity() {
                     this@SingleMatchActivity.matchData!!.id
             )
             this@SingleMatchActivity.runOnUiThread {
-                betList.removeAllViews()
+                this@SingleMatchActivity.findViewById(R.id.single_match_bets_progress).visibility =
+                        View.INVISIBLE
                 bets.keys.map {
                     SingleMatchBetView(this@SingleMatchActivity, it, bets[it])
                 }.forEach { betList.addView(it) }
@@ -151,7 +176,7 @@ class SingleMatchActivity : AppCompatActivity() {
     }
 
     /**
-     * Starts a Async Task that periodically checks the current score while this
+     * Starts an Async Task that periodically checks the current score while this
      * activity is active
      */
     private fun startUpdateChecker() {
@@ -159,9 +184,7 @@ class SingleMatchActivity : AppCompatActivity() {
         this.doAsync {
             while (this@SingleMatchActivity.active) {
                 Thread.sleep(60000)
-                this@SingleMatchActivity.loadGoals()
-                this@SingleMatchActivity.loadBets()
-                this@SingleMatchActivity.displayCurrentScores()
+                this@SingleMatchActivity.update(true)
             }
         }
     }

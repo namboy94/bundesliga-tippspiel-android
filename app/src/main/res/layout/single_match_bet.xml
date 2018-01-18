@@ -32,28 +32,28 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:layout_weight="1"
             android:id="@+id/single_match_bet_points"
             android:text="@string/dummy_string"/>
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:layout_weight="10"
             android:id="@+id/single_match_bet_username"
             android:text="@string/dummy_string"/>
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:layout_weight="1"
             android:id="@+id/single_match_bet_home"
             android:text="@string/dummy_string"/>
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:layout_weight="1"

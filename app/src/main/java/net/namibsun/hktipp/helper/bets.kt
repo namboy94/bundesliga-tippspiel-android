@@ -95,12 +95,19 @@ fun getGoalsForMatch(username: String, apiKey: String, matchId: Int): List<GoalD
  * @param matchId: The ID of the match for which to retrieve the bets
  * @return A list of bets
  */
-fun getBetsForMatch(username: String, apiKey: String, matchId: Int): List<BetData> {
+fun getBetsForMatch(username: String, apiKey: String, matchId: Int): Map<String, BetData?> {
     val postJson = JSONObject()
     postJson.put("match_id", matchId)
     val response = post("get_bets_for_match", postJson.toString(), username, apiKey)
-    val bets = response.getJSONArray("data")
-    return (0..(bets.length() - 1)).map {
-        BetData(bets.getJSONObject(it))
+    val bets = response.getJSONObject("data")
+
+    val betList = mutableMapOf<String, BetData?>()
+    for (user in bets.keys()) {
+        if (!bets.isNull(user)) {
+            betList[user] = BetData(bets.getJSONObject(user))
+        } else {
+            betList[user] = null
+        }
     }
+    return betList
 }

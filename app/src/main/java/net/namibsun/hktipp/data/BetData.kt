@@ -49,8 +49,7 @@ class BetData(data: JSONObject) : Serializable {
     val match = MatchData(data.getJSONObject("match"))
 
     /**
-     * The points scored with this bet. -1 indicates that the bet has not been
-     * evaluated yet
+     * The points scored with this bet.
      */
-    var points = -1
+    // val points = data.getInt("points")
 }

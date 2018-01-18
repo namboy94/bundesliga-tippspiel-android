@@ -50,7 +50,6 @@ fun post(endpoint: String, data: String): JSONObject {
 
     val response = client.newCall(request).execute()
     val responseBody = response.body()!!.string()
-
     return JSONObject(responseBody)
 }
 
@@ -69,7 +68,6 @@ fun post(endpoint: String, data: String, username: String, apiKey: String): JSON
     json.put("api_key", apiKey)
 
     try {
-
         val result = post(endpoint, json.toString())
 
         if (result.get("status") == "success" || result.get("status") == "success_with_errors") {

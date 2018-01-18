@@ -72,7 +72,7 @@ class SingleMatchActivity : AppCompatActivity() {
         this.loadLogos()
         this.loadGoals()
         this.loadBets()
-        this.startUpdateChecker()
+        // this.startUpdateChecker()
     }
 
     /**

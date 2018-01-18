@@ -54,4 +54,5 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
     <string name="points_divider">:</string>
     <string name="match_goals_title">Goals</string>
     <string name="match_bets_title">Bets</string>
+    <string name="dummy_string">-</string>
 </resources>

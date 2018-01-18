@@ -51,5 +51,5 @@ class BetData(data: JSONObject) : Serializable {
     /**
      * The points scored with this bet.
      */
-    // val points = data.getInt("points")
+    val points = data.getInt("points")
 }

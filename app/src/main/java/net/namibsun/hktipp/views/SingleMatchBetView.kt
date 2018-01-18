@@ -25,26 +25,29 @@ import android.support.v7.widget.CardView
 import android.view.View
 import android.widget.TextView
 import net.namibsun.hktipp.R
+import net.namibsun.hktipp.data.BetData
 
 /**
- * A custom View that displays a user's name and points for use in the
- * leaderboard.
+ * A custom View that displays a bet for a user on a match
  * @param context: The context/activity in which this view is created
- * @param position: The position of the user in the leaderboard
  * @param username: The username to display
- * @param points: The points to display
+ * @param bet: The bet to display
  */
 @SuppressLint("ViewConstructor")
-class LeaderboardEntryView(context: Context, position: String, username: String, points: String)
+class SingleMatchBetView(context: Context, username: String, bet: BetData?)
     : CardView(context, null) {
 
     /**
-     * Initializes the leaderboard entry fields
+     * Initializes the bet view
      */
     init {
-        View.inflate(context, R.layout.leaderboard_entry, this)
-        this.findViewById<TextView>(R.id.leaderboard_entry_position).text = position
-        this.findViewById<TextView>(R.id.leaderboard_entry_username).text = username
-        this.findViewById<TextView>(R.id.leaderboard_entry_points).text = points
+        View.inflate(context, R.layout.single_match_bet, this)
+        this.findViewById<TextView>(R.id.single_match_bet_username).text = username
+
+        if (bet != null) {
+            this.findViewById<TextView>(R.id.single_match_bet_points).text = "${bet.points}"
+            this.findViewById<TextView>(R.id.single_match_bet_home).text = "${bet.homeScore}"
+            this.findViewById<TextView>(R.id.single_match_bet_away).text = "${bet.awayScore}"
+        }
     }
 }

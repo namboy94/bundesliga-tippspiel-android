@@ -28,6 +28,8 @@ import net.namibsun.hktipp.data.MatchData
 import net.namibsun.hktipp.helper.getBetsForMatch
 import net.namibsun.hktipp.helper.getGoalsForMatch
 import net.namibsun.hktipp.singletons.Logos
+import net.namibsun.hktipp.views.SingleMatchBetView
+import net.namibsun.hktipp.views.SingleMatchGoalView
 import org.jetbrains.anko.doAsync
 
 /**
@@ -121,8 +123,9 @@ class SingleMatchActivity : AppCompatActivity() {
             )
             this@SingleMatchActivity.runOnUiThread {
                 goalList.removeAllViews()
-                for (goal in goals) {
-                }
+                goals.map {
+                    SingleMatchGoalView(this@SingleMatchActivity, it)
+                }.forEach { goalList.addView(it) }
             }
         }
     }
@@ -140,8 +143,9 @@ class SingleMatchActivity : AppCompatActivity() {
             )
             this@SingleMatchActivity.runOnUiThread {
                 betList.removeAllViews()
-                for (bet in bets) {
-                }
+                bets.keys.map {
+                    SingleMatchBetView(this@SingleMatchActivity, it, bets[it])
+                }.forEach { betList.addView(it) }
             }
         }
     }

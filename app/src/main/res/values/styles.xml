@@ -19,4 +19,22 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 -->
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
+
+    <style name="WrappedContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Title">
+        <item name="android:textSize">40sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@color/title_bg</item>
+        <item name="android:textColor">@color/title_text</item>
+        <item name="android:layout_marginBottom">5dp</item>
+    </style>
+
+    <style name="Button">
+        <item name="android:background">@color/button_bg</item>
+        <item name="android:textColor">@color/button_text</item>
+    </style>
 </resources>

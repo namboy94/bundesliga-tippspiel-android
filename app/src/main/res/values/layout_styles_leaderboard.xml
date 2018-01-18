@@ -17,27 +17,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
-<RelativeLayout style="@style/ParentMatcher"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <ProgressBar style="@style/InvisibleProgress"
-        android:id="@+id/leaderboard_progress"/>
-
-    <LinearLayout style="VerticalParentMatcher"
-        android:id="@+id/leaderboard_inner_layout">
-
-        <TextView style="@style/LeaderboardTitle"
-            android:id="@+id/leaderboard_title" />
-
-        <ScrollView style="@style/ParentMatcher"
-            android:id="@+id/leaderboard_scroller">
-
-            <LinearLayout style="@style/VerticalList"
-                android:id="@+id/leaderboard_list">
-            </LinearLayout>
-
-        </ScrollView>
-
-    </LinearLayout>
-</RelativeLayout>
+<resources>
+    <style name="LeaderboardTitle" parent="Title">
+        <item name="android:padding">10dp</item>
+        <item name="android:text">@string/leaderboard_title</item>
+    </style>
+    <style name="Lea"
+</resources>

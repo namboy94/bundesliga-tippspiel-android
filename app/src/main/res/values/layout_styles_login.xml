@@ -18,11 +18,27 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
-    <style name="LoginTextField">
+
+    <style name="LoginTitle" parent="Title">
+        <item name="android:text">@string/login_screen_title</item>
+    </style>
+
+    <style name="LoginCard">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="LoginUsernameEdit">
         <item name="android:maxLines">1</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
+        <item name="android:inputType">text</item>
+        <item name="android:hint">@string/login_screen_username</item>
+    </style>
+    <style name="LoginPasswordEdit" parent="LoginUsernameEdit">
+        <item name="android:inputType">textPassword</item>
+        <item name="android:hint">@string/login_screen_password</item>
     </style>
 
     <style name="LoginRememberCheckBox">
@@ -33,6 +49,12 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
         <item name="android:text">@string/login_screen_remember_me</item>
     </style>
 
+    <style name="LoginButtonBar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">20dp</item>
+    </style>
+
     <style name="LoginButton" parent="Button">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -40,6 +62,11 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
         <item name="android:layout_weight">1</item>
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:layout_margin">5dp</item>
+        <item name="android:text">@string/login_screen_button_title</item>
+    </style>
+
+    <style name="RegisterButton" parent="LoginButton">
+        <item name="android:text">@string/no_account_button_title</item>
     </style>
 
     <style name="LoginBackground" parent="WrappedContent">

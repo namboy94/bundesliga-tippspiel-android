@@ -18,110 +18,43 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/bets_outer_layout">
+<RelativeLayout style="@style/ParentMatcher"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="invisible"
+    <ProgressBar style="@style/InvisibleProgress"
         android:id="@+id/bets_progress"/>
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/bets_inner_layout">
+    <LinearLayout style="@style/VerticalParentMatcher"
+        android:id="@+id/bets_inner_layout"
+        android:baselineAligned="false">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/title_bg">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/bets_matchday_title_default"
-                android:textSize="30sp"
-                android:gravity="center"
-                android:paddingLeft="30dp"
-                android:paddingStart="30dp"
-                android:paddingRight="0dp"
-                android:paddingEnd="0dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_centerInParent="true"
+        <LinearLayout style="@style/Title">
 
-                android:textColor="@color/title_text"
+            <TextView style="@style/BetsTitle"
                 android:id="@+id/bets_title" />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/button_bg"
-                android:textColor="@color/button_text"
-                android:layout_margin="5dp"
-                android:padding="10dp"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:text="@string/leaderboard_button_title"
+
+            <Button style="@style/BetsLeaderboardButton"
                 android:id="@+id/leaderboard_button"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="90"
-            android:id="@+id/bets_scroller">
+        <ScrollView style="@style/BetScroller" >
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
+            <LinearLayout style="@style/VerticalList"
                 android:id="@+id/bets_list">
-
             </LinearLayout>
 
         </ScrollView>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="10"
-            android:id="@+id/bets_button_bar">
+        <LinearLayout style="@style/BetsButtonBar">
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/left_arrow"
-                android:background="@color/button_bg"
-                android:textColor="@color/button_text"
-                android:layout_margin="5dp"
+            <Button style="@style/BetsLeftButton"
                 android:id="@+id/bets_prev_button"/>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:text="@string/bet_submit_button"
-                android:background="@color/button_bg"
-                android:textColor="@color/button_text"
-                android:layout_margin="5dp"
+            <Button style="@style/BetsSubmitButton"
                 android:id="@+id/bets_submit_button"/>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/right_arrow"
-                android:background="@color/button_bg"
-                android:textColor="@color/button_text"
-                android:layout_margin="5dp"
+            <Button style="@style/BetsRightButton"
                 android:id="@+id/bets_next_button"/>
 
         </LinearLayout>

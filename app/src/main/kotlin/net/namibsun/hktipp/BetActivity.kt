@@ -36,7 +36,6 @@ import net.namibsun.hktipp.helper.placeBets
 import net.namibsun.hktipp.views.BetView
 import org.jetbrains.anko.doAsync
 import org.json.JSONArray
-import org.json.JSONObject
 import java.io.IOException
 import java.io.Serializable
 
@@ -150,7 +149,7 @@ class BetActivity : AppCompatActivity() {
                 Log.i("BetActivity", "Data successfully fetched")
 
                 // Update Matchday (Only has an effect if matchday == -1). Also reset BetViews
-                this@BetActivity.matchDay = matches.getJSONObject(0).getInt("matchday")
+                this@BetActivity.matchDay = matches[0].matchDay
                 this@BetActivity.betViews[this@BetActivity.matchDay] = mutableListOf()
 
                 this@BetActivity.runOnUiThread {
@@ -177,45 +176,31 @@ class BetActivity : AppCompatActivity() {
      * @param matches: The match data retrieved from the API
      * @param bets: The bets data retrieved from the API
      */
-    private fun initializeBetViews(matches: JSONArray, bets: JSONArray) {
+    private fun initializeBetViews(matches: List<MatchData>, bets: List<BetData>) {
 
         Log.i("BetActivity", "Initializing bet views")
 
         // Initialize the BetViews
-        for (i in 0..(matches.length() - 1)) {
+        for (match in matches) {
 
-            val matchData = matches.getJSONObject(i)
-            var betData: JSONObject? = null
+            var betData: BetData? = null
 
             // Check for existing bet data
-            @Suppress("LoopToCallChain")
-            for (j in 0..(bets.length() - 1)) {
-                val bet = bets.getJSONObject(j)
-                if (bet.getJSONObject("match").getInt("id") == matchData.getInt("id")) {
+            for (bet in bets) {
+                if (bet.match.id == match.id) {
                     betData = bet
-                    Log.d("BetActivity", "Bet Data Found for match ${matchData.getInt("id")}")
+                    Log.d("BetActivity", "Bet Data Found for match ${match.id}")
                 }
             }
 
             // Add Bet Views
-            val matchDataObj = MatchData(matchData)
-            val betDataObj = if (betData == null) {
-                null
-            } else {
-                BetData(betData)
-            }
-            val betView = BetView(
-                    this@BetActivity,
-                    matchDataObj,
-                    betDataObj
-            )
-
+            val betView = BetView(this@BetActivity, match, betData)
             betView.setOnClickListener {
                 val intent = Intent(this@BetActivity, SingleMatchActivity::class.java)
                 val bundle = Bundle()
                 bundle.putString("username", this@BetActivity.username)
                 bundle.putString("api_key", this@BetActivity.apiKey)
-                bundle.putSerializable("match_data", matchDataObj as Serializable)
+                bundle.putSerializable("match_data", match as Serializable)
                 intent.putExtras(bundle)
                 this@BetActivity.startActivity(intent)
             }

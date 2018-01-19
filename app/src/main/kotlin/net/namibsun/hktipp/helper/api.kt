@@ -21,6 +21,7 @@ package net.namibsun.hktipp.helper
 
 import net.namibsun.hktipp.data.BetData
 import net.namibsun.hktipp.data.GoalData
+import net.namibsun.hktipp.data.MatchData
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -32,27 +33,35 @@ import org.json.JSONObject
  * Fetches all the match data for the specified match day
  * @param username: The requesting user's username
  * @param apiKey: The API key of the user
- * @param matchday: The match day for which to fetch the match data.
+ * @param matchDay: The match day for which to fetch the match data.
  *                  Defaults to -1, which will fetch the current match day
- * @return: The match data for the matchday
+ * @return: The matches for the specified/current matchday
  */
-fun getMatches(username: String, apiKey: String, matchday: Int = -1): JSONArray {
-    val json = if (matchday == -1) "{}" else "{\"matchday\":\"$matchday\"}"
-    val res = post("get_matches_for_matchday", json, username, apiKey)
-    return res.getJSONArray("data")
+fun getMatches(username: String, apiKey: String, matchDay: Int = -1): List<MatchData> {
+    val json = if (matchDay == -1) "{}" else "{\"matchday\":\"$matchDay\"}"
+    val result = post("get_matches_for_matchday", json, username, apiKey)
+    val matchData = result.getJSONArray("data")
+
+    return (0..(matchData.length() - 1)).map {
+        MatchData(matchData.getJSONObject(it))
+    }
 }
 
 /**
  * Retrieves a user's bet data for a specified match day
  * @param username: The user's username
  * @param apiKey: The user's api key
- * @param matchday: The match day for which to fetch the bet data.
+ * @param matchDay: The match day for which to fetch the bet data.
  *                  Defaults to -1 which would fetch the bet data for the current match day
  * @return: The Bet Data
  */
-fun getBets(username: String, apiKey: String, matchday: Int = -1): JSONArray {
-    val json = if (matchday == -1) "{}" else "{\"matchday\":\"$matchday\"}"
-    return post("get_user_bets_for_matchday", json, username, apiKey).getJSONArray("data")
+fun getBets(username: String, apiKey: String, matchDay: Int = -1): List<BetData> {
+    val json = if (matchDay == -1) "{}" else "{\"matchday\":\"$matchDay\"}"
+    val result = post("get_user_bets_for_matchday", json, username, apiKey).getJSONArray("data")
+
+    return (0..(result.length() - 1)).map {
+        BetData(result.getJSONObject(it))
+    }
 }
 
 /**

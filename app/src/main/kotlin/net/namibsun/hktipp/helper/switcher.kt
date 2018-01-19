@@ -56,6 +56,5 @@ fun logout(context: Context, deleteCredentials: Boolean = false) {
     if (deleteCredentials) {
         getDefaultSharedPreferences(context).edit().clear().apply()
     }
-
     context.startActivity(Intent(context, LoginActivity::class.java))
 }

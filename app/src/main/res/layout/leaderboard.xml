@@ -24,7 +24,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
     <ProgressBar style="@style/InvisibleProgress"
         android:id="@+id/leaderboard_progress"/>
 
-    <LinearLayout style="@style/VerticalParentMatcher"
+    <LinearLayout style="VerticalParentMatcher"
         android:id="@+id/leaderboard_inner_layout">
 
         <TextView style="@style/LeaderboardTitle"

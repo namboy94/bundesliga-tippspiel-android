@@ -63,6 +63,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:layout_margin">5dp</item>
         <item name="android:text">@string/login_screen_button_title</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="RegisterButton" parent="LoginButton">

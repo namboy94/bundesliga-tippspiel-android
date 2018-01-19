@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2017-2018 Hermann Krumrey<hermann@krumreyh.com>
+
+This file is part of bundesliga-tippspiel-android.
+
+bundesliga-tippspiel-android is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+bundesliga-tippspiel-android is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<resources>
+    <style name="SingleMatchTitleFrame">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="SingleMatchTeamLogoImage">
+        <item name="android:layout_height">100dp</item>
+        <item name="android:layout_width">100dp</item>
+        <item name="android:src">@color/button_bg</item>
+    </style>
+    <style name="SingleMatchTeamHeaderText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">40sp</item>
+    </style>
+    <style name="SingleMatchTeamHeaderTextDivider" parent="SingleMatchTeamHeaderText">
+        <item name="android:text">@string/points_divider</item>
+        <item name="android:textSize">50sp</item>
+    </style>
+    <style name="SingleMatchSubtitle" parent="Title">
+        <item name="android:gravity">left</item>
+    </style>
+    <style name="SingleMatchGoalSubtitle" parent="SingleMatchSubtitle">
+        <item name="android:text">@string/match_goals_title</item>
+    </style>
+    <style name="SingleMatchBetsSubtitle" parent="SingleMatchSubtitle">
+        <item name="android:text">@string/match_bets_title</item>
+    </style>
+    <style name="SingleMatchGoalsScrollerFrame">
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+    <style name="SingleMatchBetsScrollerFrame" parent="SingleMatchGoalsScrollerFrame">
+        <item name="android:layout_weight">2</item>
+    </style>
+    <style name="SingleMatchUpdateButton" parent="Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:text">@string/update_button_text</item>
+    </style>
+</resources>

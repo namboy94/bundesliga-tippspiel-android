@@ -18,126 +18,58 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:id="@+id/leaderboard_outer_layout">
+<LinearLayout style="@style/VerticalParentMatcher"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/title_bg">
+    <LinearLayout style="@style/Title">
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@color/button_bg"
+        <ImageView style="@style/SingleMatchTeamLogoImage"
             android:id="@+id/home_team_logo"
             android:contentDescription="@string/home_team_logo_caption" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="40sp"
+        <TextView style="@style/SingleMatchTeamHeaderText"
             android:id="@+id/home_team_score"/>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="50sp"
-            android:text="@string/points_divider"/>
+        <TextView style="@style/SingleMatchTeamHeaderTextDivider"/>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="40sp"
+        <TextView style="@style/SingleMatchTeamHeaderText"
             android:id="@+id/away_team_score"/>
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@color/button_bg"
+        <ImageView style="@style/SingleMatchTeamLogoImage"
             android:id="@+id/away_team_logo"
             android:contentDescription="@string/away_team_logo_caption" />
 
     </LinearLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/title_bg"
-        android:text="@string/match_goals_title"
-        android:textSize="30sp"/>
+    <TextView style="@style/SingleMatchGoalSubtitle"/>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+    <RelativeLayout style="@style/SingleMatchGoalsScrollerFrame">
 
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="invisible"
+        <ProgressBar style="@style/InvisibleProgress"
             android:id="@+id/single_match_goals_progress"/>
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
+        <ScrollView style="@style/ParentMatcher">
+            <LinearLayout style="@style/VerticalList"
                 android:id="@+id/match_goals_list">
             </LinearLayout>
         </ScrollView>
+
     </RelativeLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/title_bg"
-        android:textSize="30sp"
-        android:text="@string/match_bets_title"/>
+    <TextView style="@style/SingleMatchBetsSubtitle"/>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2">
+    <RelativeLayout style="@style/SingleMatchBetsScrollerFrame">
 
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="invisible"
+        <ProgressBar style="@style/InvisibleProgress"
             android:id="@+id/single_match_bets_progress"/>
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
+        <ScrollView style="@style/ParentMatcher">
+            <LinearLayout style="@style/VerticalList"
                 android:id="@+id/match_bets_list">
             </LinearLayout>
         </ScrollView>
+
     </RelativeLayout>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/button_bg"
-        android:textColor="@color/button_text"
-        android:layout_gravity="center"
-        android:textSize="25sp"
-        android:text="@string/update_button_text"
+    <Button style="@style/SingleMatchUpdateButton"
         android:id="@+id/single_match_update_button"/>
 </LinearLayout>

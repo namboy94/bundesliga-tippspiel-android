@@ -37,10 +37,10 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
             <LinearLayout style="@style/LoginButtonBar">
 
-                <Button style="@style/LoginButton"
+                <Button style="@style/RegisterButton"
                     android:id="@+id/login_screen_register_button"/>
 
-                <Button style="@style/RegisterButton"
+                <Button style="@style/LoginButton"
                     android:id="@+id/login_screen_button"/>
 
             </LinearLayout>

@@ -18,26 +18,50 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<RelativeLayout style="@style/ParentMatcher"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/leaderboard_outer_layout">
 
-    <ProgressBar style="@style/InvisibleProgress"
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"
         android:id="@+id/leaderboard_progress"/>
 
-    <LinearLayout style="VerticalParentMatcher"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:id="@+id/leaderboard_inner_layout">
 
-        <TextView style="@style/LeaderboardTitle"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/title_bg"
+            android:text="@string/leaderboard_title"
+            android:textSize="30sp"
+            android:padding="10dp"
+            android:gravity="center"
+            android:textColor="@color/title_text"
             android:id="@+id/leaderboard_title" />
 
-        <ScrollView style="@style/ParentMatcher"
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="90"
             android:id="@+id/leaderboard_scroller">
 
-            <LinearLayout style="@style/VerticalList"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:id="@+id/leaderboard_list">
+
             </LinearLayout>
-
         </ScrollView>
-
     </LinearLayout>
 </RelativeLayout>

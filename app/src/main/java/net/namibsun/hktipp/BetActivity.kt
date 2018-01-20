@@ -19,7 +19,6 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log

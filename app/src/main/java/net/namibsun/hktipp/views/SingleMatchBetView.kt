@@ -21,6 +21,7 @@ package net.namibsun.hktipp.views
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.CardView
 import android.view.View
 import android.widget.TextView
@@ -52,9 +53,19 @@ class SingleMatchBetView(context: Context, username: String, bet: BetData?)
             if (bet.match.finished) {
                 val pointsView = this.findViewById<TextView>(R.id.single_match_bet_points)
                 pointsView.text = "${bet.points}"
+                ContextCompat.getDrawable(context, R.drawable.goal_owngoal)
 
+                val background = when (bet.points) {
+                    0 -> R.drawable.bet_points_0
+                    1 -> R.drawable.bet_points_1
+                    2 -> R.drawable.bet_points_2
+                    3 -> R.drawable.bet_points_3
+                    4 -> R.drawable.bet_points_4
+                    5 -> R.drawable.bet_points_5
+                    else -> R.drawable.bet_points_before
+                }
 
-
+                pointsView.background = ContextCompat.getDrawable(context, background)
             }
         }
     }

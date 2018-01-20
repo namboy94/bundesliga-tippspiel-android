@@ -28,6 +28,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
     <string name="login_screen_logo_description">The Logo of the Website</string>
     <string name="login_error_title">Login Failed</string>
     <string name="login_error_body">Wrong username or password</string>
+    <string name="no_account_button_title">No Account?</string>
 
     <string name="bet_submit_button">Submit</string>
     <string name="home_team_logo_description">The Home Team\'s Logo</string>
@@ -48,4 +49,18 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
     <string name="leaderboard_position_dummy">1</string>
     <string name="leaderboard_username_dummy">Username</string>
     <string name="leaderboard_points_dummy">100</string>
+
+    <string name="home_team_logo_caption">The Home Team Logo</string>
+    <string name="away_team_logo_caption">The Away Team Logo</string>
+    <string name="points_divider">:</string>
+    <string name="match_goals_title">Goals</string>
+    <string name="match_bets_title">Bets</string>
+    <string name="dummy_string">-</string>
+    <string name="update_button_text">Update</string>
+
+    <string name="goal_type_description">Icon indicating the type of goal</string>
+
+    <string name="leaderboard_header_position">#</string>
+    <string name="leaderboard_header_username">Username</string>
+    <string name="leaderboard_header_points">Points</string>
 </resources>

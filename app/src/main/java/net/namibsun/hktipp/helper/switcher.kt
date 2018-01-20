@@ -31,19 +31,27 @@ import net.namibsun.hktipp.LoginActivity
  * @param target: The activity to switch to's class
  * @param username: The (optional) username to provide to the new activity
  * @param apiKey: The (optional) API key to provide to the new activity
+ * @param extras: Additional, optional bundle that will be passed to the next activity
  */
 fun switchActivity(context: Context, target: Class<*>,
-                   username: String? = null, apiKey: String? = null) {
+                   username: String? = null, apiKey: String? = null, extras: Bundle? = null) {
 
     val intent = Intent(context, target)
 
-    // Set username and api key in bundle if provided
-    if (username != null && apiKey != null) {
-        val bundle = Bundle()
-        bundle.putString("username", username)
-        bundle.putString("api_key", apiKey)
-        intent.putExtras(bundle)
+    val bundle = if (extras == null) {
+        Bundle()
+    } else {
+        extras
     }
+
+    // Set username and api key in bundle if provided
+    if (username != null) {
+        bundle.putString("username", username)
+    }
+    if (apiKey != null) {
+        bundle.putString("api_key", apiKey)
+    }
+    intent.putExtras(bundle)
     context.startActivity(intent)
 }
 
@@ -54,8 +62,7 @@ fun switchActivity(context: Context, target: Class<*>,
  */
 fun logout(context: Context, deleteCredentials: Boolean = false) {
     if (deleteCredentials) {
-        val editor = getDefaultSharedPreferences(context).edit().clear().apply()
+        getDefaultSharedPreferences(context).edit().clear().apply()
     }
-
     context.startActivity(Intent(context, LoginActivity::class.java))
 }

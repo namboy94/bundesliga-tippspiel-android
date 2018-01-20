@@ -44,13 +44,12 @@ fun post(endpoint: String, data: String): JSONObject {
 
     val body = RequestBody.create(jsonMediaType, data)
     val request = Request.Builder()
-            .url("https://hk-tippspiel.com/api/v1/$endpoint.php")
+            .url("https://develop.hk-tippspiel.com/api/v1/$endpoint.php")
             .post(body)
             .build()
 
     val response = client.newCall(request).execute()
     val responseBody = response.body()!!.string()
-
     return JSONObject(responseBody)
 }
 
@@ -69,7 +68,6 @@ fun post(endpoint: String, data: String, username: String, apiKey: String): JSON
     json.put("api_key", apiKey)
 
     try {
-
         val result = post(endpoint, json.toString())
 
         if (result.get("status") == "success" || result.get("status") == "success_with_errors") {

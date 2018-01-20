@@ -19,14 +19,16 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import net.namibsun.hktipp.data.BetData
+import net.namibsun.hktipp.data.MatchData
 import net.namibsun.hktipp.helper.getMatches
+import net.namibsun.hktipp.helper.switchActivity
 import net.namibsun.hktipp.helper.getBets
 import net.namibsun.hktipp.helper.showErrorDialog
 import net.namibsun.hktipp.helper.logout
@@ -34,8 +36,8 @@ import net.namibsun.hktipp.helper.placeBets
 import net.namibsun.hktipp.views.BetView
 import org.jetbrains.anko.doAsync
 import org.json.JSONArray
-import org.json.JSONObject
 import java.io.IOException
+import java.io.Serializable
 
 /**
  * This activity allows a user to place bets, as well as view already placed bets
@@ -73,8 +75,8 @@ class BetActivity : AppCompatActivity() {
         this.setContentView(R.layout.bets)
         super.onCreate(savedInstanceState)
 
-        this.username = intent.extras.getString("username")
-        this.apiKey = intent.extras.getString("api_key")
+        this.username = this.intent.extras.getString("username")
+        this.apiKey = this.intent.extras.getString("api_key")
 
         this.findViewById(R.id.bets_submit_button).setOnClickListener { this.placeBets() }
 
@@ -147,7 +149,7 @@ class BetActivity : AppCompatActivity() {
                 Log.i("BetActivity", "Data successfully fetched")
 
                 // Update Matchday (Only has an effect if matchday == -1). Also reset BetViews
-                this@BetActivity.matchDay = matches.getJSONObject(0).getInt("matchday")
+                this@BetActivity.matchDay = matches[0].matchDay
                 this@BetActivity.betViews[this@BetActivity.matchDay] = mutableListOf()
 
                 this@BetActivity.runOnUiThread {
@@ -174,69 +176,35 @@ class BetActivity : AppCompatActivity() {
      * @param matches: The match data retrieved from the API
      * @param bets: The bets data retrieved from the API
      */
-    private fun initializeBetViews(matches: JSONArray, bets: JSONArray) {
+    private fun initializeBetViews(matches: List<MatchData>, bets: List<BetData>) {
 
         Log.i("BetActivity", "Initializing bet views")
 
         // Initialize the BetViews
-        for (i in 0..(matches.length() - 1)) {
+        for (match in matches) {
 
-            val matchData = matches.getJSONObject(i)
-            var betData: JSONObject? = null
+            var betData: BetData? = null
 
             // Check for existing bet data
-            @Suppress("LoopToCallChain")
-            for (j in 0..(bets.length() - 1)) {
-                val bet = bets.getJSONObject(j)
-                if (bet.getJSONObject("match").getInt("id") == matchData.getInt("id")) {
+            for (bet in bets) {
+                if (bet.match.id == match.id) {
                     betData = bet
-                    Log.d("BetActivity", "Bet Data Found for match ${matchData.getInt("id")}")
+                    Log.d("BetActivity", "Bet Data Found for match ${match.id}")
                 }
             }
 
             // Add Bet Views
-            val betView = BetView(this@BetActivity, matchData, betData, this.findLogos(matchData))
+            val betView = BetView(this@BetActivity, match, betData)
+            betView.setOnClickListener {
+                val bundle = Bundle()
+                bundle.putSerializable("match_data", match as Serializable)
+                switchActivity(this, SingleMatchActivity::class.java,
+                        this.username, this.apiKey, bundle)
+            }
+
             this.betViews[this.matchDay]!!.add(betView)
         }
         this.betViews[-1] = this.betViews[this.matchDay]!! // Store betViews for logo purposes
-    }
-
-    /**
-     * Checks for previously downloaded logos in the betViews[-1] list.
-     * @param match: The match to get logos for
-     * @return: A Map of strings pointing to the appropriate bitmaps
-     */
-    private fun findLogos(match: JSONObject): MutableMap<String, Bitmap?> {
-        Log.d("BetActivity", "Searching for logos for match ${match.getInt("id")}")
-
-        val homeTeamId = match.getJSONObject("home_team").getInt("id")
-        val awayTeamId = match.getJSONObject("away_team").getInt("id")
-
-        val bitmaps = mutableMapOf<String, Bitmap?>("home" to null, "away" to null)
-
-        // Check for existing logos, but only when some have already been stored
-        if (this.betViews[-1] != null) {
-
-            @Suppress("LoopToCallChain")
-            for (oldBetView in this.betViews[-1]!!) {
-
-                val teams = oldBetView.getTeamData()
-
-                for (identifier in listOf("home", "away")) {
-                    if (homeTeamId == teams[identifier]!!.getInt("id")) {
-                        Log.d("BetActivity", "Home Team Logo Found for team $homeTeamId")
-                        bitmaps["home"] = oldBetView.getLogoBitmaps()[identifier]
-                    } else if (awayTeamId == teams[identifier]!!.getInt("id")) {
-                        Log.d("BetActivity", "Away Team Logo Found for team $awayTeamId")
-                        bitmaps["away"] = oldBetView.getLogoBitmaps()[identifier]
-                    }
-                }
-            }
-        } else {
-            Log.d("BetActivity", "No old logos found for match ${match.getInt("id")}")
-        }
-
-        return bitmaps
     }
 
     /**

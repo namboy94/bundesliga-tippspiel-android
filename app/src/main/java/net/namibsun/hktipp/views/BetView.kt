@@ -21,19 +21,19 @@ package net.namibsun.hktipp.views
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.support.v7.widget.CardView
 import android.view.View
-
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import net.namibsun.hktipp.R
+import net.namibsun.hktipp.data.BetData
+import net.namibsun.hktipp.data.MatchData
+import net.namibsun.hktipp.data.TeamData
+import net.namibsun.hktipp.singletons.Logos
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.runOnUiThread
 import org.json.JSONObject
-import java.net.URL
 
 @SuppressLint("ViewConstructor")
 /**
@@ -41,37 +41,18 @@ import java.net.URL
  * @param context: The context/activity for which to display this bet
  * @param matchData: The match data to display. A JSONObject fetched from the API
  * @param betData: The existing bet data. Can be null if not bet data exists yet
- * @param logoBitmaps: A Map of Bitmaps that contain the team logos for this map.
- *                     Can be used to reduce loading times
  */
-class BetView(context: Context,
-              private val matchData: JSONObject,
-              private val betData: JSONObject?,
-              private val logoBitmaps:
-              MutableMap<String, Bitmap?> = mutableMapOf("home" to null, "away" to null))
+class BetView(context: Context, private val matchData: MatchData, private val betData: BetData?)
     : CardView(context, null) {
-
-    /**
-     * The Match ID of this BetView
-     */
-    private val matchId = matchData.getInt("id")
-
-    /**
-     * Getter method for retrieving the view's logo bitmaps
-     * @return: A Map of logo bitmaps with the keys `home` and `away`
-     */
-    @Suppress("RedundantVisibilityModifier")
-    public fun getLogoBitmaps(): MutableMap<String, Bitmap?> = this.logoBitmaps
 
     /**
      * Retrieves the team data from this BetView
      * @return a tuple of the home team's data and the away team's data
      */
-    @Suppress("RedundantVisibilityModifier")
-    public fun getTeamData(): Map<String, JSONObject> =
+    fun getTeamData(): Map<String, TeamData> =
             mapOf(
-                    "home" to this.matchData.getJSONObject("home_team"),
-                    "away" to this.matchData.getJSONObject("away_team")
+                    "home" to this.matchData.homeTeam,
+                    "away" to this.matchData.awayTeam
             )
 
     /**
@@ -82,47 +63,37 @@ class BetView(context: Context,
 
         View.inflate(context, R.layout.bet, this)
 
-        val homeTeam = this.matchData.getJSONObject("home_team")
-        val awayTeam = this.matchData.getJSONObject("away_team")
-
         // Display Team names
-        val homeTeamTitle = (this.findViewById(R.id.bet_home_team_title) as TextView)
-        val awayTeamTitle = (this.findViewById(R.id.bet_away_team_title) as TextView)
-        homeTeamTitle.text = homeTeam.getString("shortname")
-        awayTeamTitle.text = awayTeam.getString("shortname")
+        val homeTeamTitle = this.findViewById<TextView>(R.id.bet_home_team_title)
+        val awayTeamTitle = this.findViewById<TextView>(R.id.bet_away_team_title)
+        homeTeamTitle.text = this.matchData.homeTeam.shortName
+        awayTeamTitle.text = this.matchData.awayTeam.shortName
 
         // Set existing bet data
         if (this.betData != null) {
-            val homeTeamEdit = (this.findViewById(R.id.bet_home_team_edit) as EditText)
-            val awayTeamEdit = (this.findViewById(R.id.bet_away_team_edit) as EditText)
-            homeTeamEdit.setText(this.betData.getInt("home_score").toString())
-            awayTeamEdit.setText(this.betData.getInt("away_score").toString())
+            val homeTeamEdit = this.findViewById<EditText>(R.id.bet_home_team_edit)
+            val awayTeamEdit = this.findViewById<EditText>(R.id.bet_away_team_edit)
+            homeTeamEdit.setText("${this.betData.homeScore}")
+            awayTeamEdit.setText("${this.betData.awayScore}")
         }
 
         // Disable editing if match has started
-        if (this.matchData.getBoolean("started")) {
-            (this.findViewById(R.id.bet_home_team_edit) as EditText).isEnabled = false
-            (this.findViewById(R.id.bet_away_team_edit) as EditText).isEnabled = false
+        if (this.matchData.started) {
+            this.findViewById<EditText>(R.id.bet_home_team_edit).isEnabled = false
+            this.findViewById<EditText>(R.id.bet_away_team_edit).isEnabled = false
         }
 
         // Download/Display the Logos
-        val homeLogoUrl = homeTeam.getString("icon")
-        val awayLogoUrl = awayTeam.getString("icon")
-        val homeImage = this.findViewById(R.id.bet_home_team_logo) as ImageView
-        val awayImage = this.findViewById(R.id.bet_away_team_logo) as ImageView
+        val homeImage = this.findViewById<ImageView>(R.id.bet_home_team_logo)
+        val awayImage = this.findViewById<ImageView>(R.id.bet_away_team_logo)
 
         context.doAsync {
-            if (this@BetView.logoBitmaps["home"] == null) {
-
-                this@BetView.logoBitmaps["home"] = BitmapFactory.decodeStream(
-                        URL(homeLogoUrl).openConnection().getInputStream())
-                this@BetView.logoBitmaps["away"] = BitmapFactory.decodeStream(
-                        URL(awayLogoUrl).openConnection().getInputStream())
-            }
+            val homeTeamLogoBitmap = Logos.getLogo(this@BetView.matchData.homeTeam)
+            val awayTeamLogoBitmap = Logos.getLogo(this@BetView.matchData.awayTeam)
 
             this@BetView.context.runOnUiThread {
-                homeImage.setImageBitmap(this@BetView.logoBitmaps["home"])
-                awayImage.setImageBitmap(this@BetView.logoBitmaps["away"])
+                homeImage.setImageBitmap(homeTeamLogoBitmap)
+                awayImage.setImageBitmap(awayTeamLogoBitmap)
             }
         }
     }
@@ -135,8 +106,8 @@ class BetView(context: Context,
 
         return try {
 
-            val homeTeamEdit = this.findViewById(R.id.bet_home_team_edit) as EditText
-            val awayTeamEdit = this.findViewById(R.id.bet_away_team_edit) as EditText
+            val homeTeamEdit = this.findViewById<EditText>(R.id.bet_home_team_edit)
+            val awayTeamEdit = this.findViewById<EditText>(R.id.bet_away_team_edit)
 
             val homeScore = (homeTeamEdit).text.toString().toInt()
             val awayScore = (awayTeamEdit).text.toString().toInt()
@@ -149,7 +120,7 @@ class BetView(context: Context,
             val json = JSONObject("{}")
             json.put("home_score", homeScore)
             json.put("away_score", awayScore)
-            json.put("match_id", this.matchId)
+            json.put("match_id", this.matchData.id)
             json // return
         } catch (e: NumberFormatException) {
             null

@@ -58,4 +58,8 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
     <string name="update_button_text">Aktualisieren</string>
 
     <string name="goal_type_description">Bild dass den Typ des Tors beschreibt</string>
+
+    <string name="leaderboard_header_position">#</string>
+    <string name="leaderboard_header_username">Spieler</string>
+    <string name="leaderboard_header_points">Punkte</string>
 </resources>

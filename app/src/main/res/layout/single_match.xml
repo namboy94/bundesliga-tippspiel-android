@@ -119,7 +119,6 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
             android:layout_centerInParent="true"
             android:visibility="invisible"
             android:id="@+id/single_match_bets_progress"/>
-
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">

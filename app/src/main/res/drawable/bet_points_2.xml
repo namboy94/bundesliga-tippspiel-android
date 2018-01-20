@@ -17,22 +17,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<resources>
-    <color name="title_bg">#a2b97c</color>
-    <color name="title_text">#333333</color>
-    <color name="button_bg">#337ab7</color>
-    <color name="button_text">#ffffff</color>
-
-    <color name="goal_border_color">#000000</color>
-    <color name="goal_standard_color">#FFFFFF</color>
-    <color name="goal_owngoal_color">#f44141</color>
-    <color name="goal_penalty_color">#4286f4</color>
-
-    <color name="bet_points_0">#d9534f</color>
-    <color name="bet_points_1">#f0ad4e</color>
-    <color name="bet_points_2">#777777</color>
-    <color name="bet_points_3">#5bc0de</color>
-    <color name="bet_points_4">#5bc0de</color>
-    <color name="bet_points_5">#5cb85c</color>
-    <color name="bet_points_before">#777777</color>
-</resources>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <stroke android:color="@color/bet_points_2" android:width="3dp"/>
+    <size android:height="10dp" android:width="10dp"/>
+</shape>

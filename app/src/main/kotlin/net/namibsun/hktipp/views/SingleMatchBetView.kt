@@ -45,9 +45,17 @@ class SingleMatchBetView(context: Context, username: String, bet: BetData?)
         this.findViewById<TextView>(R.id.single_match_bet_username).text = username
 
         if (bet != null) {
-            this.findViewById<TextView>(R.id.single_match_bet_points).text = "${bet.points}"
+
             this.findViewById<TextView>(R.id.single_match_bet_home).text = "${bet.homeScore}"
             this.findViewById<TextView>(R.id.single_match_bet_away).text = "${bet.awayScore}"
+
+            if (bet.match.finished) {
+                val pointsView = this.findViewById<TextView>(R.id.single_match_bet_points)
+                pointsView.text = "${bet.points}"
+
+
+
+            }
         }
     }
 }

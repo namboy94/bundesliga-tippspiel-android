@@ -22,22 +22,28 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp"
     android:layout_marginTop="5dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="10dp"
         android:orientation="horizontal">
 
 
         <TextView
+            android:background="@drawable/bet_points_before"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:layout_weight="1"
+            android:gravity="center"
             android:id="@+id/single_match_bet_points"
             android:text="@string/dummy_string"/>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"

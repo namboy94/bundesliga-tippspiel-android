@@ -37,7 +37,7 @@ object Logos {
 
     fun getLogo(team: TeamData): Bitmap {
 
-        if (team.id !in logos) {
+        while (team.id !in logos) {
             this.downloadLogo(team)
         }
         return this.logos[team.id]!!

@@ -29,6 +29,7 @@ import android.widget.TextView
 import net.namibsun.hktipp.data.BetData
 import net.namibsun.hktipp.data.MatchData
 import net.namibsun.hktipp.helper.getMatches
+import net.namibsun.hktipp.helper.switchActivity
 import net.namibsun.hktipp.helper.getBets
 import net.namibsun.hktipp.helper.showErrorDialog
 import net.namibsun.hktipp.helper.logout
@@ -196,13 +197,10 @@ class BetActivity : AppCompatActivity() {
             // Add Bet Views
             val betView = BetView(this@BetActivity, match, betData)
             betView.setOnClickListener {
-                val intent = Intent(this@BetActivity, SingleMatchActivity::class.java)
                 val bundle = Bundle()
-                bundle.putString("username", this@BetActivity.username)
-                bundle.putString("api_key", this@BetActivity.apiKey)
                 bundle.putSerializable("match_data", match as Serializable)
-                intent.putExtras(bundle)
-                this@BetActivity.startActivity(intent)
+                switchActivity(this, SingleMatchActivity::class.java,
+                        this.username, this.apiKey, bundle)
             }
 
             this.betViews[this.matchDay]!!.add(betView)

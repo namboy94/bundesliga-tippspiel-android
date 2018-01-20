@@ -56,4 +56,6 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
     <string name="match_bets_title">Tipps</string>
     <string name="dummy_string">-</string>
     <string name="update_button_text">Aktualisieren</string>
+
+    <string name="goal_type_description">Bild dass den Typ des Tors beschreibt</string>
 </resources>

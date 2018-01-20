@@ -21,8 +21,10 @@ package net.namibsun.hktipp.views
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.CardView
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import net.namibsun.hktipp.R
 import net.namibsun.hktipp.data.GoalData
@@ -45,5 +47,12 @@ class SingleMatchGoalView(context: Context, goal: GoalData)
         this.findViewById<TextView>(R.id.single_match_goal_player).text = goal.player.name
         this.findViewById<TextView>(R.id.single_match_goal_home).text = "${goal.homeScore}"
         this.findViewById<TextView>(R.id.single_match_goal_away).text = "${goal.awayScore}"
+
+        val icon = this.findViewById<ImageView>(R.id.single_match_goal_icon)
+        if (goal.ownGoal) {
+            icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.goal_owngoal))
+        } else if (goal.penalty) {
+            icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.goal_penalty))
+        }
     }
 }

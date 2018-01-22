@@ -80,6 +80,7 @@ upload_play_store_beta:
     - master
   tags:
     - python
+    - python-pip
   script:
     - pip install --upgrade google-api-python-client pyOpenSSL --user
     - git clone https://gitlab.namibsun.net/namboy94/ci-scripts.git

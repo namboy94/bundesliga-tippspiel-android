@@ -3,11 +3,6 @@ stages:
   - test
   - build
   - release
-  - docs
-  - finalize
-
-variables:
-  ANDROID_HOME: "$ANDROID_SDK_LOCATION"
 
 github_mirror:
   stage: mirror
@@ -24,9 +19,9 @@ github_mirror:
 lint:
   stage: test
   tags:
-    - gradle
+    - linux
   script:
-    - gradle ktlint -q
+    - ./gradlew ktlint
 
 build_app:
   stage: build
@@ -34,15 +29,13 @@ build_app:
     - master
     - develop
   tags:
-    - gradle
     - android_sdk_26
   script:
     - mkdir -p artifacts
-    - gradle wrapper
     - echo $ANDROIDKEY | base64 -d > androidkey
     - echo $ANDROIDKEY | base64 -d > app/androidkey
     - ./gradlew assembleRelease -Pandroid.injected.signing.store.file=androidkey -Pandroid.injected.signing.store.password=$ANDROIDKEY_PASS -Pandroid.injected.signing.key.alias=$ANDROIDKEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROIDKEY_PASS
-    - mv app/build/outputs/apk/app-release.apk artifacts/hktipp-$(gradle version -q).apk
+    - mv app/build/outputs/apk/app-release.apk artifacts/hktipp-$(./gradlew version -q).apk
     - rm androidkey app/androidkey
   artifacts:
     expire_in: 1 week
@@ -55,13 +48,12 @@ upload_release_to_github:
     - master
   tags:
     - python
-    - gradle
   script:
     - mkdir -p artifacts
     - git clone https://gitlab.namibsun.net/namboy94/ci-scripts.git
     - python ci-scripts/src/changelog-reader/changelog-reader.py -c CHANGELOG -d current_changelog
     - python ci-scripts/src/github-release-uploader/github-release-uploader.py namboy94 bundesliga-tippspiel-android $GITHUB_ACCESS_TOKEN
-      $(gradle version -q) current_changelog artifacts -b master
+      $(./gradlew version -q) current_changelog artifacts -b master
 
 upload_release_to_gitlab:
   stage: release
@@ -75,7 +67,7 @@ upload_release_to_gitlab:
     - git clone https://gitlab.namibsun.net/namboy94/ci-scripts.git
     - python ci-scripts/src/changelog-reader/changelog-reader.py -c CHANGELOG -d  current_changelog
     - python ci-scripts/src/gitlab-release-uploader/gitlab-release-uploader.py namboy94 bundesliga-tippspiel-android $GITLAB_ACCESS_TOKEN
-      $(gradle version -q) current_changelog artifacts -b master -u https://gitlab.namibsun.net
+      $(./gradlew version -q) current_changelog artifacts -b master -u https://gitlab.namibsun.net
 
 upload_play_store_beta:
   stage: release

@@ -19,8 +19,8 @@ github_mirror:
 lint:
   stage: test
   tags:
-    - androidsdk26
-    - openjdk8
+    - android-sdk-26
+    - openjdk-8
   script:
     - ./gradlew ktlint
 
@@ -30,8 +30,8 @@ build_app:
     - master
     - develop
   tags:
-    - openjdk8
-    - androidsdk26
+    - openjdk-8
+    - android-sdk-26
   script:
     - mkdir -p artifacts
     - echo $ANDROIDKEY | base64 -d > androidkey
@@ -50,8 +50,8 @@ upload_release_to_github:
     - master
   tags:
     - python
-    - openjdk8
-    - androidsdk26
+    - open-jdk-8
+    - android-sdk-26
   script:
     - mkdir -p artifacts
     - git clone https://gitlab.namibsun.net/namboy94/ci-scripts.git
@@ -65,8 +65,8 @@ upload_release_to_gitlab:
     - master
   tags:
     - python
-    - openjdk8
-    - androidsdk26
+    - openjdk-8
+    - android-sdk-26
   script:
     - mkdir -p artifacts
     - git clone https://gitlab.namibsun.net/namboy94/ci-scripts.git

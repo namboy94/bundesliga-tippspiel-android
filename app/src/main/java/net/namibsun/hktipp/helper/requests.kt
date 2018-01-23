@@ -44,7 +44,7 @@ fun post(endpoint: String, data: String): JSONObject {
 
     val body = RequestBody.create(jsonMediaType, data)
     val request = Request.Builder()
-            .url("https://develop.hk-tippspiel.com/api/v1/$endpoint.php")
+            .url("https://hk-tippspiel.com/api/v1/$endpoint.php")
             .post(body)
             .build()
 

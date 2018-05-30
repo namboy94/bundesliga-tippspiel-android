@@ -1,91 +1,78 @@
 stages:
-  - mirror
   - test
-  - build
+  - stats
   - release
-
-github_mirror:
-  stage: mirror
-  tags:
-    - github_namboy94_push
-  script:
-    - git checkout master
-    - git pull
-    - git push git@github.com:namboy94/bundesliga-tippspiel-android.git master -f
-    - git checkout develop
-    - git pull
-    - git push git@github.com:namboy94/bundesliga-tippspiel-android.git develop -f
 
 lint:
   stage: test
   tags:
     - android-sdk-26
     - openjdk-8
+    - python3
   script:
-    - ./gradlew ktlint
+    - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
+    - gradle-ktlint
+
+# TODO: unit tests
 
 build_app:
-  stage: build
+  stage: test
   only:
     - master
     - develop
   tags:
     - openjdk-8
     - android-sdk-26
+    - python3
   script:
-    - mkdir -p artifacts
-    - echo $ANDROIDKEY | base64 -d > androidkey
-    - echo $ANDROIDKEY | base64 -d > app/androidkey
-    - ./gradlew assembleRelease -Pandroid.injected.signing.store.file=androidkey -Pandroid.injected.signing.store.password=$ANDROIDKEY_PASS -Pandroid.injected.signing.key.alias=$ANDROIDKEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROIDKEY_PASS
-    - mv app/build/outputs/apk/app-release.apk artifacts/hktipp-$(./gradlew version -q).apk
-    - rm androidkey app/androidkey
+    - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
+    - gradle-build-android
   artifacts:
     expire_in: 1 week
     paths:
       - artifacts/
 
-upload_release_to_github:
-  stage: release
-  only:
-    - master
+gitstats:
+  stage: stats
   tags:
-    - python
-    - openjdk-8
-    - android-sdk-26
+    - python3
+    - gitstats
+    - progstats
   script:
-    - mkdir -p artifacts
-    - git clone https://gitlab.namibsun.net/namboy94/ci-scripts.git
-    - python ci-scripts/src/changelog-reader/changelog-reader.py -c CHANGELOG -d current_changelog
-    - python ci-scripts/src/github-release-uploader/github-release-uploader.py namboy94 bundesliga-tippspiel-android $GITHUB_ACCESS_TOKEN
-      $(./gradlew version -q) current_changelog artifacts -b master
+    - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
+    - gitstats-gen
 
-upload_release_to_gitlab:
-  stage: release
-  only:
-    - master
+docgen:
+  stage: stats
   tags:
-    - python
-    - openjdk-8
-    - android-sdk-26
+    - python3
+    - progstats
   script:
-    - mkdir -p artifacts
-    - git clone https://gitlab.namibsun.net/namboy94/ci-scripts.git
-    - python ci-scripts/src/changelog-reader/changelog-reader.py -c CHANGELOG -d  current_changelog
-    - python ci-scripts/src/gitlab-release-uploader/gitlab-release-uploader.py namboy94 bundesliga-tippspiel-android $GITLAB_ACCESS_TOKEN
-      $(./gradlew version -q) current_changelog artifacts -b master -u https://gitlab.namibsun.net
+    - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
+    - sphinx-docgen
 
-upload_play_store_beta:
+release_upload:
   stage: release
   only:
     - master
   tags:
     - python3
-    - python3-pip
   script:
-    - pip3 install --upgrade google-api-python-client pyOpenSSL --user
-    - git clone https://gitlab.namibsun.net/namboy94/ci-scripts.git
-    - python3 ci-scripts/src/changelog-reader/changelog-reader.py -c CHANGELOG -d en-US
-    - python3 ci-scripts/src/changelog-reader/changelog-reader.py -c CHANGELOG-de -d de-DE
+    - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
+    - github-release-upload $(cat version) "$(changelog-reader)"
+    - gitlab-release-upload $(cat version) "$(changelog-reader)"
+
+upload_play_store:
+  stage: release
+  only:
+    - master
+  tags:
+    - python3
+  script:
+    - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
+    - changelog-reader -c CHANGELOG -d en-US
+    - changelog-reader -c CHANGELOG-de -d de-DE
+    - #TODO Make script fetch this stuff automagically
     - echo $PLAY_UPLOAD_SECRET | base64 -d > key.p12
     - python3 ci-scripts/src/play-upload/play-upload.py net.namibsun.hktipp production $PLAY_UPLOAD_EMAIL key.p12 artifacts/*.apk --changes="en-US,de-DE"
     - rm key.p12

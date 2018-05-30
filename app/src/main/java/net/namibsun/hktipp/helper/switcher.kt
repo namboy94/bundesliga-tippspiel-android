@@ -1,5 +1,5 @@
 /*
-Copyright 2017-2018 Hermann Krumrey<hermann@krumreyh.com>
+Copyright 2017 Hermann Krumrey <hermann@krumreyh.com>
 
 This file is part of bundesliga-tippspiel-android.
 
@@ -33,8 +33,13 @@ import net.namibsun.hktipp.LoginActivity
  * @param apiKey: The (optional) API key to provide to the new activity
  * @param extras: Additional, optional bundle that will be passed to the next activity
  */
-fun switchActivity(context: Context, target: Class<*>,
-                   username: String? = null, apiKey: String? = null, extras: Bundle? = null) {
+fun switchActivity(
+    context: Context,
+    target: Class<*>,
+    username: String? = null,
+    apiKey: String? = null,
+    extras: Bundle? = null
+) {
 
     val intent = Intent(context, target)
 

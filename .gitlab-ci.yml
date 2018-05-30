@@ -26,7 +26,7 @@ build_app:
     - python3
   script:
     - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
-    - gradle-build-android
+    - gradle-build-android app
   artifacts:
     expire_in: 1 week
     paths:

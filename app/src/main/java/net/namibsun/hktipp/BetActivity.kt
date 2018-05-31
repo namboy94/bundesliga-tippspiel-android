@@ -23,6 +23,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import net.namibsun.hktipp.data.BetData
@@ -78,14 +79,18 @@ class BetActivity : AppCompatActivity() {
         this.username = this.intent.extras.getString("username")
         this.apiKey = this.intent.extras.getString("api_key")
 
-        this.findViewById(R.id.bets_submit_button).setOnClickListener { this.placeBets() }
+        this.findViewById<View>(R.id.bets_submit_button).setOnClickListener { this.placeBets() }
 
         // Set button actions to go to next or previous matchday
-        this.findViewById(R.id.bets_prev_button).setOnClickListener { this.adjustMatchday(false) }
-        this.findViewById(R.id.bets_next_button).setOnClickListener { this.adjustMatchday(true) }
+        this.findViewById<View>(R.id.bets_prev_button).setOnClickListener {
+            this.adjustMatchday(false)
+        }
+        this.findViewById<View>(R.id.bets_next_button).setOnClickListener {
+            this.adjustMatchday(true)
+        }
 
         // Set listener for Leaderboard Activity button
-        this.findViewById(R.id.leaderboard_button).setOnClickListener {
+        this.findViewById<View>(R.id.leaderboard_button).setOnClickListener {
             net.namibsun.hktipp.helper.switchActivity(
                     this, LeaderboardActivity::class.java, this.username, this.apiKey)
         }
@@ -110,8 +115,8 @@ class BetActivity : AppCompatActivity() {
             } else {
                 this.matchDay--
             }
-            this.findViewById(R.id.bets_prev_button).isEnabled = this.matchDay != 1
-            this.findViewById(R.id.bets_next_button).isEnabled = this.matchDay != 34
+            this.findViewById<Button>(R.id.bets_prev_button).isEnabled = this.matchDay != 1
+            this.findViewById<Button>(R.id.bets_next_button).isEnabled = this.matchDay != 34
             this.updateData()
         }
     }
@@ -137,7 +142,7 @@ class BetActivity : AppCompatActivity() {
                 this.betViews[this.matchDay] = mutableListOf()
                 this.renderBetViews()
             }
-            this.findViewById(R.id.bets_progress).visibility = View.VISIBLE
+            this.findViewById<View>(R.id.bets_progress).visibility = View.VISIBLE
         }
 
         this.doAsync {
@@ -156,7 +161,8 @@ class BetActivity : AppCompatActivity() {
                     this@BetActivity.initializeBetViews(matches, bets)
                     this@BetActivity.renderBetViews()
                     // Stop Progress Spinner and re-enable UI elements
-                    this@BetActivity.findViewById(R.id.bets_progress).visibility = View.INVISIBLE
+                    this@BetActivity.findViewById<View>(R.id.bets_progress).visibility =
+                            View.INVISIBLE
                     this@BetActivity.setUiElementEnabledState(true)
                 }
             } catch (e: IOException) { // If failed to fetch data, log out
@@ -216,8 +222,8 @@ class BetActivity : AppCompatActivity() {
 
         Log.d("BetActivity", "Rendering Views")
 
-        val title = this.findViewById(R.id.bets_title) as TextView
-        val list = this.findViewById(R.id.bets_list) as LinearLayout
+        val title = this.findViewById<TextView>(R.id.bets_title)
+        val list = this.findViewById<LinearLayout>(R.id.bets_list)
         val bets = this.betViews[this.matchDay]
 
         title.text = this.resources.getString(R.string.bets_matchday_title, this.matchDay)
@@ -247,7 +253,7 @@ class BetActivity : AppCompatActivity() {
 
         this.betViews[this.matchDay] = mutableListOf()
         this.renderBetViews()
-        this.findViewById(R.id.bets_progress).visibility = View.VISIBLE
+        this.findViewById<View>(R.id.bets_progress).visibility = View.VISIBLE
 
         this.doAsync {
             val result = placeBets(this@BetActivity.username!!, this@BetActivity.apiKey!!, json)
@@ -267,15 +273,15 @@ class BetActivity : AppCompatActivity() {
      * @param state: Sets the enabled state of the elements
      */
     private fun setUiElementEnabledState(state: Boolean) {
-        this.findViewById(R.id.bets_submit_button).isEnabled = state
+        this.findViewById<Button>(R.id.bets_submit_button).isEnabled = state
         if (state) {
-            this.findViewById(R.id.bets_prev_button).setOnClickListener {
+            this.findViewById<Button>(R.id.bets_prev_button).setOnClickListener {
                 this.adjustMatchday(false) }
-            this.findViewById(R.id.bets_next_button).setOnClickListener {
+            this.findViewById<Button>(R.id.bets_next_button).setOnClickListener {
                 this.adjustMatchday(true) }
         } else {
-            this.findViewById(R.id.bets_next_button).setOnClickListener { }
-            this.findViewById(R.id.bets_prev_button).setOnClickListener { }
+            this.findViewById<Button>(R.id.bets_next_button).setOnClickListener { }
+            this.findViewById<Button>(R.id.bets_prev_button).setOnClickListener { }
         }
     }
 }

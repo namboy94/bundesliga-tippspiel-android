@@ -73,7 +73,7 @@ class SingleMatchActivity : AppCompatActivity() {
 
         this.update()
 
-        this.findViewById(R.id.single_match_update_button).setOnClickListener {
+        this.findViewById<View>(R.id.single_match_update_button).setOnClickListener {
             this@SingleMatchActivity.update(true)
         }
 
@@ -104,11 +104,11 @@ class SingleMatchActivity : AppCompatActivity() {
         if (this.matchData!!.started) {
             val homeScore = "${this.matchData!!.homeFtScore}"
             val awayScore = "${this.matchData!!.awayFtScore}"
-            (this.findViewById(R.id.home_team_score) as TextView).text = homeScore
-            (this.findViewById(R.id.away_team_score) as TextView).text = awayScore
+            this.findViewById<TextView>(R.id.home_team_score).text = homeScore
+            this.findViewById<TextView>(R.id.away_team_score).text = awayScore
         } else {
-            (this.findViewById(R.id.home_team_score) as TextView).text = "-"
-            (this.findViewById(R.id.away_team_score) as TextView).text = "-"
+            this.findViewById<TextView>(R.id.home_team_score).text = "-"
+            this.findViewById<TextView>(R.id.away_team_score).text = "-"
         }
     }
 
@@ -117,8 +117,8 @@ class SingleMatchActivity : AppCompatActivity() {
      */
     private fun loadLogos() {
         this.doAsync {
-            val homeLogo = this@SingleMatchActivity.findViewById(R.id.home_team_logo) as ImageView
-            val awayLogo = this@SingleMatchActivity.findViewById(R.id.away_team_logo) as ImageView
+            val homeLogo = this@SingleMatchActivity.findViewById<ImageView>(R.id.home_team_logo)
+            val awayLogo = this@SingleMatchActivity.findViewById<ImageView>(R.id.away_team_logo)
             val homeBitmap = Logos.getLogo(this@SingleMatchActivity.matchData!!.homeTeam)
             val awayBitmap = Logos.getLogo(this@SingleMatchActivity.matchData!!.awayTeam)
 
@@ -133,9 +133,9 @@ class SingleMatchActivity : AppCompatActivity() {
      * Retrieves goals for the game using the API
      */
     private fun loadGoals() {
-        val goalList = this.findViewById(R.id.match_goals_list) as LinearLayout
+        val goalList = this.findViewById<LinearLayout>(R.id.match_goals_list)
         goalList.removeAllViews()
-        this.findViewById(R.id.single_match_goals_progress).visibility = View.VISIBLE
+        this.findViewById<View>(R.id.single_match_goals_progress).visibility = View.VISIBLE
         this.doAsync {
             val goals = getGoalsForMatch(
                     this@SingleMatchActivity.username!!,
@@ -143,8 +143,8 @@ class SingleMatchActivity : AppCompatActivity() {
                     this@SingleMatchActivity.matchData!!.id
             )
             this@SingleMatchActivity.runOnUiThread {
-                this@SingleMatchActivity.findViewById(R.id.single_match_goals_progress).visibility =
-                        View.INVISIBLE
+                this@SingleMatchActivity.findViewById<View>(R.id.single_match_goals_progress)
+                        .visibility = View.INVISIBLE
                 goals.map {
                     SingleMatchGoalView(this@SingleMatchActivity, it)
                 }.forEach { goalList.addView(it) }
@@ -156,9 +156,9 @@ class SingleMatchActivity : AppCompatActivity() {
      * Retrieves the bets for the game by other users using the API
      */
     private fun loadBets() {
-        val betList = this.findViewById(R.id.match_bets_list) as LinearLayout
+        val betList = this.findViewById<LinearLayout>(R.id.match_bets_list)
         betList.removeAllViews()
-        this.findViewById(R.id.single_match_bets_progress).visibility = View.VISIBLE
+        this.findViewById<View>(R.id.single_match_bets_progress).visibility = View.VISIBLE
         this.doAsync {
             val bets = getBetsForMatch(
                     this@SingleMatchActivity.username!!,
@@ -166,8 +166,8 @@ class SingleMatchActivity : AppCompatActivity() {
                     this@SingleMatchActivity.matchData!!.id
             )
             this@SingleMatchActivity.runOnUiThread {
-                this@SingleMatchActivity.findViewById(R.id.single_match_bets_progress).visibility =
-                        View.INVISIBLE
+                this@SingleMatchActivity.findViewById<View>(R.id.single_match_bets_progress)
+                        .visibility = View.INVISIBLE
                 bets.keys.map {
                     SingleMatchBetView(this@SingleMatchActivity, it, bets[it])
                 }.forEach { betList.addView(it) }

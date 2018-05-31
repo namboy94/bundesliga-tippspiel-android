@@ -23,6 +23,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.CheckBox
 import android.widget.EditText
@@ -53,22 +54,22 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         this.setContentView(R.layout.login)
 
-        this.findViewById(R.id.login_screen_button).setOnClickListener { this.login() }
-        this.findViewById(R.id.login_screen_logo).setOnClickListener { this.login() }
+        this.findViewById<View>(R.id.login_screen_button).setOnClickListener { this.login() }
+        this.findViewById<View>(R.id.login_screen_logo).setOnClickListener { this.login() }
 
         // Set input elements with stored data
         if (getApiKeyFromSharedPreferences(this) != null) {
-            (this.findViewById(R.id.login_screen_password) as EditText).setText("******")
+            this.findViewById<EditText>(R.id.login_screen_password).setText("******")
             // We set the password to "******" if the stored api key should be used
             // So basically, this WILL be problematic if a user has the password "******"
             // TODO Find another way of doing this without discriminating against "******"-passwords
         }
         val username = getUsernameFromPreferences(this)
         if (username != null) {
-            (this.findViewById(R.id.login_screen_username) as EditText).setText(username)
+            this.findViewById<EditText>(R.id.login_screen_username).setText(username)
         }
 
-        this.findViewById(R.id.login_screen_register_button).setOnClickListener {
+        this.findViewById<View>(R.id.login_screen_register_button).setOnClickListener {
             val uri = Uri.parse("https://hk-tippspiel.com/signup.php")
             val intent = Intent(Intent.ACTION_VIEW, uri)
             this.startActivity(intent)
@@ -82,14 +83,14 @@ class LoginActivity : AppCompatActivity() {
      */
     private fun login() {
 
-        val username = (this.findViewById(R.id.login_screen_username) as EditText).text.toString()
-        val password = (this.findViewById(R.id.login_screen_password) as EditText).text.toString()
+        val username = this.findViewById<EditText>(R.id.login_screen_username).text.toString()
+        val password = this.findViewById<EditText>(R.id.login_screen_password).text.toString()
         val apiKey = getApiKeyFromSharedPreferences(this@LoginActivity)
         Log.i("LoginActivity", "$username trying to log in.")
 
         this.setUiElementEnabledState(false)
         val animation = AnimationUtils.loadAnimation(this, R.anim.rotate)
-        this.findViewById(R.id.login_screen_logo).startAnimation(animation)
+        this.findViewById<View>(R.id.login_screen_logo).startAnimation(animation)
 
         this@LoginActivity.doAsync {
 
@@ -106,7 +107,7 @@ class LoginActivity : AppCompatActivity() {
 
             this@LoginActivity.runOnUiThread {
                 this@LoginActivity.setUiElementEnabledState(true)
-                this@LoginActivity.findViewById(R.id.login_screen_logo).clearAnimation()
+                this@LoginActivity.findViewById<View>(R.id.login_screen_logo).clearAnimation()
             }
             this@LoginActivity.handleLoginResponse(response, username, apiKey)
         }
@@ -135,7 +136,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             // Store the username and API key if remember box is checked
-            val check = this@LoginActivity.findViewById(R.id.login_screen_remember) as CheckBox
+            val check = this@LoginActivity.findViewById<CheckBox>(R.id.login_screen_remember)
             if (check.isChecked) {
                 Log.i("LoginActivity", "Storing credentials in shared preferences")
                 storeUsernameInSharedPreferences(this@LoginActivity, username)
@@ -161,10 +162,10 @@ class LoginActivity : AppCompatActivity() {
      * @param state: Sets the enabled state of the elements
      */
     private fun setUiElementEnabledState(state: Boolean) {
-        this.findViewById(R.id.login_screen_logo).isEnabled = state
-        this.findViewById(R.id.login_screen_button).isEnabled = state
-        this.findViewById(R.id.login_screen_username).isEnabled = state
-        this.findViewById(R.id.login_screen_password).isEnabled = state
-        this.findViewById(R.id.login_screen_remember).isEnabled = state
+        this.findViewById<View>(R.id.login_screen_logo).isEnabled = state
+        this.findViewById<View>(R.id.login_screen_button).isEnabled = state
+        this.findViewById<View>(R.id.login_screen_username).isEnabled = state
+        this.findViewById<View>(R.id.login_screen_password).isEnabled = state
+        this.findViewById<View>(R.id.login_screen_remember).isEnabled = state
     }
 }

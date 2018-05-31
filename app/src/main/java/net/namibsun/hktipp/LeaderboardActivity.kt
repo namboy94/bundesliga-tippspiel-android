@@ -50,7 +50,7 @@ class LeaderboardActivity : AppCompatActivity() {
 
         this.username = intent.extras.getString("username")
 
-        (this.findViewById(R.id.leaderboard_progress) as ProgressBar).visibility = View.VISIBLE
+        this.findViewById<ProgressBar>(R.id.leaderboard_progress).visibility = View.VISIBLE
         this.doAsync {
             val rankings = post("get_rankings", "").getJSONObject("data")
             this@LeaderboardActivity.runOnUiThread {
@@ -64,9 +64,9 @@ class LeaderboardActivity : AppCompatActivity() {
      * @param rankings: The JSON ranking data
      */
     private fun populateList(rankings: JSONObject) {
-        (this.findViewById(R.id.leaderboard_progress) as ProgressBar).visibility = View.INVISIBLE
+        this.findViewById<ProgressBar>(R.id.leaderboard_progress).visibility = View.INVISIBLE
 
-        val list = this.findViewById(R.id.leaderboard_list) as LinearLayout
+        val list = this.findViewById<LinearLayout>(R.id.leaderboard_list)
         list.removeAllViews()
 
         for (position in rankings.keys()) {

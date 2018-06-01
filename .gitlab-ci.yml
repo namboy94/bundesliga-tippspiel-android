@@ -13,7 +13,35 @@ lint:
     - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
     - gradle-ktlint
 
-# TODO: unit tests
+unittest:
+  stage: test
+  tags:
+    - android-sdk-26
+    - openjdk-8
+    - python3
+  script:
+    - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
+    - gradle-jacoco
+
+gitstats:
+  stage: stats
+  tags:
+    - python3
+    - gitstats
+    - progstats
+  script:
+    - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
+    - gitstats-gen
+
+docgen:
+  stage: stats
+  tags:
+    - android-sdk-26
+    - openjdk-8
+    - python3
+  script:
+    - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
+    - gradle-dokka
 
 build_app:
   stage: test
@@ -25,24 +53,12 @@ build_app:
     - android-sdk-26
     - python3
   script:
-    - echo $ANDROIDKEY | base64 -d > app/androidkey
-    - ./gradlew assembleRelease -Pandroid.injected.signing.store.file=androidkey -Pandroid.injected.signing.store.password=$ANDROIDKEY_PASS -Pandroid.injected.signing.key.alias=$ANDROIDKEY_ALIAS -Pandroid.injected.signing.key.password=$ANDROIDKEY_PASS
-#    - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
-#    - gradle-build-android app
+    - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
+    - gradle-build-android app
   artifacts:
     expire_in: 1 week
     paths:
       - artifacts/
-
-gitstats:
-  stage: stats
-  tags:
-    - python3
-    - gitstats
-    - progstats
-  script:
-    - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
-    - gitstats-gen
 
 release_upload:
   stage: release
@@ -63,6 +79,7 @@ upload_play_store:
     - python3
   script:
     - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
+    - play-upload
     - changelog-reader -c CHANGELOG -d en-US
     - changelog-reader -c CHANGELOG-de -d de-DE
 #TODO Make script fetch this stuff automagically

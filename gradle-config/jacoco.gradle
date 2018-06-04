@@ -19,6 +19,10 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 apply plugin: 'jacoco'
 
+dependencies {
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.1.51"
+}
+
 task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
     group = "Reporting"
     description = "Generate Jacoco coverage reports for Debug build"
@@ -26,8 +30,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
         xml.enabled = true
         html.enabled = true
     }
-    // what to exclude from coverage report
-    // UI, "noise", generated classes, platform classes, etc.
+
     def excludes = [
             '**/R.class',
             '**/R$*.class',
@@ -39,7 +42,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
             '**/*Fragment.*',
             '**/*Activity.*'
     ]
-    // generated classes
+
     classDirectories = fileTree(
             dir: "$buildDir/intermediates/classes/debug",
             excludes: excludes
@@ -48,7 +51,6 @@ task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
             excludes: excludes
     )
 
-    // sources
     sourceDirectories = files([
             android.sourceSets.main.java.srcDirs,
             "src/main/kotlin"

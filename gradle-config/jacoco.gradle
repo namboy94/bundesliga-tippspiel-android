@@ -30,8 +30,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
         xml.enabled = true
         html.enabled = true
     }
-    // what to exclude from coverage report
-    // UI, "noise", generated classes, platform classes, etc.
+
     def excludes = [
             '**/R.class',
             '**/R$*.class',
@@ -43,7 +42,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
             '**/*Fragment.*',
             '**/*Activity.*'
     ]
-    // generated classes
+
     classDirectories = fileTree(
             dir: "$buildDir/intermediates/classes/debug",
             excludes: excludes
@@ -52,7 +51,6 @@ task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
             excludes: excludes
     )
 
-    // sources
     sourceDirectories = files([
             android.sourceSets.main.java.srcDirs,
             "src/main/kotlin"

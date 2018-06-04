@@ -25,3 +25,12 @@ class VersionTask extends DefaultTask {
         println project.ext.version
     }
 }
+
+task versionCode(type: VersionCodeTask)
+class VersionCodeTask extends DefaultTask {
+    @SuppressWarnings("GroovyUnusedDeclaration")
+    @TaskAction
+    def version() {
+        println project.ext.versionCode
+    }
+}

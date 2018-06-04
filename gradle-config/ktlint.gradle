@@ -17,16 +17,18 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
-
-    defaultConfig {
-        applicationId "net.namibsun.hktipp"
-        minSdkVersion 16
-        targetSdkVersion 27
-        versionCode rootProject.ext.versionCode
-        versionName rootProject.ext.version
-    }
-    apply from: "$rootDir/gradle-config/android-fluff.gradle"
+configurations {
+    ktlint
 }
+
+dependencies {
+    ktlint 'com.github.shyiko:ktlint:0.23.1'
+}
+
+// Define ktlint task
+task ktlint(type: JavaExec) {
+    main = "com.github.shyiko.ktlint.Main"
+    classpath = configurations.ktlint
+    args "src/**/*.kt"
+}
+check.dependsOn ktlint

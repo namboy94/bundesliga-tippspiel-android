@@ -28,5 +28,13 @@ android {
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.version
     }
-    apply from: "$rootDir/gradle-config/android-fluff.gradle"
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    packagingOptions {
+        exclude 'META-INF/*'
+    }
 }

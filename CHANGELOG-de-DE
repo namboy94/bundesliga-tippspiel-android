@@ -1,3 +1,5 @@
+V 1.0.4:
+  - ci-scripts integriert
 V 1.0.3:
   - Verwendet nun python3 für den Google-Play Upload
 V 1.0.2:

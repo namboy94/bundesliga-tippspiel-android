@@ -12,7 +12,7 @@ An android-frontend for [hk-tippspiel.com](https://hk-tippspiel.com)
 ## Further Information
 
 * [Changelog](CHANGELOG)
-* [Changelog (German)](CHANGELOG-de)
+* [Changelog (German)](CHANGELOG-de-DE)
 * [License (GPLv3)](LICENSE)
 * [Gitlab](https://gitlab.namibsun.net/namibsun/android/bundesliga-tippspiel-android)
 * [Github](https://github.com/namboy94/bundesliga-tippspiel-android)

@@ -79,10 +79,4 @@ upload_play_store:
     - python3
   script:
     - python3 -m venv virtual && source virtual/bin/activate && pip install ci-scripts
-    - play-upload
-    - changelog-reader -c CHANGELOG -d en-US
-    - changelog-reader -c CHANGELOG-de -d de-DE
-#TODO Make script fetch this stuff automagically
-    - echo $PLAY_UPLOAD_SECRET | base64 -d > key.p12
-    - python3 ci-scripts/src/play-upload/play-upload.py net.namibsun.hktipp production $PLAY_UPLOAD_EMAIL key.p12 artifacts/*.apk --changes="en-US,de-DE"
-    - rm key.p12
+    - play-upload net.namibsun.hktipp production

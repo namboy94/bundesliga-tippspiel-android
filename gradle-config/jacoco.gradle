@@ -19,6 +19,10 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 apply plugin: 'jacoco'
 
+dependencies {
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.1.51"
+}
+
 task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
     group = "Reporting"
     description = "Generate Jacoco coverage reports for Debug build"

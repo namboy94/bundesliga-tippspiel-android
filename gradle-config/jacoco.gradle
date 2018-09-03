@@ -20,40 +20,14 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 apply plugin: 'jacoco'
 
 dependencies {
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.1.51"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.2.41"
 }
 
-task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
+jacocoTestReport {
     group = "Reporting"
-    description = "Generate Jacoco coverage reports for Debug build"
     reports {
-        xml.enabled = true
-        html.enabled = true
+        xml.setEnabled(true)
+        csv.setEnabled(false)
+        html.setDestination(new File("${buildDir}/reports/coverage"))
     }
-
-    def excludes = [
-            '**/R.class',
-            '**/R$*.class',
-            '**/*$ViewInjector*.*',
-            '**/BuildConfig.*',
-            '**/Manifest*.*',
-            '**/*Test*.*',
-            'android/**/*.*',
-            '**/*Fragment.*',
-            '**/*Activity.*'
-    ]
-
-    classDirectories = fileTree(
-            dir: "$buildDir/intermediates/classes/debug",
-            excludes: excludes
-    ) + fileTree(
-            dir: "$buildDir/tmp/kotlin-classes/debug",
-            excludes: excludes
-    )
-
-    sourceDirectories = files([
-            android.sourceSets.main.java.srcDirs,
-            "src/main/kotlin"
-    ])
-    executionData = files("$buildDir/jacoco/testDebugUnitTest.exec")
 }

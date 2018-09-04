@@ -23,58 +23,96 @@ import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.Headers
 import org.json.JSONObject
 import java.io.IOException
 import java.net.SocketTimeoutException
+
+/**
+ * Class that defines different HTTP methods
+ */
+enum class HTTPMETHOD {
+    POST, GET, PUT, DELETE
+}
 
 /**
  * Module that contains generic functions for creating requests for the bundesliga-tippspiel API
  */
 
 /**
- * Post a JSON body to an API endpoint of bundesliga-tippspiel and returns the result
- * @param endpoint: The endpoint to POST to
- * @param data: The JSON Data to POST
+ * Sends a HTTP request to the hk-tippspiel site
+ * @param endpoint: The endpoint to send the request to
+ * @param method: The HTTP method to use
+ * @param data: The data to send to the API
+ * @param apiKey: An API key used for authentication
  * @return: The resulting JSON response
  */
-fun post(endpoint: String, data: String): JSONObject {
+fun request(
+    endpoint: String,
+    method: HTTPMETHOD,
+    data: MutableMap<String, Any>,
+    apiKey: String? = null
+): JSONObject {
 
-    val jsonMediaType = MediaType.parse("application/json; charset=utf-8")
     val client = OkHttpClient()
+    var builder = Request.Builder()
+    var body: RequestBody? = null
 
-    val body = RequestBody.create(jsonMediaType, data)
-    val request = Request.Builder()
-            .url("https://hk-tippspiel.com/api/v1/$endpoint.php")
-            .post(body)
-            .build()
+    var endpointPath = endpoint
+    if (method == HTTPMETHOD.GET && data.isNotEmpty()) {
+        endpointPath += "?"
+        for ((key, value) in data) {
+            endpointPath += "$key=$value&"
+        }
+        endpointPath = endpointPath.substring(0, endpointPath.length - 1)
+    } else {
+        val jsonMediaType = MediaType.parse("application/json; charset=utf-8")
+        val jsonData = JSONObject()
+        for ((key, value) in data) {
+            jsonData.put(key, value)
+        }
+        body = RequestBody.create(jsonMediaType, jsonData.toString())
+    }
 
-    val response = client.newCall(request).execute()
-    val responseBody = response.body()!!.string()
-    return JSONObject(responseBody)
-}
+    builder = builder.url("http://192.168.178.67:5000/api/v2/$endpointPath")
+    if (apiKey != null) {
+        val headers = Headers.of(mutableMapOf("Authorization" to "Basic $apiKey"))
+        builder = builder.headers(headers)
+    }
 
-/**
- * Extends the [post] method by adding parameters for a username and API key.
- * @param endpoint: The endpoint to POST to
- * @param data: The JSON Data to POST
- * @param username: The user's username
- * @param apiKey: The user's API key
- * @return: The resulting JSON response
- */
-fun post(endpoint: String, data: String, username: String, apiKey: String): JSONObject {
+    builder = when (method) {
+        HTTPMETHOD.POST -> builder.post(body!!)
+        HTTPMETHOD.GET -> builder.get()
+        HTTPMETHOD.PUT -> builder.put(body!!)
+        HTTPMETHOD.DELETE -> builder.delete(body!!)
+    }
 
-    val json = JSONObject(data)
-    json.put("username", username)
-    json.put("api_key", apiKey)
+    val request = builder.build()
 
     try {
-        val result = post(endpoint, json.toString())
+        val response = client.newCall(request).execute()
+        val responseBody = response.body()!!.string()
+        return JSONObject(responseBody)
 
-        if (result.get("status") == "success" || result.get("status") == "success_with_errors") {
+        /*
+        val result = JSONObject(responseBody)
+        if (result.get("status") == "ok") {
             return result
         } else {
-            throw IOException("unauthorized")
+            val unauthorized = mutableListOf(
+                    "User does not exist",
+                    "User is not confirmed",
+                    "Invalid Password"
+            )
+            for (reason in unauthorized) {
+                if (reason.toLowerCase() == result.getString("reason").toLowerCase()) {
+                    throw IOException("unauthorized")
+                }
+            }
+            return result
+            //throw IOException(result.get("reason").toString().toLowerCase())
         }
+        */
     } catch (e: SocketTimeoutException) {
         throw IOException("timeout")
     }

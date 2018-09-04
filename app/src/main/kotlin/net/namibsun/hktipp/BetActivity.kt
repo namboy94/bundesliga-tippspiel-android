@@ -131,7 +131,6 @@ class BetActivity : AppCompatActivity() {
 
         Log.i("BetActivity", "Updating Data")
 
-        val username = this.username!!
         val apiKey = this.apiKey!!
         val matchday = this.matchDay
 
@@ -149,8 +148,8 @@ class BetActivity : AppCompatActivity() {
 
             try {
 
-                val matches = getMatches(username, apiKey, matchday)
-                val bets = getBets(username, apiKey, matchday)
+                val matches = getMatches(apiKey, matchday)
+                val bets = getBets(apiKey, matchday)
                 Log.i("BetActivity", "Data successfully fetched")
 
                 // Update Matchday (Only has an effect if matchday == -1). Also reset BetViews
@@ -166,7 +165,6 @@ class BetActivity : AppCompatActivity() {
                     this@BetActivity.setUiElementEnabledState(true)
                 }
             } catch (e: IOException) { // If failed to fetch data, log out
-                Log.e("BetActivity", "Failed to fetch data")
                 this@BetActivity.runOnUiThread {
                     showErrorDialog(this@BetActivity,
                             R.string.bets_fetching_error_title,
@@ -256,7 +254,7 @@ class BetActivity : AppCompatActivity() {
         this.findViewById<View>(R.id.bets_progress).visibility = View.VISIBLE
 
         this.doAsync {
-            val result = placeBets(this@BetActivity.username!!, this@BetActivity.apiKey!!, json)
+            val result = placeBets(this@BetActivity.apiKey!!, json)
             this@BetActivity.runOnUiThread {
                 if (!result) {
                     showErrorDialog(this@BetActivity,

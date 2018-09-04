@@ -23,7 +23,6 @@ import net.namibsun.hktipp.data.BetData
 import net.namibsun.hktipp.data.GoalData
 import net.namibsun.hktipp.data.MatchData
 import org.json.JSONArray
-import org.json.JSONObject
 
 /**
  * Module that contains wrappers around bundesliga-tippspiel APIs
@@ -31,16 +30,20 @@ import org.json.JSONObject
 
 /**
  * Fetches all the match data for the specified match day
- * @param username: The requesting user's username
  * @param apiKey: The API key of the user
  * @param matchDay: The match day for which to fetch the match data.
  *                  Defaults to -1, which will fetch the current match day
  * @return: The matches for the specified/current matchday
  */
-fun getMatches(username: String, apiKey: String, matchDay: Int = -1): List<MatchData> {
-    val json = if (matchDay == -1) "{}" else "{\"matchday\":\"$matchDay\"}"
-    val result = post("get_matches_for_matchday", json, username, apiKey)
-    val matchData = result.getJSONArray("data")
+fun getMatches(apiKey: String, matchDay: Int = -1): List<MatchData> {
+    val json = mutableMapOf<String, Any>("matchday" to matchDay)
+    val result = request(
+            "match",
+            HTTPMETHOD.GET,
+            json,
+            apiKey
+    )
+    val matchData = result.getJSONObject("data").getJSONArray("matches")
 
     return (0..(matchData.length() - 1)).map {
         MatchData(matchData.getJSONObject(it))
@@ -49,15 +52,19 @@ fun getMatches(username: String, apiKey: String, matchDay: Int = -1): List<Match
 
 /**
  * Retrieves a user's bet data for a specified match day
- * @param username: The user's username
  * @param apiKey: The user's api key
  * @param matchDay: The match day for which to fetch the bet data.
  *                  Defaults to -1 which would fetch the bet data for the current match day
  * @return: The Bet Data
  */
-fun getBets(username: String, apiKey: String, matchDay: Int = -1): List<BetData> {
-    val json = if (matchDay == -1) "{}" else "{\"matchday\":\"$matchDay\"}"
-    val result = post("get_user_bets_for_matchday", json, username, apiKey).getJSONArray("data")
+fun getBets(apiKey: String, matchDay: Int = -1): List<BetData> {
+    val json = mutableMapOf<String, Any>("matchday" to matchDay)
+    val result = request(
+            "bet",
+            HTTPMETHOD.GET,
+            json,
+            apiKey
+    ).getJSONObject("data").getJSONArray("bets")
 
     return (0..(result.length() - 1)).map {
         BetData(result.getJSONObject(it))
@@ -66,32 +73,36 @@ fun getBets(username: String, apiKey: String, matchDay: Int = -1): List<BetData>
 
 /**
  * Places bets for a user
- * @param username: The user's username
  * @param apiKey: The user's API key
  * @param bets: The bets to place. Must be a JsonArray of JsonObjects with the attributes
  *              `home_score`, `away_score` and `match_id`
  * @return: true if the bets where places successfully, false otherwise
  */
-fun placeBets(username: String, apiKey: String, bets: JSONArray): Boolean {
-    val betsJson = JSONObject()
-    betsJson.put("bets", bets)
-    val response = post("place_bets", betsJson.toString(), username, apiKey)
-    val status = response.getString("status")
-    return status.startsWith("success")
+fun placeBets(apiKey: String, bets: JSONArray): Boolean {
+    val betsJson = mutableMapOf<String, Any>()
+    for (i in 0..(bets.length() - 1)) {
+        val bet = bets.getJSONObject(i)
+        val matchId = bet.getInt("match_id")
+        val homeScore = bet.getInt("home_score")
+        val awayScore = bet.getInt("away_score")
+        betsJson["$matchId-home"] = homeScore
+        betsJson["$matchId-away"] = awayScore
+    }
+    val response = request("bet", HTTPMETHOD.PUT, betsJson, apiKey)
+    return response.getString("status") == "ok"
 }
 
 /**
  * Retrieves goal data from the API
- * @param username: The username used for authentication
  * @param apiKey: The API key used for authentication
  * @param matchId: The ID of the match for which to retrieve the goals
  * @return A List of GoalData objects for the specified match
  */
-fun getGoalsForMatch(username: String, apiKey: String, matchId: Int): List<GoalData> {
-    val postJson = JSONObject()
-    postJson.put("match_id", matchId)
-    val response = post("get_goal_data_for_match", postJson.toString(), username, apiKey)
-    val goals = response.getJSONArray("data")
+fun getGoalsForMatch(apiKey: String, matchId: Int): List<GoalData> {
+    val goalsJson = mutableMapOf<String, Any>()
+    goalsJson["match_id"] = matchId
+    val response = request("goal", HTTPMETHOD.GET, goalsJson, apiKey)
+    val goals = response.getJSONObject("data").getJSONArray("goals")
     return (0..(goals.length() - 1)).map {
         GoalData(goals.getJSONObject(it))
     }
@@ -99,24 +110,21 @@ fun getGoalsForMatch(username: String, apiKey: String, matchId: Int): List<GoalD
 
 /**
  * Retrieves bets for a match
- * @param username: The username used for authentication
  * @param apiKey: The API Key used for authentication
  * @param matchId: The ID of the match for which to retrieve the bets
  * @return A list of bets
  */
-fun getBetsForMatch(username: String, apiKey: String, matchId: Int): Map<String, BetData?> {
-    val postJson = JSONObject()
-    postJson.put("match_id", matchId)
-    val response = post("get_bets_for_match", postJson.toString(), username, apiKey)
-    val bets = response.getJSONObject("data")
+fun getBetsForMatch(apiKey: String, matchId: Int): Map<String, BetData?> {
+    val betsJson = mutableMapOf<String, Any>()
+    betsJson["match_id"] = matchId
+    val response = request("bet", HTTPMETHOD.GET, betsJson, apiKey)
+    val bets = response.getJSONObject("data").getJSONArray("bets")
 
     val betList = mutableMapOf<String, BetData?>()
-    for (user in bets.keys()) {
-        if (!bets.isNull(user)) {
-            betList[user] = BetData(bets.getJSONObject(user))
-        } else {
-            betList[user] = null
-        }
+    for (i in 0..(bets.length() - 1)) {
+        val bet = bets.getJSONObject(i)
+        val user = bet.getJSONObject("user").getString("username")
+        betList[user] = BetData(bet)
     }
     return betList
 }

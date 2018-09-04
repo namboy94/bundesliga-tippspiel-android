@@ -100,7 +100,6 @@ fun request(
             Log.e("Error", result.getString("reason"))
         }
         return result
-
     } catch (e: SocketTimeoutException) {
         throw IOException("timeout")
     }

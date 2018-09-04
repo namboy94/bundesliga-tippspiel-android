@@ -74,7 +74,7 @@ fun request(
         body = RequestBody.create(jsonMediaType, jsonData.toString())
     }
 
-    builder = builder.url("http://192.168.178.67:5000/api/v2/$endpointPath")
+    builder = builder.url("https://hk-tippspiel.com/api/v2/$endpointPath")
     if (apiKey != null) {
         val headers = Headers.of(mutableMapOf("Authorization" to "Basic $apiKey"))
         builder = builder.headers(headers)

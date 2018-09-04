@@ -19,6 +19,8 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp.helper
 
+import android.util.Base64
+import android.util.Log
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -76,7 +78,8 @@ fun request(
 
     builder = builder.url("https://hk-tippspiel.com/api/v2/$endpointPath")
     if (apiKey != null) {
-        val headers = Headers.of(mutableMapOf("Authorization" to "Basic $apiKey"))
+        val encoded = Base64.encodeToString(apiKey.toByteArray(), 0)
+        val headers = Headers.of(mutableMapOf("Authorization" to "Basic $encoded"))
         builder = builder.headers(headers)
     }
 
@@ -92,27 +95,12 @@ fun request(
     try {
         val response = client.newCall(request).execute()
         val responseBody = response.body()!!.string()
-        return JSONObject(responseBody)
-
-        /*
         val result = JSONObject(responseBody)
-        if (result.get("status") == "ok") {
-            return result
-        } else {
-            val unauthorized = mutableListOf(
-                    "User does not exist",
-                    "User is not confirmed",
-                    "Invalid Password"
-            )
-            for (reason in unauthorized) {
-                if (reason.toLowerCase() == result.getString("reason").toLowerCase()) {
-                    throw IOException("unauthorized")
-                }
-            }
-            return result
-            //throw IOException(result.get("reason").toString().toLowerCase())
+        if (result.getString("status") == "error") {
+            Log.e("Error", result.getString("reason"))
         }
-        */
+        return result
+
     } catch (e: SocketTimeoutException) {
         throw IOException("timeout")
     }

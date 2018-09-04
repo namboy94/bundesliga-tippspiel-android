@@ -37,9 +37,9 @@ class DummyTest {
         val x = JSONObject()
         x.put("id", 1)
         x.put("name", "AAA")
-        x.put("shortname", "AAA")
+        x.put("short_name", "AAA")
         x.put("abbreviation", "AAA")
-        x.put("icon", "AAA")
+        x.put("icon_png", "AAA")
 
         val y = TeamData(x)
 

@@ -32,7 +32,8 @@ import net.namibsun.hktipp.helper.getApiKeyFromSharedPreferences
 import net.namibsun.hktipp.helper.getUsernameFromPreferences
 import net.namibsun.hktipp.helper.storeApiKeyInSharedPreferences
 import net.namibsun.hktipp.helper.storeUsernameInSharedPreferences
-import net.namibsun.hktipp.helper.post
+import net.namibsun.hktipp.helper.request
+import net.namibsun.hktipp.helper.HTTPMETHOD
 import org.jetbrains.anko.doAsync
 import org.json.JSONObject
 
@@ -70,7 +71,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         this.findViewById<View>(R.id.login_screen_register_button).setOnClickListener {
-            val uri = Uri.parse("https://hk-tippspiel.com/signup.php")
+            val uri = Uri.parse("https://hk-tippspiel.com/register")
             val intent = Intent(Intent.ACTION_VIEW, uri)
             this.startActivity(intent)
         }
@@ -97,12 +98,11 @@ class LoginActivity : AppCompatActivity() {
             // Log in or authorize the existing API Key
             val response = if (apiKey != "" && password == "******") {
                 Log.i("LoginActivity", "Authorizing existing API key")
-                val json = "{\"username\":\"$username\", \"api_key\":\"$apiKey\"}"
-                post("authorize", json)
+                request("authorize", HTTPMETHOD.GET, mutableMapOf(), apiKey)
             } else {
                 Log.i("LoginActivity", "Attempting to log in using password")
-                val json = "{\"username\":\"$username\", \"password\":\"$password\"}"
-                post("request_api_key", json)
+                val json = mutableMapOf<String, Any>("username" to username, "password" to password)
+                request("api_key", HTTPMETHOD.POST, json)
             }
 
             this@LoginActivity.runOnUiThread {
@@ -124,13 +124,14 @@ class LoginActivity : AppCompatActivity() {
      */
     private fun handleLoginResponse(response: JSONObject, username: String, apiKey: String?) {
 
-        if (response.getString("status") == "success") { // Login successful
+        if (response.getString("status") == "ok") { // Login successful
 
             Log.i("LoginActivity", "Login Successful")
 
             // Check for valid API key
-            val validApiKey = if (response.has("key")) {
-                response.getString("key") // Login API Action
+            val responseData = response.getJSONObject("data")
+            val validApiKey = if (responseData.has("api_key")) {
+                responseData.getString("api_key") // Login API Action
             } else {
                 apiKey!! // Authorize API Action
             }

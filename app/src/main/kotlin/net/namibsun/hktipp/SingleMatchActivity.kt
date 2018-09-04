@@ -138,7 +138,6 @@ class SingleMatchActivity : AppCompatActivity() {
         this.findViewById<View>(R.id.single_match_goals_progress).visibility = View.VISIBLE
         this.doAsync {
             val goals = getGoalsForMatch(
-                    this@SingleMatchActivity.username!!,
                     this@SingleMatchActivity.apiKey!!,
                     this@SingleMatchActivity.matchData!!.id
             )
@@ -161,7 +160,6 @@ class SingleMatchActivity : AppCompatActivity() {
         this.findViewById<View>(R.id.single_match_bets_progress).visibility = View.VISIBLE
         this.doAsync {
             val bets = getBetsForMatch(
-                    this@SingleMatchActivity.username!!,
                     this@SingleMatchActivity.apiKey!!,
                     this@SingleMatchActivity.matchData!!.id
             )

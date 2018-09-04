@@ -17,6 +17,15 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+ext {
+    version = new File("$rootDir/version").text
+    majorVersion = version.split("\\.")[0].padLeft(2, "0")
+    minorVersion = version.split("\\.")[1].padLeft(2, "0")
+    patchVersion = version.split("\\.")[2].padLeft(2, "0")
+    versionCode = (majorVersion + minorVersion + patchVersion).toInteger()
+    versionCode += 100000  // Necessary due to mistake made in previous releases
+}
+
 task version(type: VersionTask)
 class VersionTask extends DefaultTask {
     @SuppressWarnings("GroovyUnusedDeclaration")

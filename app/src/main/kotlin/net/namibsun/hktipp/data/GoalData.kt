@@ -49,9 +49,14 @@ class GoalData(data: JSONObject) : Serializable {
     val minute = data.getInt("minute")
 
     /**
+     * The minute of extra time in which the goal was scored
+     */
+    val minuteEt = data.getInt("minute_et")
+
+    /**
      * Indicates if the goal was an own goal or not
      */
-    val ownGoal = data.getBoolean("owngoal")
+    val ownGoal = data.getBoolean("own_goal")
 
     /**
      * Indicates if the goal was scored via penalty shot or not

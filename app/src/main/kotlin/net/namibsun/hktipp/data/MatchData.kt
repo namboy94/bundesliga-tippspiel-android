@@ -44,6 +44,16 @@ class MatchData(data: JSONObject) : Serializable {
     val awayTeam = TeamData(data.getJSONObject("away_team")!!)
 
     /**
+     * The current score of the home team
+     */
+    val homeCurrentScore = data.getInt("home_current_score")
+
+    /**
+     * The current score of the away team
+     */
+    val awayCurrentScore = data.getInt("away_current_score")
+
+    /**
      * The home team's half-time score
      */
     val homeHtScore = data.getInt("home_ht_score")

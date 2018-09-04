@@ -17,24 +17,11 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-apply from: "$rootDir/gradle-config/version.gradle"
+apply plugin: 'org.jetbrains.dokka-android'
 
-buildscript {
-    repositories {
-        google()
-        jcenter()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.41"
-        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.17"
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
-    }
+dokka {
+    outputFormat = 'javadoc'
+    outputDirectory = "$buildDir/javadoc"
+    skipEmptyPackages = true
+    noStdlibLink = true
 }

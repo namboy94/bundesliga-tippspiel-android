@@ -25,9 +25,10 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import org.jetbrains.anko.doAsync
-import net.namibsun.hktipp.helper.post
+import net.namibsun.hktipp.helper.request
+import net.namibsun.hktipp.helper.HTTPMETHOD
 import net.namibsun.hktipp.views.LeaderboardEntryView
-import org.json.JSONObject
+import org.json.JSONArray
 
 /**
  * Activity that displays the current leadeboard of the hk-tippspiel website
@@ -40,6 +41,11 @@ class LeaderboardActivity : AppCompatActivity() {
     private var username: String? = null
 
     /**
+     * The API Key of the logged in user
+     */
+    private var apiKey: String? = null
+
+    /**
      * Initializes the Activity. Populates the leaderboard.
      * @param savedInstanceState: The Instance Information of the app.
      */
@@ -49,10 +55,16 @@ class LeaderboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         this.username = intent.extras.getString("username")
+        this.apiKey = intent.extras.getString("api_key")
 
         this.findViewById<ProgressBar>(R.id.leaderboard_progress).visibility = View.VISIBLE
         this.doAsync {
-            val rankings = post("get_rankings", "").getJSONObject("data")
+            val rankings = request(
+                    "leaderboard",
+                    HTTPMETHOD.GET,
+                    mutableMapOf(),
+                    this@LeaderboardActivity.apiKey
+            ).getJSONObject("data").getJSONArray("leaderboard")
             this@LeaderboardActivity.runOnUiThread {
                 this@LeaderboardActivity.populateList(rankings)
             }
@@ -63,17 +75,19 @@ class LeaderboardActivity : AppCompatActivity() {
      * Populates the leaderboard with custom leaderboard entry views
      * @param rankings: The JSON ranking data
      */
-    private fun populateList(rankings: JSONObject) {
+    private fun populateList(rankings: JSONArray) {
         this.findViewById<ProgressBar>(R.id.leaderboard_progress).visibility = View.INVISIBLE
 
         val list = this.findViewById<LinearLayout>(R.id.leaderboard_list)
         list.removeAllViews()
 
-        for (position in rankings.keys()) {
-            val userData = rankings.getJSONObject(position)
+        for (i in 0..(rankings.length() - 1)) {
+            val rankData = rankings.getJSONArray(i)
+            val userData = rankData.getJSONObject(0)
             val name = userData.getString("username")
-            val points = userData.getInt("points")
-            val view = LeaderboardEntryView(this, position, name, "$points")
+            val points = rankData.getInt(1)
+            val rank = i + 1
+            val view = LeaderboardEntryView(this, "$rank", name, "$points")
             list.addView(view)
         }
     }

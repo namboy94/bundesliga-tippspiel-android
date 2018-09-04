@@ -41,7 +41,7 @@ class TeamData(data: JSONObject) : Serializable {
     /**
      * The shortform version of the team's name
      */
-    val shortName = data.getString("shortname")!!
+    val shortName = data.getString("short_name")!!
 
     /**
      * The team's 3-letter abbreviation
@@ -51,5 +51,5 @@ class TeamData(data: JSONObject) : Serializable {
     /**
      * The path to the team's icon
      */
-    val iconPath = data.getString("icon")!!
+    val iconPath = data.getString("icon_png")!!
 }

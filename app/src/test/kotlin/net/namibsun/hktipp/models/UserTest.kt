@@ -24,18 +24,18 @@ import kotlin.test.assertEquals
 import org.json.JSONObject
 
 /**
- * Class that tests the Player model class
+ * Class that tests the User model class
  */
-class PlayerTest {
+class UserTest {
 
     /**
-     * A sample JSON string for a player
+     * A sample JSON string for a user
      */
     val sampleJson = """{
         "id": 1,
-        "name": "Thomas Müller",
-        "team_id": 1,
-        "team": ${TeamTest().sampleJson}
+        "username": "Tester",
+        "email": "test@hk-tippspiel.com",
+        "confirmed": true
     }""".trimIndent()
 
     /**
@@ -43,12 +43,11 @@ class PlayerTest {
      */
     @Test
     fun testGenerating() {
-        val team = Team.fromJson(JSONObject(TeamTest().sampleJson))
-        val player = Player.fromJson(JSONObject(this.sampleJson))
-        assertEquals(player.id, 1)
-        assertEquals(player.name, "Thomas Müller")
-        assertEquals(player.teamId, 1)
-        assertEquals(player.team, team)
-        assertEquals(player.toJson().toString(), JSONObject(this.sampleJson).toString())
+        val user = User.fromJson(JSONObject(this.sampleJson))
+        assertEquals(user.id, 1)
+        assertEquals(user.username, "Tester")
+        assertEquals(user.email, "test@hk-tippspiel.com")
+        assertEquals(user.confirmed, true)
+        assertEquals(user.toJson().toString(), JSONObject(this.sampleJson).toString())
     }
 }

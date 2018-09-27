@@ -17,32 +17,38 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package net.namibsun.hktipp
+package net.namibsun.hktipp.models
+
 import org.junit.Test
 import kotlin.test.assertEquals
 import org.json.JSONObject
-import net.namibsun.hktipp.data.TeamData
 
 /**
- * A Unittest class quickly thrown together to test coverage reporting
+ * Class that tests the ApiKey model class
  */
-class DummyTest {
+class TestApiKey {
 
     /**
-     * Tests creating a TeamData object
+     * A sample JSON string for an API key
+     */
+    private val sampleJson = """{
+        "id": 1,
+        "user_id": 1,
+        "user": ${UserTest().sampleJson},
+        "creation_time": 60
+    }""".trimIndent()
+
+    /**
+     * Tests generating a model object using the sample JSON string
      */
     @Test
-    fun dummyTest() {
-
-        val x = JSONObject()
-        x.put("id", 1)
-        x.put("name", "AAA")
-        x.put("short_name", "AAA")
-        x.put("abbreviation", "AAA")
-        x.put("icon_png", "AAA")
-
-        val y = TeamData(x)
-
-        assertEquals(y.id, 1)
+    fun testGenerating() {
+        val user = User.fromJson(JSONObject(UserTest().sampleJson))
+        val apiKey = ApiKey.fromJson(JSONObject(this.sampleJson))
+        assertEquals(apiKey.id, 1)
+        assertEquals(apiKey.userId, 1)
+        assertEquals(apiKey.user, user)
+        assertEquals(apiKey.creationTime, 60)
+        assertEquals(apiKey.toJson().toString(), JSONObject(this.sampleJson).toString())
     }
 }

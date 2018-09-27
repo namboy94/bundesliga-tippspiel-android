@@ -24,18 +24,22 @@ import kotlin.test.assertEquals
 import org.json.JSONObject
 
 /**
- * Class that tests the Player model class
+ * Class that tests the Bet model class
  */
-class PlayerTest {
+class BetTest {
 
     /**
-     * A sample JSON string for a player
+     * A sample JSON string for a bet
      */
-    val sampleJson = """{
+    private val sampleJson = """{
         "id": 1,
-        "name": "Thomas Müller",
-        "team_id": 1,
-        "team": ${TeamTest().sampleJson}
+        "user_id": 1,
+        "user": ${UserTest().sampleJson},
+        "match_id": 1,
+        "match": ${MatchTest().sampleJson},
+        "home_score": 2,
+        "away_score": 3,
+        "points": 15
     }""".trimIndent()
 
     /**
@@ -43,12 +47,17 @@ class PlayerTest {
      */
     @Test
     fun testGenerating() {
-        val team = Team.fromJson(JSONObject(TeamTest().sampleJson))
-        val player = Player.fromJson(JSONObject(this.sampleJson))
-        assertEquals(player.id, 1)
-        assertEquals(player.name, "Thomas Müller")
-        assertEquals(player.teamId, 1)
-        assertEquals(player.team, team)
-        assertEquals(player.toJson().toString(), JSONObject(this.sampleJson).toString())
+        val user = User.fromJson(JSONObject(UserTest().sampleJson))
+        val match = Match.fromJson(JSONObject(MatchTest().sampleJson))
+        val bet = Bet.fromJson(JSONObject(this.sampleJson))
+        assertEquals(bet.id, 1)
+        assertEquals(bet.userId, 1)
+        assertEquals(bet.user, user)
+        assertEquals(bet.matchId, 1)
+        assertEquals(bet.match, match)
+        assertEquals(bet.homeScore, 2)
+        assertEquals(bet.awayScore, 3)
+        assertEquals(bet.points, 15)
+        assertEquals(bet.toJson().toString(), JSONObject(this.sampleJson).toString())
     }
 }

@@ -24,18 +24,19 @@ import kotlin.test.assertEquals
 import org.json.JSONObject
 
 /**
- * Class that tests the Player model class
+ * Class that tests the EmailReminder model class
  */
-class PlayerTest {
+class EmailReminderTest {
 
     /**
-     * A sample JSON string for a player
+     * A sample JSON string for an email reminder
      */
-    val sampleJson = """{
+    private val sampleJson = """{
         "id": 1,
-        "name": "Thomas Müller",
-        "team_id": 1,
-        "team": ${TeamTest().sampleJson}
+        "user_id": 1,
+        "user": ${UserTest().sampleJson},
+        "reminder_time": 60,
+        "last_reminder": "2017-01-01:01-02-03"
     }""".trimIndent()
 
     /**
@@ -43,12 +44,13 @@ class PlayerTest {
      */
     @Test
     fun testGenerating() {
-        val team = Team.fromJson(JSONObject(TeamTest().sampleJson))
-        val player = Player.fromJson(JSONObject(this.sampleJson))
-        assertEquals(player.id, 1)
-        assertEquals(player.name, "Thomas Müller")
-        assertEquals(player.teamId, 1)
-        assertEquals(player.team, team)
-        assertEquals(player.toJson().toString(), JSONObject(this.sampleJson).toString())
+        val user = User.fromJson(JSONObject(UserTest().sampleJson))
+        val reminder = EmailReminder.fromJson(JSONObject(this.sampleJson))
+        assertEquals(reminder.id, 1)
+        assertEquals(reminder.userId, 1)
+        assertEquals(reminder.user, user)
+        assertEquals(reminder.reminderTime, 60)
+        assertEquals(reminder.lastReminder, "2017-01-01:01-02-03")
+        assertEquals(reminder.toJson().toString(), JSONObject(this.sampleJson).toString())
     }
 }

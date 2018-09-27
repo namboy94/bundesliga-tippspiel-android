@@ -22,19 +22,17 @@ package net.namibsun.hktipp.models
 import org.json.JSONObject
 
 /**
- * Model class that models an email reminder
- * @param id: The database ID of the email reminder
- * @param userId: The ID of the user whose email reminder settings this object represents
- * @param user: The user whose email reminder settings this object represents
- * @param reminderTime: The amount of seconds before a match that the reminder is triggered for
- * @param lastReminder: The last time the reminder was triggered
+ * Model class that models an API key
+ * @param id: The database ID of the API Key
+ * @param userId: The ID of the user whose API key this is
+ * @param user: The user whose API key this is
+ * @param creationTime: The time at which the API key was created
  */
-data class EmailReminder(
+data class ApiKey(
         val id: Int,
         val userId: Int,
         val user: User,
-        val reminderTime: Int,
-        val lastReminder: String
+        val creationTime: Int
 ) : Model {
 
     /**
@@ -46,8 +44,7 @@ data class EmailReminder(
             "id": $id,
             "user_id": $userId,
             "user": ${user.toJson()},
-            "reminder_time": $reminderTime,
-            "last_reminder": "$lastReminder"
+            "creation_time": $creationTime
         }""".trimIndent())
     }
 
@@ -62,13 +59,12 @@ data class EmailReminder(
          * @param data: The JSON to parse
          * @return: The generated model
          */
-        override fun fromJson(data: JSONObject): EmailReminder {
-            return EmailReminder(
+        override fun fromJson(data: JSONObject): ApiKey {
+            return ApiKey(
                     id = data.getInt("id"),
                     userId = data.getInt("user_id"),
                     user = User.fromJson(data.getJSONObject("user")),
-                    reminderTime = data.getInt("reminder_time"),
-                    lastReminder = data.getString("last_reminder")
+                    creationTime = data.getInt("creation_time")
             )
         }
     }

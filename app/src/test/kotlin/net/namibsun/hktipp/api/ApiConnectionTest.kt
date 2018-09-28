@@ -19,19 +19,59 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp.api
 
-import org.junit.Test
-import kotlin.test.assertEquals
-import org.json.JSONObject
+import java.time.Instant
+import junit.framework.TestCase
 
 /**
  * Class that tests the ApiConnection class
  */
-class ApiConnectionTest {
+class ApiConnectionTest : TestCase() {
 
-    @Test
-    fun testLoggingIn() {
+    /**
+     * Sets the host URL of the API Connection to point to the development instance
+     */
+    override fun setUp() {
+        super.setUp()
+        ApiConnection.hostUrl = "https://develop.hk-tippspiel.com"
+    }
+
+    /**
+     * Reverts the host URL of the API Connection to point to the production instance
+     */
+    override fun tearDown() {
+        super.tearDown()
+        ApiConnection.hostUrl = "https://hk-tippspiel.com"
+    }
+
+    /**
+     * Executes the default login
+     * @return The generated ApiConnection
+     */
+    private fun login(): ApiConnection {
+        return ApiConnection.login(
+                System.getenv("API_USERNAME"),
+                System.getenv("API_PASSWORD")
+        )!!
+    }
+
+    /**
+     * Tests a failed login attempt
+     */
+    fun testFailedLogin() {
         val failed = ApiConnection.login("a", "b")
         assertEquals(failed, null)
+    }
+
+    /**
+     * Tests logging in, then logging out
+     */
+    fun testLoggingInAndLoggingOut() {
+        val connection = this.login()
+        assertTrue(connection.isAuthorized())
+        val now = Instant.now().epochSecond
+        assertTrue(connection.expiration > now + 1728000)
+        connection.logout()
+        assertFalse(connection.isAuthorized())
     }
 
 }

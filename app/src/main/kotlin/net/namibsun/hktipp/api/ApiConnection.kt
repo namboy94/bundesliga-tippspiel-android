@@ -37,9 +37,30 @@ import java.net.SocketTimeoutException
 class ApiConnection(val apiKey: String, val expiration: Int) {
 
     /**
+     * Checks if the ApiConnection is authorized or not
+     * @return true if the connection is authorized, false otherwise
+     */
+    fun isAuthorized(): Boolean {
+        val resp = this.get("authorize", mapOf())
+        return resp.getString("status") == "ok"
+    }
+
+    /**
+     * Logs out by deleting the API key
+     */
+    fun logout() {
+        this.delete("api_key", mapOf("api_key" to this.apiKey))
+    }
+
+    /**
      * Contains static methods of the class
      */
     companion object {
+
+        /**
+         * The URL to the bundesliga-tippspiel instance to use for API calls
+         */
+        var hostUrl = "https://hk-tippspiel.com"
 
         /**
          * Allows initializing an ApiConnection object using username and password
@@ -128,7 +149,7 @@ class ApiConnection(val apiKey: String, val expiration: Int) {
                 endpoint: String,
                 params: Map<String, Any>
         ): String {
-            var endpointUrl = "https://hk-tippspiel.com/api/v2/$endpoint"
+            var endpointUrl = "${this.hostUrl}/api/v2/$endpoint"
             if (method == HTTP_METHOD.GET && params.isNotEmpty()) {
                 endpointUrl += "?"
                 for ((key, value) in params) {
@@ -154,5 +175,41 @@ class ApiConnection(val apiKey: String, val expiration: Int) {
             }
             return RequestBody.create(jsonMediaType, jsonData.toString())
         }
+    }
+
+    /**
+     * Performs an authenticated GET request to the API
+     * @param endpoint: The API endpoint to connect to
+     * @param params: The parameters to send
+     */
+    fun get(endpoint: String, params: Map<String, Any>): JSONObject {
+        return ApiConnection.request(HTTP_METHOD.GET, endpoint, params, this.apiKey)
+    }
+
+    /**
+     * Performs an authenticated POST request to the API
+     * @param endpoint: The API endpoint to connect to
+     * @param params: The parameters to send
+     */
+    fun post(endpoint: String, params: Map<String, Any>): JSONObject {
+        return ApiConnection.request(HTTP_METHOD.POST, endpoint, params, this.apiKey)
+    }
+
+    /**
+     * Performs an authenticated PUT request to the API
+     * @param endpoint: The API endpoint to connect to
+     * @param params: The parameters to send
+     */
+    fun put(endpoint: String, params: Map<String, Any>): JSONObject {
+        return ApiConnection.request(HTTP_METHOD.PUT, endpoint, params, this.apiKey)
+    }
+
+    /**
+     * Performs an authenticated DELETE request to the API
+     * @param endpoint: The API endpoint to connect to
+     * @param params: The parameters to send
+     */
+    fun delete(endpoint: String, params: Map<String, Any>): JSONObject {
+        return ApiConnection.request(HTTP_METHOD.DELETE, endpoint, params, this.apiKey)
     }
 }

@@ -19,6 +19,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp.models
 
+import net.namibsun.hktipp.api.ApiConnection
 import org.json.JSONObject
 
 /**
@@ -73,7 +74,7 @@ data class Goal(
      * Companion object that implements static methods to generate the model using a
      * JSONObject.
      */
-    companion object : ModelGenerator {
+    companion object : ModelGenerator, QueryAble {
 
         /**
          * Generates the model using a JSONObject
@@ -95,5 +96,41 @@ data class Goal(
                     penalty = data.getBoolean("penalty")
             )
         }
+
+        /**
+         * Generates a Query object with which the model may be queried
+         * @param apiConnection: The API connection to use with the query
+         * @return: The query object
+         */
+        override fun query(apiConnection: ApiConnection): GoalQuery {
+            return GoalQuery(apiConnection)
+        }
+    }
+}
+
+/**
+ * Extends the Query class to generate Goal model objects.
+ * @param apiConnection: The API connection to use
+ */
+class GoalQuery(
+    apiConnection: ApiConnection
+) : Query(
+        apiConnection,
+        "goal",
+        { json: JSONObject -> Goal.fromJson(json) },
+        listOf("id", "matchday", "match_id", "player_id", "team_id")
+) {
+
+    /**
+     * Executes the query, then converts the model objects to the Goal model class
+     * @return A list of model objects that are the result of the query
+     */
+    override fun query(): List<Goal> {
+        val models = super.query()
+        val converted = mutableListOf<Goal>()
+        for (model in models) {
+            converted.add(model as Goal)
+        }
+        return converted
     }
 }

@@ -19,6 +19,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp.models
 
+import net.namibsun.hktipp.api.ApiConnection
 import org.json.JSONObject
 
 /**
@@ -58,7 +59,7 @@ data class Team(
      * Companion object that implements static methods to generate the model using a
      * JSONObject.
      */
-    companion object : ModelGenerator {
+    companion object : ModelGenerator, QueryAble {
 
         /**
          * Generates the model using a JSONObject
@@ -75,5 +76,41 @@ data class Team(
                     iconPng = data.getString("icon_png")
             )
         }
+
+        /**
+         * Generates a Query object with which the model may be queried
+         * @param apiConnection: The API connection to use with the query
+         * @return: The query object
+         */
+        override fun query(apiConnection: ApiConnection): TeamQuery {
+            return TeamQuery(apiConnection)
+        }
+    }
+}
+
+/**
+ * Extends the Query class to generate Team model objects.
+ * @param apiConnection: The API connection to use
+ */
+class TeamQuery(
+    apiConnection: ApiConnection
+) : Query(
+        apiConnection,
+        "team",
+        { json: JSONObject -> Team.fromJson(json) },
+        listOf("id")
+) {
+
+    /**
+     * Executes the query, then converts the model objects to the Team model class
+     * @return A list of model objects that are the result of the query
+     */
+    override fun query(): List<Team> {
+        val models = super.query()
+        val converted = mutableListOf<Team>()
+        for (model in models) {
+            converted.add(model as Team)
+        }
+        return converted
     }
 }

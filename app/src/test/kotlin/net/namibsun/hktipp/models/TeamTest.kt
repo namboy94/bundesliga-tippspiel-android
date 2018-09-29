@@ -20,12 +20,38 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 package net.namibsun.hktipp.models
 
 import junit.framework.TestCase
+import net.namibsun.hktipp.api.ApiConnection
 import org.json.JSONObject
 
 /**
  * Class that tests the Team model class
  */
 class TeamTest : TestCase() {
+
+    /**
+     * The API connection to use
+     */
+    private lateinit var apiConnection: ApiConnection
+
+    /**
+     * Sets up the API connection
+     */
+    override fun setUp() {
+        super.setUp()
+        this.apiConnection = ApiConnection.login(
+                System.getenv("API_USER"),
+                System.getenv("API_PASS"),
+                "https://develop.hk-tippspiel.com"
+        )!!
+    }
+
+    /**
+     * Logs out the API connection
+     */
+    override fun tearDown() {
+        super.tearDown()
+        this.apiConnection.logout()
+    }
 
     /**
      * A sample JSON string for a team
@@ -51,5 +77,20 @@ class TeamTest : TestCase() {
         assertEquals(team.iconSvg, "SVG")
         assertEquals(team.iconPng, "PNG")
         assertEquals(team.toJson().toString(), JSONObject(this.sampleJson).toString())
+    }
+
+    /**
+     * Tests querying the model using the API
+     */
+    fun testQuerying() {
+        val query = Team.query(this.apiConnection)
+
+        val all = query.query()
+        assertEquals(all.size, 18)
+
+        query.addFilter("id", 40)
+        val result = query.query()
+        assertEquals(result.size, 1)
+        assertEquals(result[0].name, "FC Bayern München")
     }
 }

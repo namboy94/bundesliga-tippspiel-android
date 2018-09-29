@@ -20,12 +20,38 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 package net.namibsun.hktipp.models
 
 import junit.framework.TestCase
+import net.namibsun.hktipp.api.ApiConnection
 import org.json.JSONObject
 
 /**
  * Class that tests the Goal model class
  */
 class GoalTest : TestCase() {
+
+    /**
+     * The API connection to use
+     */
+    private lateinit var apiConnection: ApiConnection
+
+    /**
+     * Sets up the API connection
+     */
+    override fun setUp() {
+        super.setUp()
+        this.apiConnection = ApiConnection.login(
+                System.getenv("API_USER"),
+                System.getenv("API_PASS"),
+                "https://develop.hk-tippspiel.com"
+        )!!
+    }
+
+    /**
+     * Logs out the API connection
+     */
+    override fun tearDown() {
+        super.tearDown()
+        this.apiConnection.logout()
+    }
 
     /**
      * A sample JSON string for a goal
@@ -63,5 +89,24 @@ class GoalTest : TestCase() {
         assertEquals(goal.ownGoal, false)
         assertEquals(goal.penalty, true)
         assertEquals(goal.toJson().toString(), JSONObject(this.sampleJson).toString())
+    }
+
+    /**
+     * Tests querying the model using the API
+     */
+    fun testQuerying() {
+        val query = Goal.query(this.apiConnection)
+
+        val all = query.query()
+        assertTrue(all.size > 10)
+
+        query.addFilter("match_id", 51121)
+        val forMatch = query.query()
+        assertEquals(forMatch.size, 4)
+
+        query.addFilter("id", 70634)
+        val forId = query.query()[0]
+        assertEquals(forId.homeScore, 1)
+        assertEquals(forId.awayScore, 0)
     }
 }

@@ -19,6 +19,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp.models
 
+import net.namibsun.hktipp.api.ApiConnection
 import org.json.JSONObject
 
 /**
@@ -64,7 +65,7 @@ data class Bet(
      * Companion object that implements static methods to generate the model using a
      * JSONObject.
      */
-    companion object : ModelGenerator {
+    companion object : ModelGenerator, QueryAble {
 
         /**
          * Generates the model using a JSONObject
@@ -83,5 +84,41 @@ data class Bet(
                     points = data.getInt("points")
             )
         }
+
+        /**
+         * Generates a Query object with which the model may be queried
+         * @param apiConnection: The API connection to use with the query
+         * @return: The query object
+         */
+        override fun query(apiConnection: ApiConnection): BetQuery {
+            return BetQuery(apiConnection)
+        }
+    }
+}
+
+/**
+ * Extends the Query class to generate Bet model objects.
+ * @param apiConnection: The API connection to use
+ */
+class BetQuery(
+    apiConnection: ApiConnection
+) : Query(
+        apiConnection,
+        "bet",
+        { json: JSONObject -> Bet.fromJson(json) },
+        listOf("id", "user_id", "match_id", "matchday")
+) {
+
+    /**
+     * Executes the query, then converts the model objects to the Bet model class
+     * @return A list of model objects that are the result of the query
+     */
+    override fun query(): List<Bet> {
+        val models = super.query()
+        val converted = mutableListOf<Bet>()
+        for (model in models) {
+            converted.add(model as Bet)
+        }
+        return converted
     }
 }

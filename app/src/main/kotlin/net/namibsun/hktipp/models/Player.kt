@@ -29,10 +29,10 @@ import org.json.JSONObject
  * @param team: The player's team
  */
 data class Player(
-        val id: Int,
-        val name: String,
-        val teamId: Int,
-        val team: Team
+    val id: Int,
+    val name: String,
+    val teamId: Int,
+    val team: Team
 ) : Model {
 
     /**

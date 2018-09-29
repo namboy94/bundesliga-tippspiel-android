@@ -29,10 +29,10 @@ import org.json.JSONObject
  * @param creationTime: The time at which the API key was created
  */
 data class ApiKey(
-        val id: Int,
-        val userId: Int,
-        val user: User,
-        val creationTime: Int
+    val id: Int,
+    val userId: Int,
+    val user: User,
+    val creationTime: Int
 ) : Model {
 
     /**

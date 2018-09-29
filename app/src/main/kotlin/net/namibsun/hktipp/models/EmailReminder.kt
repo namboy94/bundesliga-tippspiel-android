@@ -30,11 +30,11 @@ import org.json.JSONObject
  * @param lastReminder: The last time the reminder was triggered
  */
 data class EmailReminder(
-        val id: Int,
-        val userId: Int,
-        val user: User,
-        val reminderTime: Int,
-        val lastReminder: String
+    val id: Int,
+    val userId: Int,
+    val user: User,
+    val reminderTime: Int,
+    val lastReminder: String
 ) : Model {
 
     /**

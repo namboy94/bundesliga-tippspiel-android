@@ -19,15 +19,13 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp.models
 
-import org.junit.Test
-import kotlin.test.assertEquals
+import junit.framework.TestCase
 import org.json.JSONObject
-import kotlin.test.assertNotEquals
 
 /**
  * A Unittest class that tests the Model interface
  */
-class ModelTest {
+class ModelTest : TestCase() {
 
     data class A(val a: Int) : Model {
         override fun toJson(): JSONObject {
@@ -58,7 +56,6 @@ class ModelTest {
     /**
      * Tests creating two class that inherit from Model, then tests that they work as intended
      */
-    @Test
     fun testInterface() {
 
         val json = JSONObject()
@@ -69,15 +66,15 @@ class ModelTest {
         val b = B.fromJson(json) as B
 
         assertEquals(A(1), a)
-        assertNotEquals(A(2), a)
+        assertNotSame(A(2), a)
         assertEquals(B(2), b)
-        assertNotEquals(B(1), b)
+        assertNotSame(B(1), b)
 
         assertEquals(a.a, 1)
         assertEquals(b.b, 2)
 
         assertEquals(JSONObject("{a: 1}").toString(), a.toJson().toString())
         assertEquals(JSONObject("{b: 2}").toString(), b.toJson().toString())
-        assertNotEquals(a.toJson(), b.toJson())
+        assertNotSame(a.toJson(), b.toJson())
     }
 }

@@ -19,14 +19,13 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp.models
 
-import org.junit.Test
-import kotlin.test.assertEquals
+import junit.framework.TestCase
 import org.json.JSONObject
 
 /**
  * Class that tests the Bet model class
  */
-class BetTest {
+class BetTest : TestCase() {
 
     /**
      * A sample JSON string for a bet
@@ -45,7 +44,6 @@ class BetTest {
     /**
      * Tests generating a model object using the sample JSON string
      */
-    @Test
     fun testGenerating() {
         val user = User.fromJson(JSONObject(UserTest().sampleJson))
         val match = Match.fromJson(JSONObject(MatchTest().sampleJson))

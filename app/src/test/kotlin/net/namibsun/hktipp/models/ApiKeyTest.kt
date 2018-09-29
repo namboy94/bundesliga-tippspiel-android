@@ -19,14 +19,13 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp.models
 
-import org.junit.Test
-import kotlin.test.assertEquals
+import junit.framework.TestCase
 import org.json.JSONObject
 
 /**
  * Class that tests the ApiKey model class
  */
-class ApiKeyTest {
+class ApiKeyTest : TestCase() {
 
     /**
      * A sample JSON string for an API key
@@ -41,7 +40,6 @@ class ApiKeyTest {
     /**
      * Tests generating a model object using the sample JSON string
      */
-    @Test
     fun testGenerating() {
         val user = User.fromJson(JSONObject(UserTest().sampleJson))
         val apiKey = ApiKey.fromJson(JSONObject(this.sampleJson))

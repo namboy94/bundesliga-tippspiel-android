@@ -28,29 +28,14 @@ import junit.framework.TestCase
 class ApiConnectionTest : TestCase() {
 
     /**
-     * Sets the host URL of the API Connection to point to the development instance
-     */
-    override fun setUp() {
-        super.setUp()
-        ApiConnection.hostUrl = "https://develop.hk-tippspiel.com"
-    }
-
-    /**
-     * Reverts the host URL of the API Connection to point to the production instance
-     */
-    override fun tearDown() {
-        super.tearDown()
-        ApiConnection.hostUrl = "https://hk-tippspiel.com"
-    }
-
-    /**
      * Executes the default login
      * @return The generated ApiConnection
      */
     private fun login(): ApiConnection {
         return ApiConnection.login(
-                System.getenv("API_USERNAME"),
-                System.getenv("API_PASSWORD")
+                System.getenv("API_USER"),
+                System.getenv("API_PASS"),
+                "https://develop.hk-tippspiel.com"
         )!!
     }
 
@@ -73,5 +58,4 @@ class ApiConnectionTest : TestCase() {
         connection.logout()
         assertFalse(connection.isAuthorized())
     }
-
 }

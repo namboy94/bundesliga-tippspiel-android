@@ -19,15 +19,40 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp.models
 
-import org.junit.Test
-import kotlin.test.assertEquals
+import junit.framework.TestCase
+import net.namibsun.hktipp.api.ApiConnection
 import org.json.JSONObject
 import kotlin.test.assertNotEquals
 
 /**
  * Class that tests the Match model class
  */
-class MatchTest {
+class MatchTest : TestCase() {
+
+    /**
+     * The API connection to use
+     */
+    private lateinit var apiConnection: ApiConnection
+
+    /**
+     * Sets up the API connection
+     */
+    override fun setUp() {
+        super.setUp()
+        this.apiConnection = ApiConnection.login(
+                System.getenv("API_USER"),
+                System.getenv("API_PASS"),
+                "https://develop.hk-tippspiel.com"
+        )!!
+    }
+
+    /**
+     * Logs out the API connection
+     */
+    override fun tearDown() {
+        super.tearDown()
+        this.apiConnection.logout()
+    }
 
     /**
      * A sample JSON string for a match
@@ -60,7 +85,6 @@ class MatchTest {
     /**
      * Tests generating a model object using the sample JSON string
      */
-    @Test
     fun testGenerating() {
         val homeTeam = Team.fromJson(JSONObject(TeamTest().sampleJson))
         val match = Match.fromJson(JSONObject(this.sampleJson))
@@ -80,5 +104,26 @@ class MatchTest {
         assertEquals(match.started, true)
         assertEquals(match.finished, true)
         assertEquals(match.toJson().toString(), JSONObject(this.sampleJson).toString())
+    }
+
+    /**
+     * Tests querying the model using the API
+     */
+    fun testQuerying() {
+        val query = Match.query(this.apiConnection)
+
+        val all = query.query()
+        assertEquals(all.size, 9 * 34)
+
+        query.addFilter("matchday", 1)
+        val firstMatchday = query.query()
+        assertEquals(firstMatchday.size, 9)
+
+        query.addFilter("id", 51121)
+        val result = query.query()
+        val match = result[0]
+        assertEquals(match.homeTeam.abbreviation, "FCB")
+        assertEquals(match.awayTeam.abbreviation, "TSG")
+        assertEquals(result.size, 1)
     }
 }

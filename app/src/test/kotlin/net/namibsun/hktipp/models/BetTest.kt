@@ -89,6 +89,27 @@ class BetTest : TestCase() {
      * Tests querying the model using the API
      */
     fun testQuerying() {
+
+        Bet.place(this.apiConnection, listOf(
+                MinimalBet(51424, 2, 1),
+                MinimalBet(51425, 0, 1)
+        ))
         val query = Bet.query(this.apiConnection)
+
+        val all = query.query()
+        assertTrue(all.size >= 2)
+
+        query.addFilter("user_id", 20)
+        val allForUser = query.query()
+        assertEquals(allForUser.size, 2)
+
+        query.addFilter("match_id", 51424)
+        val byMatch = query.query()[0]
+        assertEquals(byMatch.homeScore, 2)
+        assertEquals(byMatch.awayScore, 1)
+
+        query.addFilter("id", byMatch.id)
+        val byId = query.query()[0]
+        assertEquals(byMatch, byId)
     }
 }

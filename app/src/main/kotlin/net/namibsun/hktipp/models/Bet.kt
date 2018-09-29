@@ -68,6 +68,20 @@ data class Bet(
     companion object : ModelGenerator, QueryAble {
 
         /**
+         * Places bets using the API
+         * @param apiConnection: The API connection to use
+         * @param bets: A list of bets to place
+         */
+        fun place(apiConnection: ApiConnection, bets: List<MinimalBet>) {
+            val params = mutableMapOf<String, Int>()
+            for (bet in bets) {
+                params["${bet.matchId}-home"] = bet.homeScore
+                params["${bet.matchId}-away"] = bet.awayScore
+            }
+            apiConnection.put("bet", params)
+        }
+
+        /**
          * Generates the model using a JSONObject
          * @param data: The JSON to parse
          * @return: The generated model
@@ -95,6 +109,14 @@ data class Bet(
         }
     }
 }
+
+/**
+ * Class that contains the minimal details for a bet
+ * @param matchId: The ID of the match
+ * @param homeScore: The score bet on the home team
+ * @param awayScore: The score bet on the away team
+ */
+data class MinimalBet(val matchId: Int, val homeScore: Int, val awayScore: Int)
 
 /**
  * Extends the Query class to generate Bet model objects.

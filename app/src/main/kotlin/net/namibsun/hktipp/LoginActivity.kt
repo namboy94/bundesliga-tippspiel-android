@@ -27,6 +27,7 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.CheckBox
 import android.widget.EditText
+import net.namibsun.hktipp.api.ApiConnection
 import net.namibsun.hktipp.helper.showErrorDialog
 import net.namibsun.hktipp.helper.getApiKeyFromSharedPreferences
 import net.namibsun.hktipp.helper.getUsernameFromPreferences
@@ -51,6 +52,11 @@ class LoginActivity : AppCompatActivity() {
      * @param savedInstanceState: The Instance Information of the app.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val existingApiConnection = ApiConnection.loadStored(this)
+        if (existingApiConnection != null) {
+            this.startActivity(Intent(this, BetActivity::class.java))
+        }
 
         super.onCreate(savedInstanceState)
         this.setContentView(R.layout.login)

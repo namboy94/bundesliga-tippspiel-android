@@ -18,6 +18,7 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 */
 
 package net.namibsun.hktipp.api
+import android.content.Context
 import android.util.Base64
 import android.util.Log
 import okhttp3.Headers
@@ -58,9 +59,45 @@ class ApiConnection(
     }
 
     /**
+     * Stores the API Connection info in the shared preferences
+     * @param context: The context from which to load the shared preferences
+     */
+    fun store(context: Context) {
+        val prefs = context.getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+        editor.putString("server_url", this.serverUrl)
+        editor.putString("api_key", this.apiKey)
+        editor.putInt("expiration", this.expiration)
+        editor.apply()
+    }
+
+    /**
      * Contains static methods of the class
      */
     companion object {
+
+        /**
+         * Loads a previously stored API connection
+         * @param context: The context in from which to get the shared preferences
+         * @return The loaded ApiConnection OR null if no valid connection was found
+         */
+        fun loadStored(context: Context): ApiConnection? {
+            val prefs = context.getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE)
+            val serverUrl = prefs.getString("server_url", null)
+            val apiKey = prefs.getString("api_key", null)
+            val expiration = prefs.getInt("expiration", -1)
+
+            return if (serverUrl == null || apiKey == null || expiration == -1) {
+                null
+            } else {
+                val apiConnection = ApiConnection(serverUrl, apiKey, expiration)
+                if (apiConnection.isAuthorized()) {
+                    apiConnection
+                } else {
+                    null
+                }
+            }
+        }
 
         /**
          * Allows initializing an ApiConnection object using username and password

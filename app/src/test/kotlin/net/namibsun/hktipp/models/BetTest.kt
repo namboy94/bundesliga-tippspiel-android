@@ -99,7 +99,7 @@ class BetTest : TestCase() {
         val all = query.query()
         assertTrue(all.size >= 2)
 
-        query.addFilter("user_id", 20)
+        query.addFilter("user_id", this.apiConnection.user.id)
         val allForUser = query.query()
         assertEquals(allForUser.size, 2)
 

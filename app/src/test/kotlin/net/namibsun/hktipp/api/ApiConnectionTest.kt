@@ -53,6 +53,7 @@ class ApiConnectionTest : TestCase() {
     fun testLoggingInAndLoggingOut() {
         val connection = this.login()
         assertTrue(connection.isAuthorized())
+        assertEquals(System.getenv("API_USER"), connection.user.username)
         val now = Instant.now().epochSecond
         assertTrue(connection.expiration > now + 1728000)
         connection.logout()

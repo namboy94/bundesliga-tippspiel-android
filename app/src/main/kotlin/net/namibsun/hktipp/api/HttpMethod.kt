@@ -22,6 +22,6 @@ package net.namibsun.hktipp.api
 /**
  * Class that defines different HTTP methods
  */
-enum class HTTP_METHOD {
+enum class HttpMethod {
     POST, GET, PUT, DELETE
 }

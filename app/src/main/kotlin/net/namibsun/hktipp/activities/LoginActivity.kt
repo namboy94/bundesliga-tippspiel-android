@@ -17,19 +17,20 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package net.namibsun.hktipp
-import android.app.AlertDialog
+package net.namibsun.hktipp.activities
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.EditText
+import net.namibsun.hktipp.R
 import net.namibsun.hktipp.api.ApiConnection
+import net.namibsun.hktipp.models.User
 import org.jetbrains.anko.doAsync
+import org.json.JSONObject
 
 /**
  * The Login Screen that enables the user to log in to the bundesliga-tippspiel
@@ -37,7 +38,7 @@ import org.jetbrains.anko.doAsync
  * Credentials can be stored locally on the device, though the API key is stored
  * instead of a password
  */
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity() {
 
     /**
      * Initializes the Login Activity. Sets the OnClickListener of the
@@ -48,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
 
         val existingApiConnection = ApiConnection.loadStored(this)
         if (existingApiConnection != null) {
-            this.startActivity(Intent(this, BetActivity::class.java))
+            this.startActivity(BetActivity::class.java, true)
         }
 
         super.onCreate(savedInstanceState)
@@ -57,20 +58,18 @@ class LoginActivity : AppCompatActivity() {
         this.findViewById<View>(R.id.login_screen_button).setOnClickListener { this.login() }
         this.findViewById<View>(R.id.login_screen_logo).setOnClickListener { this.login() }
         this.findViewById<View>(R.id.login_screen_register_button).setOnClickListener {
-            // this.startActivity(Intent(this, RegisterActivity::class.java))
-        }
-
-        val prefs = this.getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE)
-        val username = prefs.getString("username", null)
-
-        if (username != null) {
-            this.findViewById<EditText>(R.id.login_screen_username).setText(username)
-        }
-
-        this.findViewById<View>(R.id.login_screen_register_button).setOnClickListener {
+            // TODO Register Activity
             val uri = Uri.parse("https://hk-tippspiel.com/register")
             val intent = Intent(Intent.ACTION_VIEW, uri)
             this.startActivity(intent)
+        }
+
+        val prefs = this.getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE)
+        val user = prefs.getString("user", null)
+
+        if (user != null) {
+            val userData = User.fromJson(JSONObject(user))
+            this.findViewById<EditText>(R.id.login_screen_username).setText(userData.username)
         }
     }
 
@@ -85,35 +84,24 @@ class LoginActivity : AppCompatActivity() {
         val password = this.findViewById<EditText>(R.id.login_screen_password).text.toString()
 
         Log.i("LoginActivity", "$username trying to log in.")
-        this.startLoginAnimation()
+        this.startLoadingAnimation()
 
         this.doAsync {
 
             val apiConnection = ApiConnection.login(username, password)
 
             this@LoginActivity.runOnUiThread {
-                this@LoginActivity.endLoginAnimation()
+                this@LoginActivity.stopLoadingAnimation()
             }
 
             if (apiConnection == null) {
-
                 Log.i("LoginActivity", "Failed to log in")
-
-                val errorTitle = this@LoginActivity.getString(R.string.login_error_title)
-                val errorBody = this@LoginActivity.getString(R.string.login_error_body)
-                val errorDialogBuilder = AlertDialog.Builder(this@LoginActivity)
-                errorDialogBuilder.setTitle(errorTitle)
-                errorDialogBuilder.setMessage(errorBody)
-                errorDialogBuilder.setCancelable(true)
-                errorDialogBuilder.setPositiveButton("Ok") {
-                    dialog, _ -> dialog!!.dismiss()
-                }
-                errorDialogBuilder.create()
-
                 this@LoginActivity.runOnUiThread {
-                    errorDialogBuilder.show()
+                    this@LoginActivity.showErrorDialog(
+                            R.string.login_error_title,
+                            R.string.login_error_body
+                    )
                 }
-
             } else {
                 Log.i("LoginActivity", "Successfully logged in")
                 apiConnection.store(this@LoginActivity)
@@ -129,8 +117,11 @@ class LoginActivity : AppCompatActivity() {
     /**
      * Starts the login animation
      */
-    private fun startLoginAnimation() {
-        this.setUiElementEnabledState(false)
+    override fun startLoadingAnimation() {
+        this.findViewById<View>(R.id.login_screen_logo).isEnabled = false
+        this.findViewById<View>(R.id.login_screen_button).isEnabled = false
+        this.findViewById<View>(R.id.login_screen_username).isEnabled = false
+        this.findViewById<View>(R.id.login_screen_password).isEnabled = false
         val animation = AnimationUtils.loadAnimation(this, R.anim.rotate)
         this.findViewById<View>(R.id.login_screen_logo).startAnimation(animation)
     }
@@ -138,19 +129,11 @@ class LoginActivity : AppCompatActivity() {
     /**
      * Ends the login animation
      */
-    private fun endLoginAnimation() {
-        this.setUiElementEnabledState(true)
+    override fun stopLoadingAnimation() {
+        this.findViewById<View>(R.id.login_screen_logo).isEnabled = true
+        this.findViewById<View>(R.id.login_screen_button).isEnabled = true
+        this.findViewById<View>(R.id.login_screen_username).isEnabled = true
+        this.findViewById<View>(R.id.login_screen_password).isEnabled = true
         this.findViewById<View>(R.id.login_screen_logo).clearAnimation()
-    }
-
-    /**
-     * Enables or disables all user-editable UI elements
-     * @param state: Sets the enabled state of the elements
-     */
-    private fun setUiElementEnabledState(state: Boolean) {
-        this.findViewById<View>(R.id.login_screen_logo).isEnabled = state
-        this.findViewById<View>(R.id.login_screen_button).isEnabled = state
-        this.findViewById<View>(R.id.login_screen_username).isEnabled = state
-        this.findViewById<View>(R.id.login_screen_password).isEnabled = state
     }
 }

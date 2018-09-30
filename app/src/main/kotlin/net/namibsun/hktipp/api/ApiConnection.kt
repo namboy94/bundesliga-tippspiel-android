@@ -29,6 +29,7 @@ import okhttp3.RequestBody
 import org.json.JSONObject
 import java.io.IOException
 import java.net.SocketTimeoutException
+import net.namibsun.hktipp.models.User
 
 /**
  * Class that allows interaction with the hk-tippspiel API
@@ -39,6 +40,7 @@ import java.net.SocketTimeoutException
 class ApiConnection(
     private val serverUrl: String,
     private val apiKey: String,
+    val user: User,
     val expiration: Int
 ) {
 
@@ -67,6 +69,7 @@ class ApiConnection(
         val editor = prefs.edit()
         editor.putString("server_url", this.serverUrl)
         editor.putString("api_key", this.apiKey)
+        editor.putString("user", this.user.toJson().toString())
         editor.putInt("expiration", this.expiration)
         editor.apply()
     }
@@ -86,11 +89,17 @@ class ApiConnection(
             val serverUrl = prefs.getString("server_url", null)
             val apiKey = prefs.getString("api_key", null)
             val expiration = prefs.getInt("expiration", -1)
+            val userData = prefs.getString("user", null)
 
-            return if (serverUrl == null || apiKey == null || expiration == -1) {
+
+
+            return if (
+                    serverUrl == null || apiKey == null || expiration == -1 || userData == null
+            ) {
                 null
             } else {
-                ApiConnection(serverUrl, apiKey, expiration)
+                val user = User.fromJson(JSONObject(userData))
+                ApiConnection(serverUrl, apiKey, user, expiration)
             }
         }
 
@@ -107,7 +116,7 @@ class ApiConnection(
         ): ApiConnection? {
             val resp = this.request(
                     serverUrl,
-                    HTTP_METHOD.POST,
+                    HttpMethod.POST,
                     "api_key",
                     mapOf("username" to username, "password" to password)
             )
@@ -116,6 +125,7 @@ class ApiConnection(
                 ApiConnection(
                         serverUrl,
                         data.getString("api_key"),
+                        User.fromJson(data.getJSONObject("user")),
                         data.getInt("expiration")
                 )
             } else {
@@ -134,11 +144,11 @@ class ApiConnection(
          * @return The response JSON object
          */
         private fun request(
-            serverUrl: String,
-            method: HTTP_METHOD,
-            endpoint: String,
-            params: Map<String, Any>,
-            apiKey: String? = null
+                serverUrl: String,
+                method: HttpMethod,
+                endpoint: String,
+                params: Map<String, Any>,
+                apiKey: String? = null
         ): JSONObject {
 
             val client = OkHttpClient()
@@ -158,10 +168,10 @@ class ApiConnection(
             }
 
             builder = when (method) {
-                HTTP_METHOD.POST -> builder.post(body)
-                HTTP_METHOD.GET -> builder.get()
-                HTTP_METHOD.PUT -> builder.put(body)
-                HTTP_METHOD.DELETE -> builder.delete(body)
+                HttpMethod.POST -> builder.post(body)
+                HttpMethod.GET -> builder.get()
+                HttpMethod.PUT -> builder.put(body)
+                HttpMethod.DELETE -> builder.delete(body)
             }
 
             val request = builder.build()
@@ -189,13 +199,13 @@ class ApiConnection(
          * @return the generated endpoint URL
          */
         private fun prepareEndpointUrl(
-            serverUrl: String,
-            method: HTTP_METHOD,
-            endpoint: String,
-            params: Map<String, Any>
+                serverUrl: String,
+                method: HttpMethod,
+                endpoint: String,
+                params: Map<String, Any>
         ): String {
             var endpointUrl = "$serverUrl/api/v2/$endpoint"
-            if (method == HTTP_METHOD.GET && params.isNotEmpty()) {
+            if (method == HttpMethod.GET && params.isNotEmpty()) {
                 endpointUrl += "?"
                 for ((key, value) in params) {
                     endpointUrl += "$key=$value&"
@@ -228,16 +238,7 @@ class ApiConnection(
      * @param params: The parameters to send
      */
     fun get(endpoint: String, params: Map<String, Any>): JSONObject {
-        return ApiConnection.request(serverUrl, HTTP_METHOD.GET, endpoint, params, this.apiKey)
-    }
-
-    /**
-     * Performs an authenticated POST request to the API
-     * @param endpoint: The API endpoint to connect to
-     * @param params: The parameters to send
-     */
-    fun post(endpoint: String, params: Map<String, Any>): JSONObject {
-        return ApiConnection.request(serverUrl, HTTP_METHOD.POST, endpoint, params, this.apiKey)
+        return ApiConnection.request(serverUrl, HttpMethod.GET, endpoint, params, this.apiKey)
     }
 
     /**
@@ -246,7 +247,7 @@ class ApiConnection(
      * @param params: The parameters to send
      */
     fun put(endpoint: String, params: Map<String, Any>): JSONObject {
-        return ApiConnection.request(serverUrl, HTTP_METHOD.PUT, endpoint, params, this.apiKey)
+        return ApiConnection.request(serverUrl, HttpMethod.PUT, endpoint, params, this.apiKey)
     }
 
     /**
@@ -254,7 +255,7 @@ class ApiConnection(
      * @param endpoint: The API endpoint to connect to
      * @param params: The parameters to send
      */
-    fun delete(endpoint: String, params: Map<String, Any>): JSONObject {
-        return ApiConnection.request(serverUrl, HTTP_METHOD.DELETE, endpoint, params, this.apiKey)
+    private fun delete(endpoint: String, params: Map<String, Any>): JSONObject {
+        return ApiConnection.request(serverUrl, HttpMethod.DELETE, endpoint, params, this.apiKey)
     }
 }

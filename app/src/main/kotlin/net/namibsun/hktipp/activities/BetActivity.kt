@@ -17,30 +17,27 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package net.namibsun.hktipp
+package net.namibsun.hktipp.activities
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
-import net.namibsun.hktipp.api.ApiConnection
+import net.namibsun.hktipp.R
 import net.namibsun.hktipp.models.Bet
 import net.namibsun.hktipp.models.Match
 import net.namibsun.hktipp.models.MinimalBet
 import net.namibsun.hktipp.views.BetView
 import org.jetbrains.anko.doAsync
 import java.io.IOException
-import java.io.Serializable
 
 /**
  * This activity allows a user to place bets, as well as view already placed bets
  */
-class BetActivity : AppCompatActivity() {
+class BetActivity : AuthorizedActivity() {
 
     /**
      * The Bet Views for the currently selected match day
@@ -54,11 +51,6 @@ class BetActivity : AppCompatActivity() {
     private var matchDay: Int = -1
 
     /**
-     * The API connection to use for API calls
-     */
-    private lateinit var apiConnection: ApiConnection
-
-    /**
      * Initializes the Activity. Sets the OnClickListeners for the buttons and starts
      * fetching bet and match data asynchronously.
      * Sets the username and apiKey instance variables
@@ -68,12 +60,6 @@ class BetActivity : AppCompatActivity() {
 
         this.setContentView(R.layout.bets)
         super.onCreate(savedInstanceState)
-
-        val apiConnection = ApiConnection.loadStored(this)
-        if (apiConnection == null) {
-            this.startActivity(Intent(this, LoginActivity::class.java))
-        }
-        this.apiConnection = apiConnection!!
 
         this.findViewById<View>(R.id.bets_submit_button).setOnClickListener { this.placeBets() }
         this.findViewById<View>(R.id.bets_prev_button).setOnClickListener {
@@ -91,14 +77,56 @@ class BetActivity : AppCompatActivity() {
     }
 
     /**
+     * Updates the data when the activity restarts
+     */
+    override fun onResume() {
+        super.onResume()
+        this.updateData()
+    }
+
+    /**
+     * Starts the loading animation
+     */
+    override fun startLoadingAnimation() {
+
+        this.findViewById<Button>(R.id.bets_submit_button).isEnabled = false
+        this.findViewById<View>(R.id.bets_progress).visibility = View.VISIBLE
+
+        this.findViewById<Button>(R.id.bets_next_button).setOnClickListener { }
+        this.findViewById<Button>(R.id.bets_prev_button).setOnClickListener { }
+
+        Log.d("BetActivity", "Clearing old views")
+        if (this.matchDay != -1) { // We don't have to clear if no data was fetched before
+            this.betViews[this.matchDay] = mutableListOf()
+            this.renderBetViews()
+        }
+    }
+
+    /**
+     * Stops the loading animation
+     */
+    override fun stopLoadingAnimation() {
+
+        this.findViewById<Button>(R.id.bets_submit_button).isEnabled = true
+        this.findViewById<View>(R.id.bets_progress).visibility = View.VISIBLE
+
+        this.findViewById<Button>(R.id.bets_prev_button).setOnClickListener {
+            this.adjustMatchday(false)
+        }
+        this.findViewById<Button>(R.id.bets_next_button).setOnClickListener {
+            this.adjustMatchday(true)
+        }
+    }
+
+    /**
      * Switches the match day when either the `next` or `previous` buttons are pressed
      * @param incrementing: Specifies if the matchday is getting incremented or decremented
      */
     private fun adjustMatchday(incrementing: Boolean) {
 
-        this.setUiElementEnabledState(false)
         Log.i("BetActivity", "Switching matchday")
 
+        // Only switch matchday if in valid range
         if ((this.matchDay in 1..33 && incrementing) || (this.matchDay in 2..34 && !incrementing)) {
 
             if (incrementing) {
@@ -106,6 +134,7 @@ class BetActivity : AppCompatActivity() {
             } else {
                 this.matchDay--
             }
+
             this.findViewById<Button>(R.id.bets_prev_button).isEnabled = this.matchDay != 1
             this.findViewById<Button>(R.id.bets_next_button).isEnabled = this.matchDay != 34
             this.updateData()
@@ -122,15 +151,7 @@ class BetActivity : AppCompatActivity() {
 
         Log.i("BetActivity", "Updating Data")
 
-        // Clear previous Views and start Progress Spinner
-        this.runOnUiThread {
-            Log.d("BetActivity", "Clearing old views")
-            if (this.matchDay != -1) { // We don't have to clear if no data was fetched before
-                this.betViews[this.matchDay] = mutableListOf()
-                this.renderBetViews()
-            }
-            this.findViewById<View>(R.id.bets_progress).visibility = View.VISIBLE
-        }
+        this.startLoadingAnimation()
 
         this.doAsync {
 
@@ -142,40 +163,27 @@ class BetActivity : AppCompatActivity() {
 
                 val betQuery = Bet.query(this@BetActivity.apiConnection)
                 betQuery.addFilter("matchday", this@BetActivity.matchDay)
+                betQuery.addFilter("user_id", this@BetActivity.apiConnection.user.id)
                 val bets = betQuery.query()
 
                 Log.i("BetActivity", "Data successfully fetched")
 
-                // Update Matchday (Only has an effect if matchday == -1). Also reset BetViews
                 this@BetActivity.matchDay = matches[0].matchday
                 this@BetActivity.betViews[this@BetActivity.matchDay] = mutableListOf()
 
                 this@BetActivity.runOnUiThread {
                     this@BetActivity.initializeBetViews(matches, bets)
                     this@BetActivity.renderBetViews()
-                    // Stop Progress Spinner and re-enable UI elements
-                    this@BetActivity.findViewById<View>(R.id.bets_progress).visibility =
-                            View.INVISIBLE
-                    this@BetActivity.setUiElementEnabledState(true)
+                    this@BetActivity.stopLoadingAnimation()
                 }
             } catch (e: IOException) { // If failed to fetch data, log out
                 this@BetActivity.runOnUiThread {
 
-                    val errorTitle = this@BetActivity.getString(R.string.bets_fetching_error_title)
-                    val errorBody = this@BetActivity.getString(R.string.bets_fetching_error_body)
-                    val errorDialogBuilder = AlertDialog.Builder(this@BetActivity)
-                    errorDialogBuilder.setTitle(errorTitle)
-                    errorDialogBuilder.setMessage(errorBody)
-                    errorDialogBuilder.setCancelable(true)
-                    errorDialogBuilder.setPositiveButton("Ok") {
-                        dialog, _ -> dialog!!.dismiss()
-                    }
-                    errorDialogBuilder.create()
-                    errorDialogBuilder.show()
-
-                    this@BetActivity.startActivity(
-                            Intent(this@BetActivity, LoginActivity::class.java)
+                    this@BetActivity.showErrorDialog(
+                            R.string.bets_fetching_error_title,
+                            R.string.bets_fetching_error_body
                     )
+                    this@BetActivity.logout()
                 }
             }
         }
@@ -190,7 +198,6 @@ class BetActivity : AppCompatActivity() {
 
         Log.i("BetActivity", "Initializing bet views")
 
-        // Initialize the BetViews
         for (match in matches) {
 
             var betData: Bet? = null
@@ -203,17 +210,7 @@ class BetActivity : AppCompatActivity() {
                 }
             }
 
-            // Add Bet Views
             val betView = BetView(this@BetActivity, match, betData)
-            betView.setOnClickListener {
-
-                val intent = Intent(this@BetActivity, SingleMatchActivity::class.java)
-                val bundle = Bundle()
-                bundle.putSerializable("match_data", match as Serializable)
-                intent.putExtras(bundle)
-                this@BetActivity.startActivity(intent)
-            }
-
             this.betViews[this.matchDay]!!.add(betView)
         }
     }
@@ -248,7 +245,7 @@ class BetActivity : AppCompatActivity() {
 
         Log.i("BetActivity", "Placing Bets")
 
-        this.setUiElementEnabledState(false)
+        this.startLoadingAnimation()
 
         val minimalBets = mutableListOf<MinimalBet>()
         for (betView in this.betViews[this.matchDay]!!) {
@@ -258,33 +255,11 @@ class BetActivity : AppCompatActivity() {
             }
         }
 
-        // Remove views and start loading animation
-        this.betViews[this.matchDay] = mutableListOf()
-        this.renderBetViews()
-        this.findViewById<View>(R.id.bets_progress).visibility = View.VISIBLE
-
         this.doAsync {
             Bet.place(this@BetActivity.apiConnection, minimalBets)
             this@BetActivity.runOnUiThread {
                 this@BetActivity.updateData()
             }
-        }
-    }
-
-    /**
-     * Enables or disables all user-editable UI elements
-     * @param state: Sets the enabled state of the elements
-     */
-    private fun setUiElementEnabledState(state: Boolean) {
-        this.findViewById<Button>(R.id.bets_submit_button).isEnabled = state
-        if (state) {
-            this.findViewById<Button>(R.id.bets_prev_button).setOnClickListener {
-                this.adjustMatchday(false) }
-            this.findViewById<Button>(R.id.bets_next_button).setOnClickListener {
-                this.adjustMatchday(true) }
-        } else {
-            this.findViewById<Button>(R.id.bets_next_button).setOnClickListener { }
-            this.findViewById<Button>(R.id.bets_prev_button).setOnClickListener { }
         }
     }
 }

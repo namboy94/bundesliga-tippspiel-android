@@ -22,7 +22,7 @@ package net.namibsun.hktipp.helper
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import net.namibsun.hktipp.LoginActivity
+import net.namibsun.hktipp.activities.LoginActivity
 
 /**
  * Switches to another activity, while providing the option to provide the new activity with a

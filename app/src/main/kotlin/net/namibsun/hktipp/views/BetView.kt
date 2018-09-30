@@ -20,19 +20,22 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 package net.namibsun.hktipp.views
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.os.Bundle
 import android.support.v7.widget.CardView
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import net.namibsun.hktipp.R
+import net.namibsun.hktipp.activities.BaseActivity
+import net.namibsun.hktipp.activities.SingleMatchActivity
 import net.namibsun.hktipp.singletons.Logos
 import net.namibsun.hktipp.models.Match
 import net.namibsun.hktipp.models.Bet
 import net.namibsun.hktipp.models.MinimalBet
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.runOnUiThread
+import java.io.Serializable
 
 @SuppressLint("ViewConstructor")
 /**
@@ -41,7 +44,7 @@ import org.jetbrains.anko.runOnUiThread
  * @param match: The match data to display. A JSONObject fetched from the API
  * @param bet: The existing bet data. Can be null if not bet data exists yet
  */
-class BetView(context: Context, private val match: Match, private val bet: Bet?)
+class BetView(context: BaseActivity, private val match: Match, private val bet: Bet?)
     : CardView(context, null) {
 
 
@@ -68,15 +71,12 @@ class BetView(context: Context, private val match: Match, private val bet: Bet?)
         }
 
         // Disable editing if match has started
-        if (this.match.started) {
-            this.findViewById<EditText>(R.id.bet_home_team_edit).isEnabled = false
-            this.findViewById<EditText>(R.id.bet_away_team_edit).isEnabled = false
-        }
+        this.findViewById<EditText>(R.id.bet_home_team_edit).isEnabled = !this.match.started
+        this.findViewById<EditText>(R.id.bet_away_team_edit).isEnabled = !this.match.started
 
         // Download/Display the Logos
         val homeImage = this.findViewById<ImageView>(R.id.bet_home_team_logo)
         val awayImage = this.findViewById<ImageView>(R.id.bet_away_team_logo)
-
         context.doAsync {
             val homeTeamLogoBitmap = Logos.getLogo(this@BetView.match.homeTeam)
             val awayTeamLogoBitmap = Logos.getLogo(this@BetView.match.awayTeam)
@@ -85,6 +85,13 @@ class BetView(context: Context, private val match: Match, private val bet: Bet?)
                 homeImage.setImageBitmap(homeTeamLogoBitmap)
                 awayImage.setImageBitmap(awayTeamLogoBitmap)
             }
+        }
+
+        // Make view clickable
+        this.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putSerializable("match_data", match as Serializable)
+            context.startActivity(SingleMatchActivity::class.java, false, bundle)
         }
     }
 

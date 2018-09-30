@@ -17,13 +17,14 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package net.namibsun.hktipp
+package net.namibsun.hktipp.activities
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import net.namibsun.hktipp.R
 import org.jetbrains.anko.doAsync
 import net.namibsun.hktipp.helper.request
 import net.namibsun.hktipp.helper.HTTPMETHOD

@@ -47,12 +47,13 @@ class LoginActivity : BaseActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        super.onCreate(savedInstanceState)
+
         val existingApiConnection = ApiConnection.loadStored(this)
         if (existingApiConnection != null) {
             this.startActivity(BetActivity::class.java, true)
         }
 
-        super.onCreate(savedInstanceState)
         this.setContentView(R.layout.login)
 
         this.findViewById<View>(R.id.login_screen_button).setOnClickListener { this.login() }

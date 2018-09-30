@@ -91,8 +91,6 @@ class ApiConnection(
             val expiration = prefs.getInt("expiration", -1)
             val userData = prefs.getString("user", null)
 
-
-
             return if (
                     serverUrl == null || apiKey == null || expiration == -1 || userData == null
             ) {
@@ -144,11 +142,11 @@ class ApiConnection(
          * @return The response JSON object
          */
         private fun request(
-                serverUrl: String,
-                method: HttpMethod,
-                endpoint: String,
-                params: Map<String, Any>,
-                apiKey: String? = null
+            serverUrl: String,
+            method: HttpMethod,
+            endpoint: String,
+            params: Map<String, Any>,
+            apiKey: String? = null
         ): JSONObject {
 
             val client = OkHttpClient()
@@ -199,10 +197,10 @@ class ApiConnection(
          * @return the generated endpoint URL
          */
         private fun prepareEndpointUrl(
-                serverUrl: String,
-                method: HttpMethod,
-                endpoint: String,
-                params: Map<String, Any>
+            serverUrl: String,
+            method: HttpMethod,
+            endpoint: String,
+            params: Map<String, Any>
         ): String {
             var endpointUrl = "$serverUrl/api/v2/$endpoint"
             if (method == HttpMethod.GET && params.isNotEmpty()) {

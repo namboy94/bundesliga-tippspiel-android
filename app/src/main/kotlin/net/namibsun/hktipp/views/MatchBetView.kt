@@ -24,35 +24,43 @@ import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.CardView
 import android.view.View
-import android.widget.ImageView
 import android.widget.TextView
 import net.namibsun.hktipp.R
-import net.namibsun.hktipp.data.GoalData
+import net.namibsun.hktipp.models.Bet
 
 /**
- * A custom View that displays a goal for a match
+ * A custom View that displays a bet for a user on a match
  * @param context: The context/activity in which this view is created
- * @param goal: The goal to display
+ * @param bet: The bet to display
  */
 @SuppressLint("ViewConstructor")
-class SingleMatchGoalView(context: Context, goal: GoalData)
+class MatchBetView(context: Context, bet: Bet)
     : CardView(context, null) {
 
     /**
-     * Initializes the leaderboard entry fields
+     * Initializes the bet view
      */
     init {
-        View.inflate(context, R.layout.single_match_goal, this)
-        this.findViewById<TextView>(R.id.single_match_goal_minute).text = "${goal.minute}"
-        this.findViewById<TextView>(R.id.single_match_goal_player).text = goal.player.name
-        this.findViewById<TextView>(R.id.single_match_goal_home).text = "${goal.homeScore}"
-        this.findViewById<TextView>(R.id.single_match_goal_away).text = "${goal.awayScore}"
+        View.inflate(context, R.layout.single_match_bet, this)
+        this.findViewById<TextView>(R.id.single_match_bet_username).text = bet.user.username
 
-        val icon = this.findViewById<ImageView>(R.id.single_match_goal_icon)
-        if (goal.ownGoal) {
-            icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.goal_owngoal))
-        } else if (goal.penalty) {
-            icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.goal_penalty))
+        this.findViewById<TextView>(R.id.single_match_bet_home).text = "${bet.homeScore}"
+        this.findViewById<TextView>(R.id.single_match_bet_away).text = "${bet.awayScore}"
+
+        val pointsView = this.findViewById<TextView>(R.id.single_match_bet_points)
+        pointsView.text = "${bet.points}"
+        ContextCompat.getDrawable(context, R.drawable.goal_owngoal)
+
+        val background = when (bet.points) {
+            0 -> R.drawable.bet_points_0
+            3 -> R.drawable.bet_points_1
+            7 -> R.drawable.bet_points_2
+            10 -> R.drawable.bet_points_3
+            12 -> R.drawable.bet_points_4
+            15 -> R.drawable.bet_points_5
+            else -> R.drawable.bet_points_before
         }
+
+        pointsView.background = ContextCompat.getDrawable(context, background)
     }
 }

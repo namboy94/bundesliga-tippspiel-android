@@ -28,7 +28,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import net.namibsun.hktipp.R
 import net.namibsun.hktipp.activities.BaseActivity
-import net.namibsun.hktipp.activities.SingleMatchActivity
+import net.namibsun.hktipp.activities.MatchActivity
 import net.namibsun.hktipp.singletons.Logos
 import net.namibsun.hktipp.models.Match
 import net.namibsun.hktipp.models.Bet
@@ -46,7 +46,6 @@ import java.io.Serializable
  */
 class BetView(context: BaseActivity, private val match: Match, private val bet: Bet?)
     : CardView(context, null) {
-
 
     /**
      * Initializes the Bet View. Initializes all the text data and downloads/displays the
@@ -90,8 +89,8 @@ class BetView(context: BaseActivity, private val match: Match, private val bet: 
         // Make view clickable
         this.setOnClickListener {
             val bundle = Bundle()
-            bundle.putSerializable("match_data", match as Serializable)
-            context.startActivity(SingleMatchActivity::class.java, false, bundle)
+            bundle.putSerializable("match", match as Serializable)
+            context.startActivity(MatchActivity::class.java, false, bundle)
         }
     }
 
@@ -114,7 +113,6 @@ class BetView(context: BaseActivity, private val match: Match, private val bet: 
             }
 
             MinimalBet(this.match.id, homeScore, awayScore)
-
         } catch (e: NumberFormatException) {
             null
         }

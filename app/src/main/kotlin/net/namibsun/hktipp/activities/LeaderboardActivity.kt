@@ -20,31 +20,18 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 package net.namibsun.hktipp.activities
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import net.namibsun.hktipp.R
 import org.jetbrains.anko.doAsync
-import net.namibsun.hktipp.helper.request
-import net.namibsun.hktipp.helper.HTTPMETHOD
 import net.namibsun.hktipp.views.LeaderboardEntryView
 import org.json.JSONArray
 
 /**
  * Activity that displays the current leadeboard of the hk-tippspiel website
  */
-class LeaderboardActivity : AppCompatActivity() {
-
-    /**
-     * The username of the logged in user
-     */
-    private var username: String? = null
-
-    /**
-     * The API Key of the logged in user
-     */
-    private var apiKey: String? = null
+class LeaderboardActivity : AuthorizedActivity() {
 
     /**
      * Initializes the Activity. Populates the leaderboard.
@@ -52,42 +39,57 @@ class LeaderboardActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        this.setContentView(R.layout.leaderboard)
         super.onCreate(savedInstanceState)
+        this.setContentView(R.layout.leaderboard)
+        this.loadLeaderboard()
+    }
 
-        this.username = intent.extras.getString("username")
-        this.apiKey = intent.extras.getString("api_key")
-
+    /**
+     * Starts the loading animation
+     */
+    override fun startLoadingAnimation() {
         this.findViewById<ProgressBar>(R.id.leaderboard_progress).visibility = View.VISIBLE
+    }
+
+    /**
+     * Stops the loading animation
+     */
+    override fun stopLoadingAnimation() {
+        this.findViewById<ProgressBar>(R.id.leaderboard_progress).visibility = View.INVISIBLE
+    }
+
+    /**
+     * Loads the leaderboard via the API
+     */
+    private fun loadLeaderboard() {
+        this.startLoadingAnimation()
         this.doAsync {
-            val rankings = request(
-                    "leaderboard",
-                    HTTPMETHOD.GET,
-                    mutableMapOf(),
-                    this@LeaderboardActivity.apiKey
-            ).getJSONObject("data").getJSONArray("leaderboard")
+            val resp = this@LeaderboardActivity.apiConnection.get("leaderboard", mapOf())
+            val leaderboard = resp.getJSONObject("data").getJSONArray("leaderboard")
+            this@LeaderboardActivity.stopLoadingAnimation()
             this@LeaderboardActivity.runOnUiThread {
-                this@LeaderboardActivity.populateList(rankings)
+                this@LeaderboardActivity.displayLeaderboard(leaderboard)
             }
         }
     }
 
     /**
-     * Populates the leaderboard with custom leaderboard entry views
-     * @param rankings: The JSON ranking data
+     * Displays the leaderboard using custom leaderboard entry views
+     * @param leaderboard: The JSON ranking data
      */
-    private fun populateList(rankings: JSONArray) {
-        this.findViewById<ProgressBar>(R.id.leaderboard_progress).visibility = View.INVISIBLE
+    private fun displayLeaderboard(leaderboard: JSONArray) {
 
         val list = this.findViewById<LinearLayout>(R.id.leaderboard_list)
         list.removeAllViews()
 
-        for (i in 0..(rankings.length() - 1)) {
-            val rankData = rankings.getJSONArray(i)
+        for (i in 0..(leaderboard.length() - 1)) {
+
+            val rankData = leaderboard.getJSONArray(i)
             val userData = rankData.getJSONObject(0)
             val name = userData.getString("username")
             val points = rankData.getInt(1)
             val rank = i + 1
+
             val view = LeaderboardEntryView(this, "$rank", name, "$points")
             list.addView(view)
         }

@@ -26,7 +26,6 @@ import android.support.v7.app.AppCompatActivity
 import net.namibsun.hktipp.api.ApiConnection
 import org.jetbrains.anko.doAsync
 
-
 /**
  * Base class that implements some common methods
  */
@@ -79,7 +78,6 @@ abstract class BaseActivity : AppCompatActivity() {
      * Stops the loading animation
      */
     protected abstract fun stopLoadingAnimation()
-
 }
 
 /**

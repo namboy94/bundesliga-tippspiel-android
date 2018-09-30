@@ -21,30 +21,38 @@ package net.namibsun.hktipp.views
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.CardView
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import net.namibsun.hktipp.R
+import net.namibsun.hktipp.models.Goal
 
 /**
- * A custom View that displays a user's name and points for use in the
- * leaderboard.
+ * A custom View that displays a goal for a match
  * @param context: The context/activity in which this view is created
- * @param position: The position of the user in the leaderboard
- * @param username: The username to display
- * @param points: The points to display
+ * @param goal: The goal to display
  */
 @SuppressLint("ViewConstructor")
-class LeaderboardEntryView(context: Context, position: String, username: String, points: String)
+class MatchGoalView(context: Context, goal: Goal)
     : CardView(context, null) {
 
     /**
      * Initializes the leaderboard entry fields
      */
     init {
-        View.inflate(context, R.layout.leaderboard_entry, this)
-        this.findViewById<TextView>(R.id.leaderboard_entry_position).text = position
-        this.findViewById<TextView>(R.id.leaderboard_entry_username).text = username
-        this.findViewById<TextView>(R.id.leaderboard_entry_points).text = points
+        View.inflate(context, R.layout.single_match_goal, this)
+        this.findViewById<TextView>(R.id.single_match_goal_minute).text = "${goal.minute}"
+        this.findViewById<TextView>(R.id.single_match_goal_player).text = goal.player.name
+        this.findViewById<TextView>(R.id.single_match_goal_home).text = "${goal.homeScore}"
+        this.findViewById<TextView>(R.id.single_match_goal_away).text = "${goal.awayScore}"
+
+        val icon = this.findViewById<ImageView>(R.id.single_match_goal_icon)
+        if (goal.ownGoal) {
+            icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.goal_owngoal))
+        } else if (goal.penalty) {
+            icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.goal_penalty))
+        }
     }
 }

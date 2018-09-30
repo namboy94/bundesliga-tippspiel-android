@@ -44,7 +44,6 @@ class BetActivity : AuthorizedActivity() {
      */
     private val betViews = mutableMapOf<Int, MutableList<BetView>>()
 
-
     /**
      * The Match Day to be displayed. -1 indicates that the current match day should be used
      */
@@ -58,8 +57,8 @@ class BetActivity : AuthorizedActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        this.setContentView(R.layout.bets)
         super.onCreate(savedInstanceState)
+        this.setContentView(R.layout.bets)
 
         this.findViewById<View>(R.id.bets_submit_button).setOnClickListener { this.placeBets() }
         this.findViewById<View>(R.id.bets_prev_button).setOnClickListener {

@@ -27,33 +27,23 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import net.namibsun.hktipp.R
-import net.namibsun.hktipp.data.BetData
-import net.namibsun.hktipp.data.MatchData
-import net.namibsun.hktipp.data.TeamData
 import net.namibsun.hktipp.singletons.Logos
+import net.namibsun.hktipp.models.Match
+import net.namibsun.hktipp.models.Bet
+import net.namibsun.hktipp.models.MinimalBet
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.runOnUiThread
-import org.json.JSONObject
 
 @SuppressLint("ViewConstructor")
 /**
  * A custom view that displays a single matchup and editable fields for bets.
  * @param context: The context/activity for which to display this bet
- * @param matchData: The match data to display. A JSONObject fetched from the API
- * @param betData: The existing bet data. Can be null if not bet data exists yet
+ * @param match: The match data to display. A JSONObject fetched from the API
+ * @param bet: The existing bet data. Can be null if not bet data exists yet
  */
-class BetView(context: Context, private val matchData: MatchData, private val betData: BetData?)
+class BetView(context: Context, private val match: Match, private val bet: Bet?)
     : CardView(context, null) {
 
-    /**
-     * Retrieves the team data from this BetView
-     * @return a tuple of the home team's data and the away team's data
-     */
-    fun getTeamData(): Map<String, TeamData> =
-            mapOf(
-                    "home" to this.matchData.homeTeam,
-                    "away" to this.matchData.awayTeam
-            )
 
     /**
      * Initializes the Bet View. Initializes all the text data and downloads/displays the
@@ -66,19 +56,19 @@ class BetView(context: Context, private val matchData: MatchData, private val be
         // Display Team names
         val homeTeamTitle = this.findViewById<TextView>(R.id.bet_home_team_title)
         val awayTeamTitle = this.findViewById<TextView>(R.id.bet_away_team_title)
-        homeTeamTitle.text = this.matchData.homeTeam.shortName
-        awayTeamTitle.text = this.matchData.awayTeam.shortName
+        homeTeamTitle.text = this.match.homeTeam.shortName
+        awayTeamTitle.text = this.match.awayTeam.shortName
 
         // Set existing bet data
-        if (this.betData != null) {
+        if (this.bet != null) {
             val homeTeamEdit = this.findViewById<EditText>(R.id.bet_home_team_edit)
             val awayTeamEdit = this.findViewById<EditText>(R.id.bet_away_team_edit)
-            homeTeamEdit.setText("${this.betData.homeScore}")
-            awayTeamEdit.setText("${this.betData.awayScore}")
+            homeTeamEdit.setText("${this.bet.homeScore}")
+            awayTeamEdit.setText("${this.bet.awayScore}")
         }
 
         // Disable editing if match has started
-        if (this.matchData.started) {
+        if (this.match.started) {
             this.findViewById<EditText>(R.id.bet_home_team_edit).isEnabled = false
             this.findViewById<EditText>(R.id.bet_away_team_edit).isEnabled = false
         }
@@ -88,8 +78,8 @@ class BetView(context: Context, private val matchData: MatchData, private val be
         val awayImage = this.findViewById<ImageView>(R.id.bet_away_team_logo)
 
         context.doAsync {
-            val homeTeamLogoBitmap = Logos.getLogo(this@BetView.matchData.homeTeam)
-            val awayTeamLogoBitmap = Logos.getLogo(this@BetView.matchData.awayTeam)
+            val homeTeamLogoBitmap = Logos.getLogo(this@BetView.match.homeTeam)
+            val awayTeamLogoBitmap = Logos.getLogo(this@BetView.match.awayTeam)
 
             this@BetView.context.runOnUiThread {
                 homeImage.setImageBitmap(homeTeamLogoBitmap)
@@ -99,11 +89,10 @@ class BetView(context: Context, private val matchData: MatchData, private val be
     }
 
     /**
-     * Generates a JSON bet for use when placing a bet using the API
-     * @return: The JSONObject representation of the bet, or null if the bet is invalid
+     * Generates a MinimalBet object for use for placing bets
+     * @return The minimal bet object
      */
-    fun getBetJson(): JSONObject? {
-
+    fun getMinimalBet(): MinimalBet? {
         return try {
 
             val homeTeamEdit = this.findViewById<EditText>(R.id.bet_home_team_edit)
@@ -117,11 +106,8 @@ class BetView(context: Context, private val matchData: MatchData, private val be
                 throw NumberFormatException("Out of range")
             }
 
-            val json = JSONObject("{}")
-            json.put("home_score", homeScore)
-            json.put("away_score", awayScore)
-            json.put("match_id", this.matchData.id)
-            json // return
+            MinimalBet(this.match.id, homeScore, awayScore)
+
         } catch (e: NumberFormatException) {
             null
         }

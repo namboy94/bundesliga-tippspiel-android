@@ -18,6 +18,8 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 */
 
 package net.namibsun.hktipp
+import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -25,18 +27,9 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
-import android.widget.CheckBox
 import android.widget.EditText
 import net.namibsun.hktipp.api.ApiConnection
-import net.namibsun.hktipp.helper.showErrorDialog
-import net.namibsun.hktipp.helper.getApiKeyFromSharedPreferences
-import net.namibsun.hktipp.helper.getUsernameFromPreferences
-import net.namibsun.hktipp.helper.storeApiKeyInSharedPreferences
-import net.namibsun.hktipp.helper.storeUsernameInSharedPreferences
-import net.namibsun.hktipp.helper.request
-import net.namibsun.hktipp.helper.HTTPMETHOD
 import org.jetbrains.anko.doAsync
-import org.json.JSONObject
 
 /**
  * The Login Screen that enables the user to log in to the bundesliga-tippspiel
@@ -63,15 +56,13 @@ class LoginActivity : AppCompatActivity() {
 
         this.findViewById<View>(R.id.login_screen_button).setOnClickListener { this.login() }
         this.findViewById<View>(R.id.login_screen_logo).setOnClickListener { this.login() }
-
-        // Set input elements with stored data
-        if (getApiKeyFromSharedPreferences(this) != null) {
-            this.findViewById<EditText>(R.id.login_screen_password).setText("******")
-            // We set the password to "******" if the stored api key should be used
-            // So basically, this WILL be problematic if a user has the password "******"
-            // TODO Find another way of doing this without discriminating against "******"-passwords
+        this.findViewById<View>(R.id.login_screen_register_button).setOnClickListener {
+            // this.startActivity(Intent(this, RegisterActivity::class.java))
         }
-        val username = getUsernameFromPreferences(this)
+
+        val prefs = this.getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE)
+        val username = prefs.getString("username", null)
+
         if (username != null) {
             this.findViewById<EditText>(R.id.login_screen_username).setText(username)
         }
@@ -92,76 +83,64 @@ class LoginActivity : AppCompatActivity() {
 
         val username = this.findViewById<EditText>(R.id.login_screen_username).text.toString()
         val password = this.findViewById<EditText>(R.id.login_screen_password).text.toString()
-        val apiKey = getApiKeyFromSharedPreferences(this@LoginActivity)
+
         Log.i("LoginActivity", "$username trying to log in.")
+        this.startLoginAnimation()
 
-        this.setUiElementEnabledState(false)
-        val animation = AnimationUtils.loadAnimation(this, R.anim.rotate)
-        this.findViewById<View>(R.id.login_screen_logo).startAnimation(animation)
+        this.doAsync {
 
-        this@LoginActivity.doAsync {
-
-            // Log in or authorize the existing API Key
-            val response = if (apiKey != "" && password == "******") {
-                Log.i("LoginActivity", "Authorizing existing API key")
-                request("authorize", HTTPMETHOD.GET, mutableMapOf(), apiKey)
-            } else {
-                Log.i("LoginActivity", "Attempting to log in using password")
-                val json = mutableMapOf<String, Any>("username" to username, "password" to password)
-                request("api_key", HTTPMETHOD.POST, json)
-            }
+            val apiConnection = ApiConnection.login(username, password)
 
             this@LoginActivity.runOnUiThread {
-                this@LoginActivity.setUiElementEnabledState(true)
-                this@LoginActivity.findViewById<View>(R.id.login_screen_logo).clearAnimation()
+                this@LoginActivity.endLoginAnimation()
             }
-            this@LoginActivity.handleLoginResponse(response, username, apiKey)
+
+            if (apiConnection == null) {
+
+                Log.i("LoginActivity", "Failed to log in")
+
+                val errorTitle = this@LoginActivity.getString(R.string.login_error_title)
+                val errorBody = this@LoginActivity.getString(R.string.login_error_body)
+                val errorDialogBuilder = AlertDialog.Builder(this@LoginActivity)
+                errorDialogBuilder.setTitle(errorTitle)
+                errorDialogBuilder.setMessage(errorBody)
+                errorDialogBuilder.setCancelable(true)
+                errorDialogBuilder.setPositiveButton("Ok") {
+                    dialog, _ -> dialog!!.dismiss()
+                }
+                errorDialogBuilder.create()
+
+                this@LoginActivity.runOnUiThread {
+                    errorDialogBuilder.show()
+                }
+
+            } else {
+                Log.i("LoginActivity", "Successfully logged in")
+                apiConnection.store(this@LoginActivity)
+                this@LoginActivity.runOnUiThread {
+                    this@LoginActivity.startActivity(
+                            Intent(this@LoginActivity, BetActivity::class.java)
+                    )
+                }
+            }
         }
     }
 
     /**
-     * Handles the login response generated in the [login] method.
-     * On success, this method stores the username and API key in the shared preferences, then
-     * starts the Bet Activity
-     * If the attempt was not successful, an error dialog will be shown
-     * @param response: The JSON response of the login/authorization attempt
-     * @param username: The username of the user tying to log in
-     * @param apiKey: The stored API key, which can be null if no API key was stored
+     * Starts the login animation
      */
-    private fun handleLoginResponse(response: JSONObject, username: String, apiKey: String?) {
+    private fun startLoginAnimation() {
+        this.setUiElementEnabledState(false)
+        val animation = AnimationUtils.loadAnimation(this, R.anim.rotate)
+        this.findViewById<View>(R.id.login_screen_logo).startAnimation(animation)
+    }
 
-        if (response.getString("status") == "ok") { // Login successful
-
-            Log.i("LoginActivity", "Login Successful")
-
-            // Check for valid API key
-            val responseData = response.getJSONObject("data")
-            val validApiKey = if (responseData.has("api_key")) {
-                responseData.getString("api_key") // Login API Action
-            } else {
-                apiKey!! // Authorize API Action
-            }
-
-            // Store the username and API key if remember box is checked
-            val check = this@LoginActivity.findViewById<CheckBox>(R.id.login_screen_remember)
-            if (check.isChecked) {
-                Log.i("LoginActivity", "Storing credentials in shared preferences")
-                storeUsernameInSharedPreferences(this@LoginActivity, username)
-                storeApiKeyInSharedPreferences(this@LoginActivity, validApiKey)
-            }
-            this@LoginActivity.runOnUiThread {
-                net.namibsun.hktipp.helper.switchActivity(
-                        this@LoginActivity, BetActivity::class.java, username, validApiKey)
-            }
-        } else { // Login failed
-
-            Log.i("LoginActivity", "Login Failed")
-
-            this@LoginActivity.runOnUiThread {
-                showErrorDialog(this@LoginActivity,
-                        R.string.login_error_title, R.string.login_error_body)
-            }
-        }
+    /**
+     * Ends the login animation
+     */
+    private fun endLoginAnimation() {
+        this.setUiElementEnabledState(true)
+        this.findViewById<View>(R.id.login_screen_logo).clearAnimation()
     }
 
     /**
@@ -173,6 +152,5 @@ class LoginActivity : AppCompatActivity() {
         this.findViewById<View>(R.id.login_screen_button).isEnabled = state
         this.findViewById<View>(R.id.login_screen_username).isEnabled = state
         this.findViewById<View>(R.id.login_screen_password).isEnabled = state
-        this.findViewById<View>(R.id.login_screen_remember).isEnabled = state
     }
 }

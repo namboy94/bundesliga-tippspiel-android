@@ -90,12 +90,7 @@ class ApiConnection(
             return if (serverUrl == null || apiKey == null || expiration == -1) {
                 null
             } else {
-                val apiConnection = ApiConnection(serverUrl, apiKey, expiration)
-                if (apiConnection.isAuthorized()) {
-                    apiConnection
-                } else {
-                    null
-                }
+                ApiConnection(serverUrl, apiKey, expiration)
             }
         }
 

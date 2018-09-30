@@ -23,6 +23,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import net.namibsun.hktipp.data.TeamData
+import net.namibsun.hktipp.models.Team
 import java.net.URL
 
 /**
@@ -36,7 +37,7 @@ object Logos {
      */
     private val logos = mutableMapOf<Int, Bitmap>()
 
-    fun getLogo(team: TeamData): Bitmap {
+    fun getLogo(team: Team): Bitmap {
 
         while (team.id !in logos) {
             this.downloadLogo(team)
@@ -44,9 +45,9 @@ object Logos {
         return this.logos[team.id]!!
     }
 
-    private fun downloadLogo(team: TeamData) {
-        Log.e("LOGO", team.iconPath)
-        val url = URL(team.iconPath)
+    private fun downloadLogo(team: Team) {
+        Log.e("LOGO", team.iconPng)
+        val url = URL(team.iconPng)
         val bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream())
         this.logos[team.id] = bitmap
     }

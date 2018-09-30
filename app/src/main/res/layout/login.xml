@@ -64,14 +64,6 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
                 android:gravity="center"
                 android:inputType="textPassword"/>
 
-            <CheckBox
-                android:id="@+id/login_screen_remember"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:text="@string/login_screen_remember_me"/>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_marginTop="20dp"

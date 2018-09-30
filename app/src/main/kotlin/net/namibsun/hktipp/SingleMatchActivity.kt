@@ -28,6 +28,7 @@ import android.widget.TextView
 import net.namibsun.hktipp.data.MatchData
 import net.namibsun.hktipp.helper.getBetsForMatch
 import net.namibsun.hktipp.helper.getGoalsForMatch
+import net.namibsun.hktipp.models.Match
 import net.namibsun.hktipp.singletons.Logos
 import net.namibsun.hktipp.views.SingleMatchBetView
 import net.namibsun.hktipp.views.SingleMatchGoalView
@@ -41,7 +42,7 @@ class SingleMatchActivity : AppCompatActivity() {
     /**
      * The match data to display
      */
-    private var matchData: MatchData? = null
+    private var matchData: Match? = null
 
     /**
      * Variable that indicates if the activity is currently active or not
@@ -69,7 +70,7 @@ class SingleMatchActivity : AppCompatActivity() {
 
         this.username = this.intent.extras.getString("username")
         this.apiKey = this.intent.extras.getString("api_key")
-        this.matchData = this.intent.extras.get("match_data") as MatchData
+        this.matchData = this.intent.extras.get("match_data") as Match
 
         this.update()
 

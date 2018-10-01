@@ -110,7 +110,7 @@ class ApiConnection(
         fun login(
             username: String,
             password: String,
-            serverUrl: String = "https://hk-tippspiel.com"
+            serverUrl: String = "https://develop.hk-tippspiel.com" // TODO Change
         ): ApiConnection? {
             val resp = this.request(
                     serverUrl,

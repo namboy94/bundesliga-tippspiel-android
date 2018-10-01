@@ -71,6 +71,9 @@ class BetActivity : AuthorizedActivity() {
         this.findViewById<View>(R.id.leaderboard_button).setOnClickListener {
             this.startActivity(Intent(this, LeaderboardActivity::class.java))
         }
+        this.findViewById<View>(R.id.logout_button).setOnClickListener {
+            this.logout()
+        }
 
         this.updateData()
     }
@@ -242,9 +245,8 @@ class BetActivity : AuthorizedActivity() {
      */
     private fun placeBets() {
 
+        Log.e("START", "START")
         Log.i("BetActivity", "Placing Bets")
-
-        this.startLoadingAnimation()
 
         val minimalBets = mutableListOf<MinimalBet>()
         for (betView in this.betViews[this.matchDay]!!) {
@@ -252,7 +254,10 @@ class BetActivity : AuthorizedActivity() {
             if (minimalBet != null) {
                 minimalBets.add(minimalBet)
             }
+            Log.d("BetActivity", "Placing bet $minimalBet")
         }
+
+        this.startLoadingAnimation()
 
         this.doAsync {
             Bet.place(this@BetActivity.apiConnection, minimalBets)

@@ -17,39 +17,11 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package net.namibsun.hktipp.data
-
-import org.json.JSONObject
-import java.io.Serializable
+package net.namibsun.hktipp.api
 
 /**
- * Data class that models a bet
- * @param data: The JSON to parse
+ * Class that defines different HTTP methods
  */
-class BetData(data: JSONObject) : Serializable {
-
-    /**
-     * The ID of the bet
-     */
-    val id = data.getInt("id")
-
-    /**
-     * The score bet on the home team
-     */
-    val homeScore = data.getInt("home_score")
-
-    /**
-     * The score bet on the away team
-     */
-    val awayScore = data.getInt("away_score")
-
-    /**
-     * The bet's match data
-     */
-    val match = MatchData(data.getJSONObject("match"))
-
-    /**
-     * The points scored with this bet.
-     */
-    val points = data.getInt("points")
+enum class HttpMethod {
+    POST, GET, PUT, DELETE
 }

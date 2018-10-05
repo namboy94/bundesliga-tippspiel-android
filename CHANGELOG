@@ -1,3 +1,6 @@
+V 1.2.0:
+  - No longer requires users to log in each time
+  - Uses new internal model for API calls
 V 1.1.0:
   - Now uses V2 of the API
 V 1.0.5:

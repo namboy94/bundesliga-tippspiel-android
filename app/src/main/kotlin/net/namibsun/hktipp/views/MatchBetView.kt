@@ -26,16 +26,15 @@ import android.support.v7.widget.CardView
 import android.view.View
 import android.widget.TextView
 import net.namibsun.hktipp.R
-import net.namibsun.hktipp.data.BetData
+import net.namibsun.hktipp.models.Bet
 
 /**
  * A custom View that displays a bet for a user on a match
  * @param context: The context/activity in which this view is created
- * @param username: The username to display
  * @param bet: The bet to display
  */
 @SuppressLint("ViewConstructor")
-class SingleMatchBetView(context: Context, username: String, bet: BetData?)
+class MatchBetView(context: Context, bet: Bet)
     : CardView(context, null) {
 
     /**
@@ -43,30 +42,35 @@ class SingleMatchBetView(context: Context, username: String, bet: BetData?)
      */
     init {
         View.inflate(context, R.layout.single_match_bet, this)
-        this.findViewById<TextView>(R.id.single_match_bet_username).text = username
+        this.findViewById<TextView>(R.id.single_match_bet_username).text = bet.user.username
 
-        if (bet != null) {
+        this.findViewById<TextView>(R.id.single_match_bet_home).text = "${bet.homeScore}"
+        this.findViewById<TextView>(R.id.single_match_bet_away).text = "${bet.awayScore}"
 
-            this.findViewById<TextView>(R.id.single_match_bet_home).text = "${bet.homeScore}"
-            this.findViewById<TextView>(R.id.single_match_bet_away).text = "${bet.awayScore}"
-
-            if (bet.match.finished) {
-                val pointsView = this.findViewById<TextView>(R.id.single_match_bet_points)
-                pointsView.text = "${bet.points}"
-                ContextCompat.getDrawable(context, R.drawable.goal_owngoal)
-
-                val background = when (bet.points) {
-                    0 -> R.drawable.bet_points_0
-                    1 -> R.drawable.bet_points_1
-                    2 -> R.drawable.bet_points_2
-                    3 -> R.drawable.bet_points_3
-                    4 -> R.drawable.bet_points_4
-                    5 -> R.drawable.bet_points_5
-                    else -> R.drawable.bet_points_before
-                }
-
-                pointsView.background = ContextCompat.getDrawable(context, background)
-            }
+        val pointsView = this.findViewById<TextView>(R.id.single_match_bet_points)
+        val pointsDisplay = if (bet.match.finished) {
+            "${bet.points}"
+        } else {
+            "-"
         }
+        pointsView.text = pointsDisplay
+
+        ContextCompat.getDrawable(context, R.drawable.goal_owngoal)
+
+        val background = if (bet.match.finished) {
+            when (bet.points) {
+                0 -> R.drawable.bet_points_0
+                3 -> R.drawable.bet_points_1
+                7 -> R.drawable.bet_points_2
+                10 -> R.drawable.bet_points_3
+                12 -> R.drawable.bet_points_4
+                15 -> R.drawable.bet_points_5
+                else -> R.drawable.bet_points_before
+            }
+        } else {
+            R.drawable.bet_points_before
+        }
+
+        pointsView.background = ContextCompat.getDrawable(context, background)
     }
 }

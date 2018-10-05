@@ -27,7 +27,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import net.namibsun.hktipp.R
-import net.namibsun.hktipp.data.GoalData
+import net.namibsun.hktipp.models.Goal
 
 /**
  * A custom View that displays a goal for a match
@@ -35,7 +35,7 @@ import net.namibsun.hktipp.data.GoalData
  * @param goal: The goal to display
  */
 @SuppressLint("ViewConstructor")
-class SingleMatchGoalView(context: Context, goal: GoalData)
+class MatchGoalView(context: Context, goal: Goal)
     : CardView(context, null) {
 
     /**

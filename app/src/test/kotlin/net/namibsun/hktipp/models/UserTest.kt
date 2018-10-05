@@ -17,29 +17,35 @@ You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package net.namibsun.hktipp.data
+package net.namibsun.hktipp.models
 
+import junit.framework.TestCase
 import org.json.JSONObject
-import java.io.Serializable
 
 /**
- * Class that models a player
- * @param data: The JSON data to parse
+ * Class that tests the User model class
  */
-class PlayerData(data: JSONObject) : Serializable {
+class UserTest : TestCase() {
 
     /**
-     * The ID of the player
+     * A sample JSON string for a user
      */
-    val id = data.getInt("id")
+    val sampleJson = """{
+        "id": 1,
+        "username": "Tester",
+        "email": "test@hk-tippspiel.com",
+        "confirmed": true
+    }""".trimIndent()
 
     /**
-     * The name of the player
+     * Tests generating a model object using the sample JSON string
      */
-    val name = data.getString("name")!!
-
-    /**
-     * The team this player is associated with
-     */
-    val team = TeamData(data.getJSONObject("team"))
+    fun testGenerating() {
+        val user = User.fromJson(JSONObject(this.sampleJson))
+        assertEquals(user.id, 1)
+        assertEquals(user.username, "Tester")
+        assertEquals(user.email, "test@hk-tippspiel.com")
+        assertEquals(user.confirmed, true)
+        assertEquals(user.toJson().toString(), JSONObject(this.sampleJson).toString())
+    }
 }

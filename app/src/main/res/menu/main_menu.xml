@@ -1,4 +1,5 @@
-/*
+<?xml version="1.0" encoding="utf-8"?>
+<!--
 Copyright 2017 Hermann Krumrey <hermann@krumreyh.com>
 
 This file is part of bundesliga-tippspiel-android.
@@ -15,41 +16,13 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licenses/>.
-*/
+-->
 
-package net.namibsun.hktipp.data
-
-import org.json.JSONObject
-import java.io.Serializable
-
-/**
- * Data class that models a team's data
- * @param data: The JSON data to parse
- */
-class TeamData(data: JSONObject) : Serializable {
-
-    /**
-     * The ID of the team in the database
-     */
-    val id = data.getInt("id")
-
-    /**
-     * The name of the team
-     */
-    val name = data.getString("name")!!
-
-    /**
-     * The shortform version of the team's name
-     */
-    val shortName = data.getString("short_name")!!
-
-    /**
-     * The team's 3-letter abbreviation
-     */
-    val abbreviation = data.getString("abbreviation")!!
-
-    /**
-     * The path to the team's icon
-     */
-    val iconPath = data.getString("icon_png")!!
-}
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/leaderboard_menu_option"
+        android:title="@string/leaderboard_button_title"/>
+    <item
+        android:id="@+id/logout_menu_option"
+        android:title="@string/logout_button_title"/>
+</menu>

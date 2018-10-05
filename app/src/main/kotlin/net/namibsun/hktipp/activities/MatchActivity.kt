@@ -63,17 +63,21 @@ class MatchActivity : AuthorizedActivity() {
             this@MatchActivity.update()
         }
 
-        this.displayMatch()
+        this.loadLogos()
+        this.displayCurrentScores()
+        this.update()
     }
 
     /**
      * Starts the loading animation
      */
     override fun startLoadingAnimation() {
-        this.updateCount++
-        if (this.updateCount == 1) {
-            this.findViewById<View>(R.id.single_match_update_button).setOnClickListener {}
-        }
+        this.updateCount = 2 // For goals and bets
+        this.findViewById<View>(R.id.single_match_update_button).setOnClickListener {}
+        this.findViewById<View>(R.id.single_match_goals_progress).visibility = View.VISIBLE
+        this.findViewById<View>(R.id.single_match_bets_progress).visibility = View.VISIBLE
+        this.findViewById<LinearLayout>(R.id.match_bets_list).removeAllViews()
+        this.findViewById<LinearLayout>(R.id.match_goals_list).removeAllViews()
     }
 
     /**
@@ -85,29 +89,26 @@ class MatchActivity : AuthorizedActivity() {
             this.findViewById<View>(R.id.single_match_update_button).setOnClickListener {
                 this@MatchActivity.update()
             }
+            this.findViewById<View>(R.id.single_match_goals_progress).visibility = View.INVISIBLE
+            this.findViewById<View>(R.id.single_match_bets_progress).visibility = View.INVISIBLE
         }
-    }
-
-    /**
-     * Displays the match information
-     */
-    private fun displayMatch() {
-        this.displayCurrentScores()
-        this.loadLogos()
-        this.loadGoals()
-        this.loadBets()
     }
 
     /**
      * Updates the match data and displays the new information
      */
     private fun update() {
+
+        this.startLoadingAnimation()
+
         this.doAsync {
             val matchQuery = Match.query(this@MatchActivity.apiConnection)
             matchQuery.addFilter("id", this@MatchActivity.match.id)
             this@MatchActivity.match = matchQuery.query()[0]
             this@MatchActivity.runOnUiThread {
-                this@MatchActivity.displayMatch()
+                this@MatchActivity.displayCurrentScores()
+                this@MatchActivity.loadGoals()
+                this@MatchActivity.loadBets()
             }
         }
     }
@@ -150,11 +151,6 @@ class MatchActivity : AuthorizedActivity() {
     private fun loadGoals() {
 
         val goalListView = this.findViewById<LinearLayout>(R.id.match_goals_list)
-        goalListView.removeAllViews()
-
-        val spinner = this.findViewById<View>(R.id.single_match_goals_progress)
-        spinner.visibility = View.VISIBLE
-        this.startLoadingAnimation()
 
         this.doAsync {
 
@@ -163,14 +159,16 @@ class MatchActivity : AuthorizedActivity() {
             val goals = goalQuery.query()
 
             this@MatchActivity.runOnUiThread {
-                spinner.visibility = View.INVISIBLE
+                this@MatchActivity.stopLoadingAnimation()
+            }
 
+            while (this@MatchActivity.updateCount > 0) {} // Wait for others to load
+
+            this@MatchActivity.runOnUiThread {
                 for (goal in goals) {
                     val goalView = MatchGoalView(this@MatchActivity, goal)
                     goalListView.addView(goalView)
                 }
-
-                this@MatchActivity.stopLoadingAnimation()
             }
         }
     }
@@ -181,11 +179,6 @@ class MatchActivity : AuthorizedActivity() {
     private fun loadBets() {
 
         val betListView = this.findViewById<LinearLayout>(R.id.match_bets_list)
-        betListView.removeAllViews()
-
-        val spinner = this.findViewById<View>(R.id.single_match_bets_progress)
-        spinner.visibility = View.VISIBLE
-        this.startLoadingAnimation()
 
         this.doAsync {
 
@@ -194,15 +187,16 @@ class MatchActivity : AuthorizedActivity() {
             val bets = betsQuery.query()
 
             this@MatchActivity.runOnUiThread {
+                this@MatchActivity.stopLoadingAnimation()
+            }
 
-                spinner.visibility = View.INVISIBLE
+            while (this@MatchActivity.updateCount > 0) {} // Wait for others to load
 
+            this@MatchActivity.runOnUiThread {
                 for (bet in bets) {
                     val betView = MatchBetView(this@MatchActivity, bet)
                     betListView.addView(betView)
                 }
-
-                this@MatchActivity.stopLoadingAnimation()
             }
         }
     }

@@ -90,7 +90,7 @@ open class Query(
 
         @Suppress("CascadeIf")
         if (key !in this.validFilterKeys) {
-            Log.e("Invalid Filter Key", "Filter key $key not valid.")
+            Log.w("Query", "Filter key $key not valid.")
         } else {
             this.params[key] = value
         }

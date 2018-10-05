@@ -107,9 +107,7 @@ class LoginActivity : BaseActivity() {
                 Log.i("LoginActivity", "Successfully logged in")
                 apiConnection.store(this@LoginActivity)
                 this@LoginActivity.runOnUiThread {
-                    this@LoginActivity.startActivity(
-                            Intent(this@LoginActivity, BetActivity::class.java)
-                    )
+                    this@LoginActivity.startActivity(BetActivity::class.java, true)
                 }
             }
         }

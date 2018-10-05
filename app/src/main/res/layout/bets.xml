@@ -65,21 +65,10 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
                 android:textColor="@color/button_text"
                 android:layout_margin="5dp"
                 android:padding="10dp"
-                android:layout_toLeftOf="@+id/leaderboard_button"
-                android:layout_toStartOf="@+id/leaderboard_button"
-                android:text="@string/logout_button_title"
-                android:id="@+id/logout_button" />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/button_bg"
-                android:textColor="@color/button_text"
-                android:layout_margin="5dp"
-                android:padding="10dp"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:text="@string/leaderboard_button_title"
-                android:id="@+id/leaderboard_button"/>
+                android:text="@string/main_menu_title"
+                android:id="@+id/menu_button"/>
 
         </RelativeLayout>
 

@@ -23,6 +23,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import net.namibsun.hktipp.api.ApiConnection
 import org.jetbrains.anko.doAsync
 
@@ -63,10 +64,10 @@ abstract class BaseActivity : AppCompatActivity() {
         if (bundle != null) {
             intent.putExtras(bundle)
         }
+        this.startActivity(intent)
         if (finish) {
             this.finish()
         }
-        this.startActivity(intent)
     }
 
     /**
@@ -110,15 +111,18 @@ abstract class AuthorizedActivity : BaseActivity() {
      */
     protected fun logout() {
 
+        Log.i("Activity", "Logging out")
+
         val apiConnection = ApiConnection.loadStored(this)
         if (apiConnection != null) {
             this.doAsync {
-                if (apiConnection.isAuthorized()) {
-                    apiConnection.logout()
+                apiConnection.logout(this@AuthorizedActivity)
+                this@AuthorizedActivity.runOnUiThread {
+                    this@AuthorizedActivity.startActivity(LoginActivity::class.java, true)
                 }
             }
+        } else {
+            this.startActivity(LoginActivity::class.java, true)
         }
-
-        this.startActivity(LoginActivity::class.java, true)
     }
 }

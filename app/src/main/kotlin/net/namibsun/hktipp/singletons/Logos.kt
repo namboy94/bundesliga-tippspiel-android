@@ -21,7 +21,6 @@ package net.namibsun.hktipp.singletons
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import net.namibsun.hktipp.models.Team
 import java.net.URL
 
@@ -55,7 +54,6 @@ object Logos {
      * @param team: The team for which to download the logo
      */
     private fun downloadLogo(team: Team) {
-        Log.e("LOGO", team.iconPng)
         val url = URL(team.iconPng)
         val bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream())
         this.logos[team.id] = bitmap

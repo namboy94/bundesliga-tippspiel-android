@@ -19,12 +19,12 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 
 package net.namibsun.hktipp.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.TextView
 import net.namibsun.hktipp.R
 import net.namibsun.hktipp.models.Bet
@@ -68,13 +68,21 @@ class BetActivity : AuthorizedActivity() {
             this.adjustMatchday(true)
         }
 
-        this.findViewById<View>(R.id.leaderboard_button).setOnClickListener {
-            this.startActivity(Intent(this, LeaderboardActivity::class.java))
+        val menuButton = this.findViewById<View>(R.id.menu_button)
+        menuButton.setOnClickListener {
+            val popup = PopupMenu(this@BetActivity, menuButton)
+            popup.menuInflater.inflate(R.menu.main_menu, popup.menu)
+            popup.setOnMenuItemClickListener {
+                if (it.itemId == R.id.leaderboard_menu_option) {
+                    this@BetActivity.startActivity(LeaderboardActivity::class.java, false)
+                } else if (it.itemId == R.id.logout_menu_option) {
+                    Log.i("BetActivity", "Logging out.")
+                    this.logout()
+                }
+                true
+            }
+            popup.show()
         }
-        this.findViewById<View>(R.id.logout_button).setOnClickListener {
-            this.logout()
-        }
-
         this.updateData()
     }
 
@@ -245,7 +253,6 @@ class BetActivity : AuthorizedActivity() {
      */
     private fun placeBets() {
 
-        Log.e("START", "START")
         Log.i("BetActivity", "Placing Bets")
 
         val minimalBets = mutableListOf<MinimalBet>()

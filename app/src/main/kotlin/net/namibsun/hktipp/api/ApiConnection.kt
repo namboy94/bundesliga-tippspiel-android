@@ -55,9 +55,20 @@ class ApiConnection(
 
     /**
      * Logs out by deleting the API key
+     * @param context: If provided, deletes the API key information from the shared preferences
      */
-    fun logout() {
+    fun logout(context: Context? = null) {
         this.delete("api_key", mapOf("api_key" to this.apiKey))
+
+        if (context != null) {
+            val prefs = context.getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE)
+            val editor = prefs.edit()
+            editor.remove("server_url")
+            editor.remove("api_key")
+            editor.remove("user")
+            editor.remove("expiration")
+            editor.apply()
+        }
     }
 
     /**
@@ -110,7 +121,7 @@ class ApiConnection(
         fun login(
             username: String,
             password: String,
-            serverUrl: String = "https://develop.hk-tippspiel.com" // TODO Change
+            serverUrl: String = "https://hk-tippspiel.com"
         ): ApiConnection? {
             val resp = this.request(
                     serverUrl,
@@ -127,7 +138,7 @@ class ApiConnection(
                         data.getInt("expiration")
                 )
             } else {
-                Log.i("Login Failure", "Failed to log in user $username.")
+                Log.i("ApiConnection", "Failed to log in user $username.")
                 null
             }
         }
@@ -179,7 +190,7 @@ class ApiConnection(
                 val responseBody = response.body()!!.string()
                 val result = JSONObject(responseBody)
                 if (result.getString("status") == "error") {
-                    Log.e("Error", result.getString("reason"))
+                    Log.e("ApiConnection", "Error: ${result.getString("reason")}")
                 }
                 return result
             } catch (e: SocketTimeoutException) {

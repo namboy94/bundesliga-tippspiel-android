@@ -20,7 +20,9 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 package net.namibsun.hktipp.activities
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -31,6 +33,22 @@ import org.jetbrains.anko.doAsync
  * Base class that implements some common methods
  */
 abstract class BaseActivity : AppCompatActivity() {
+
+    /**
+     * The shared preferences used for storing stuff like API keys
+     */
+    lateinit var sharedPreferences: SharedPreferences
+
+    /**
+     * Initializes the Shared preferences
+     * @param savedInstanceState: The bundle provided by a previous activity
+     */
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        this.sharedPreferences = this.getSharedPreferences(
+                "SHARED_PREFS", Context.MODE_PRIVATE
+        )
+    }
 
     /**
      * Shows an error dialog.
@@ -114,15 +132,17 @@ abstract class AuthorizedActivity : BaseActivity() {
         Log.i("Activity", "Logging out")
 
         val apiConnection = ApiConnection.loadStored(this)
+
+        val editor = this.sharedPreferences.edit()
+        editor.remove("api_key")
+        editor.apply()
+
         if (apiConnection != null) {
             this.doAsync {
                 apiConnection.logout(this@AuthorizedActivity)
-                this@AuthorizedActivity.runOnUiThread {
-                    this@AuthorizedActivity.startActivity(LoginActivity::class.java, true)
-                }
             }
-        } else {
-            this.startActivity(LoginActivity::class.java, true)
         }
+
+        this.startActivity(LoginActivity::class.java, true)
     }
 }

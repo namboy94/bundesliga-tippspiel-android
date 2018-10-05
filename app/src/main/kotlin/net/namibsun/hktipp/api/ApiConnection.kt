@@ -18,9 +18,9 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 */
 
 package net.namibsun.hktipp.api
-import android.content.Context
 import android.util.Base64
 import android.util.Log
+import net.namibsun.hktipp.activities.BaseActivity
 import okhttp3.Headers
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -57,15 +57,13 @@ class ApiConnection(
      * Logs out by deleting the API key
      * @param context: If provided, deletes the API key information from the shared preferences
      */
-    fun logout(context: Context? = null) {
+    fun logout(context: BaseActivity? = null) {
         this.delete("api_key", mapOf("api_key" to this.apiKey))
 
         if (context != null) {
-            val prefs = context.getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE)
-            val editor = prefs.edit()
+            val editor = context.sharedPreferences.edit()
             editor.remove("server_url")
             editor.remove("api_key")
-            editor.remove("user")
             editor.remove("expiration")
             editor.apply()
         }
@@ -75,9 +73,8 @@ class ApiConnection(
      * Stores the API Connection info in the shared preferences
      * @param context: The context from which to load the shared preferences
      */
-    fun store(context: Context) {
-        val prefs = context.getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE)
-        val editor = prefs.edit()
+    fun store(context: BaseActivity) {
+        val editor = context.sharedPreferences.edit()
         editor.putString("server_url", this.serverUrl)
         editor.putString("api_key", this.apiKey)
         editor.putString("user", this.user.toJson().toString())
@@ -95,8 +92,8 @@ class ApiConnection(
          * @param context: The context in from which to get the shared preferences
          * @return The loaded ApiConnection OR null if no valid connection was found
          */
-        fun loadStored(context: Context): ApiConnection? {
-            val prefs = context.getSharedPreferences("SHARED_PREFS", Context.MODE_PRIVATE)
+        fun loadStored(context: BaseActivity): ApiConnection? {
+            val prefs = context.sharedPreferences
             val serverUrl = prefs.getString("server_url", null)
             val apiKey = prefs.getString("api_key", null)
             val expiration = prefs.getInt("expiration", -1)

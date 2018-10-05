@@ -83,7 +83,7 @@ class BetActivity : AuthorizedActivity() {
             }
             popup.show()
         }
-        this.updateData()
+        // onResume will be called, so we don't need to call updateData here
     }
 
     /**
@@ -106,10 +106,8 @@ class BetActivity : AuthorizedActivity() {
         this.findViewById<Button>(R.id.bets_prev_button).setOnClickListener { }
 
         Log.d("BetActivity", "Clearing old views")
-        if (this.matchDay != -1) { // We don't have to clear if no data was fetched before
-            this.betViews[this.matchDay] = mutableListOf()
-            this.renderBetViews()
-        }
+        this.betViews[this.matchDay] = mutableListOf()
+        this.renderBetViews()
     }
 
     /**
@@ -238,7 +236,9 @@ class BetActivity : AuthorizedActivity() {
         val list = this.findViewById<LinearLayout>(R.id.bets_list)
         val bets = this.betViews[this.matchDay]
 
-        title.text = this.resources.getString(R.string.bets_matchday_title, this.matchDay)
+        if (this.matchDay != -1) {
+            title.text = this.resources.getString(R.string.bets_matchday_title, this.matchDay)
+        }
 
         if (bets != null) {
             list.removeAllViews()

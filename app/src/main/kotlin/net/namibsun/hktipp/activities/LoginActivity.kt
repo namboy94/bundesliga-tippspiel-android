@@ -59,7 +59,6 @@ class LoginActivity : BaseActivity() {
         this.findViewById<View>(R.id.login_screen_button).setOnClickListener { this.login() }
         this.findViewById<View>(R.id.login_screen_logo).setOnClickListener { this.login() }
         this.findViewById<View>(R.id.login_screen_register_button).setOnClickListener {
-            // TODO Register Activity
             val uri = Uri.parse("https://hk-tippspiel.com/register")
             val intent = Intent(Intent.ACTION_VIEW, uri)
             this.startActivity(intent)

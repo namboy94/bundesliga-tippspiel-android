@@ -48,17 +48,27 @@ class MatchBetView(context: Context, bet: Bet)
         this.findViewById<TextView>(R.id.single_match_bet_away).text = "${bet.awayScore}"
 
         val pointsView = this.findViewById<TextView>(R.id.single_match_bet_points)
-        pointsView.text = "${bet.points}"
+        val pointsDisplay = if (bet.match.finished) {
+            "${bet.points}"
+        } else {
+            "-"
+        }
+        pointsView.text = pointsDisplay
+
         ContextCompat.getDrawable(context, R.drawable.goal_owngoal)
 
-        val background = when (bet.points) {
-            0 -> R.drawable.bet_points_0
-            3 -> R.drawable.bet_points_1
-            7 -> R.drawable.bet_points_2
-            10 -> R.drawable.bet_points_3
-            12 -> R.drawable.bet_points_4
-            15 -> R.drawable.bet_points_5
-            else -> R.drawable.bet_points_before
+        val background = if (bet.match.finished) {
+            when (bet.points) {
+                0 -> R.drawable.bet_points_0
+                3 -> R.drawable.bet_points_1
+                7 -> R.drawable.bet_points_2
+                10 -> R.drawable.bet_points_3
+                12 -> R.drawable.bet_points_4
+                15 -> R.drawable.bet_points_5
+                else -> R.drawable.bet_points_before
+            }
+        } else {
+            R.drawable.bet_points_before
         }
 
         pointsView.background = ContextCompat.getDrawable(context, background)

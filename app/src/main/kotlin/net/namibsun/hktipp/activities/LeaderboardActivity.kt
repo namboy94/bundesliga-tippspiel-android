@@ -33,12 +33,13 @@ import org.json.JSONArray
  */
 class LeaderboardActivity : AuthorizedActivity() {
 
+    // TODO Find out why this activity does not load on some phones
+
     /**
      * Initializes the Activity. Populates the leaderboard.
      * @param savedInstanceState: The Instance Information of the app.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         this.setContentView(R.layout.leaderboard)
         this.loadLeaderboard()

@@ -83,7 +83,7 @@ class BetActivity : AuthorizedActivity() {
             }
             popup.show()
         }
-        // onResume will be called, so we don't need to call updateData here
+        this.updateData()
     }
 
     /**

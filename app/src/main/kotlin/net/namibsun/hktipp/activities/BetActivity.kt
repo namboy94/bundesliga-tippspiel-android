@@ -87,14 +87,6 @@ class BetActivity : AuthorizedActivity() {
     }
 
     /**
-     * Updates the data when the activity restarts
-     */
-    override fun onResume() {
-        super.onResume()
-        this.updateData()
-    }
-
-    /**
      * Starts the loading animation
      */
     override fun startLoadingAnimation() {

@@ -1,3 +1,5 @@
+V 1.2.1:
+  - Fixed leaderboard not loading on some devices
 V 1.2.0:
   - No longer requires users to log in each time
   - Uses new internal model for API calls

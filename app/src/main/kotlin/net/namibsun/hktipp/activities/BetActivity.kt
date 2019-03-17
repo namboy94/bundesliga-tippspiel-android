@@ -83,14 +83,6 @@ class BetActivity : AuthorizedActivity() {
             }
             popup.show()
         }
-        // onResume will be called, so we don't need to call updateData here
-    }
-
-    /**
-     * Updates the data when the activity restarts
-     */
-    override fun onResume() {
-        super.onResume()
         this.updateData()
     }
 

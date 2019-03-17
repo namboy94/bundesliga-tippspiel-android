@@ -38,7 +38,6 @@ class LeaderboardActivity : AuthorizedActivity() {
      * @param savedInstanceState: The Instance Information of the app.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         this.setContentView(R.layout.leaderboard)
         this.loadLeaderboard()
@@ -66,8 +65,8 @@ class LeaderboardActivity : AuthorizedActivity() {
         this.doAsync {
             val resp = this@LeaderboardActivity.apiConnection.get("leaderboard", mapOf())
             val leaderboard = resp.getJSONObject("data").getJSONArray("leaderboard")
-            this@LeaderboardActivity.stopLoadingAnimation()
             this@LeaderboardActivity.runOnUiThread {
+                this@LeaderboardActivity.stopLoadingAnimation()
                 this@LeaderboardActivity.displayLeaderboard(leaderboard)
             }
         }

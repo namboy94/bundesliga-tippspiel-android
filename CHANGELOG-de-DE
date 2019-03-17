@@ -1,3 +1,5 @@
+V 1.2.1:
+  - Bugfix für die Rangliste, die zuvor auf manchen Geräten nicht funktioniert hat.
 V 1.2.0:
   - Nutzer müssen nicht länger jedes Mal sich neu einloggen
   - Verwendet neues internes Model zur API Nutzung

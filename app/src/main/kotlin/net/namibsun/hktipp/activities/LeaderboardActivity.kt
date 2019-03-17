@@ -33,8 +33,6 @@ import org.json.JSONArray
  */
 class LeaderboardActivity : AuthorizedActivity() {
 
-    // TODO Find out why this activity does not load on some phones
-
     /**
      * Initializes the Activity. Populates the leaderboard.
      * @param savedInstanceState: The Instance Information of the app.
@@ -67,8 +65,8 @@ class LeaderboardActivity : AuthorizedActivity() {
         this.doAsync {
             val resp = this@LeaderboardActivity.apiConnection.get("leaderboard", mapOf())
             val leaderboard = resp.getJSONObject("data").getJSONArray("leaderboard")
-            this@LeaderboardActivity.stopLoadingAnimation()
             this@LeaderboardActivity.runOnUiThread {
+                this@LeaderboardActivity.stopLoadingAnimation()
                 this@LeaderboardActivity.displayLeaderboard(leaderboard)
             }
         }

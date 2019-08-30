@@ -20,6 +20,7 @@ lint:
 unittest:
   stage: test
   tags: [docker]
+  only: [master, develop]
   script:
     - gradle-jacoco app
 

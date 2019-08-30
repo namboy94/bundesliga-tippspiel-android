@@ -10,6 +10,7 @@ default:
   before_script:
     - echo "$SERVER_ACCESS_KEY" > ~/.ssh/id_rsa
     - chmod 0600 ~/.ssh/id_rsa
+    - ./gradlew
 
 lint:
   stage: test

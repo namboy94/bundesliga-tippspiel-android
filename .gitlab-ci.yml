@@ -1,5 +1,4 @@
 stages:
-  - testb
   - mirror
   - test
   - stats
@@ -24,20 +23,8 @@ unittest:
   script:
     - gradle-jacoco app
 
-gitstats:
-  stage: stats
-  tags: [docker]
-  script:
-    - gitstats-gen
-
-docgen:
-  stage: stats
-  tags: [docker]
-  script:
-    - gradle-dokka app
-
 build_app:
-  stage: testb
+  stage: test
   only: [master, develop]
   tags: [docker]
   script:
@@ -50,6 +37,18 @@ build_app:
     expire_in: 1 week
     paths:
       - artifacts/
+
+gitstats:
+  stage: stats
+  tags: [docker]
+  script:
+    - gitstats-gen
+
+docgen:
+  stage: stats
+  tags: [docker]
+  script:
+    - gradle-dokka app
 
 release_upload:
   stage: release

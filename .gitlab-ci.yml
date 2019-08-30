@@ -11,6 +11,17 @@ default:
     - chmod 0600 ~/.ssh/id_rsa
     - ./gradlew
 
+github_mirror:
+  stage: mirror
+  tags: [docker]
+  only: [master, develop]
+  before_script:
+    - echo "$GITHUB_SSH_KEY" > ~/.ssh/id_rsa
+    - chmod 0600 ~/.ssh/id_rsa
+  script:
+    - git-mirror-pusher git@github.com:namboy94/bundesliga-tippspiel-android.git
+      master develop
+
 lint:
   stage: test
   tags: [docker]

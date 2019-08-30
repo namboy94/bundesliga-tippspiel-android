@@ -1,4 +1,5 @@
 stages:
+  - testb
   - mirror
   - test
   - stats
@@ -35,11 +36,11 @@ docgen:
     - gradle-dokka app
 
 build_app:
-  stage: test
+  stage: testb
   only: [master, develop]
   tags: [docker]
   script:
-    - gradle-build-android app
+    - gradle-build-android app & ls app/build/outputs/apk/release
   artifacts:
     expire_in: 1 week
     paths:

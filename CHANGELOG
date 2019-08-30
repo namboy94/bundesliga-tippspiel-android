@@ -1,3 +1,6 @@
+V 1.2.2:
+  - Now uses docker for Ci
+  - Added tests for loading leaderboard data
 V 1.2.1:
   - Fixed leaderboard not loading on some devices
 V 1.2.0:

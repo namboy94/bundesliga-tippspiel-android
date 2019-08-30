@@ -89,8 +89,8 @@ class PlayerTest : TestCase() {
         val forTeam = query.query()
         assertTrue(all.size > forTeam.size)
 
-        query.addFilter("id", 181)
+        query.addFilter("id", 1478)
         val forId = query.query()[0]
-        assertEquals(forId.name, "Robben")
+        assertEquals(forId.name, "Lewandowski")
     }
 }

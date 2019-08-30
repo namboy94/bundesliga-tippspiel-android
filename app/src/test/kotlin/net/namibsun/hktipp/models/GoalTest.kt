@@ -100,13 +100,13 @@ class GoalTest : TestCase() {
         val all = query.query()
         assertTrue(all.size > 10)
 
-        query.addFilter("match_id", 51121)
+        query.addFilter("match_id", 55277)
         val forMatch = query.query()
         assertEquals(forMatch.size, 4)
 
-        query.addFilter("id", 70634)
+        query.addFilter("id", 80234)
         val forId = query.query()[0]
-        assertEquals(forId.homeScore, 1)
-        assertEquals(forId.awayScore, 0)
+        assertEquals(forId.homeScore, 2)
+        assertEquals(forId.awayScore, 2)
     }
 }

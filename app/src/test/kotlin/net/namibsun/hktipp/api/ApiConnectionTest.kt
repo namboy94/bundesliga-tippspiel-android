@@ -59,4 +59,13 @@ class ApiConnectionTest : TestCase() {
         connection.logout()
         assertFalse(connection.isAuthorized())
     }
+
+    /**
+     * Tests retrieving the current leaderboard
+     */
+    fun testGettingLeaderboard() {
+        val api = this.login()
+        val resp = api.get("leaderboard", mapOf())
+        resp.getJSONObject("data").getJSONArray("leaderboard")
+    }
 }

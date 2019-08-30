@@ -1,3 +1,6 @@
+V 1.2.2:
+  - Verwendet jetzt docker für CI
+  - Tests für Ranglistenfunktionen hinzugefügt
 V 1.2.1:
   - Bugfix für die Rangliste, die zuvor auf manchen Geräten nicht funktioniert hat.
 V 1.2.0:

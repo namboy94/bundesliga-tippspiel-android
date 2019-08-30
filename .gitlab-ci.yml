@@ -40,7 +40,11 @@ build_app:
   only: [master, develop]
   tags: [docker]
   script:
-    - gradle-build-android app & ls app/build/outputs/apk/release
+    - gradle-build-android app
+  after_script:
+    - ls app/build/
+    - ls app/build/outputs/apk
+    - ls app/build/outputs/apk/release
   artifacts:
     expire_in: 1 week
     paths:

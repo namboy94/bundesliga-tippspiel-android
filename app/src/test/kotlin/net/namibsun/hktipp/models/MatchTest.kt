@@ -119,11 +119,11 @@ class MatchTest : TestCase() {
         val firstMatchday = query.query()
         assertEquals(firstMatchday.size, 9)
 
-        query.addFilter("id", 51121)
+        query.addFilter("id", 55277)
         val result = query.query()
         val match = result[0]
         assertEquals(match.homeTeam.abbreviation, "FCB")
-        assertEquals(match.awayTeam.abbreviation, "TSG")
+        assertEquals(match.awayTeam.abbreviation, "BSC")
         assertEquals(result.size, 1)
     }
 }

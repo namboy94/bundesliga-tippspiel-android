@@ -76,3 +76,15 @@ upload_play_store:
   tags: [docker]
   script:
     - play-upload net.namibsun.hktipp production
+
+neo_upload_play_store:
+  stage: release
+  only: [develop]
+  tags: [docker]
+  script:
+    - git clone https://gitlab.namibsun.net/namibsun/python/ci-scripts.git -b develop
+    - cd ci-scripts
+    - pip3 uninstall ci-scripts -y
+    - python3 setup.py install
+    - cd ..
+    - play-upload net.namibsun.hktipp production

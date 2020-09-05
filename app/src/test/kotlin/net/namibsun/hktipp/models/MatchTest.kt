@@ -42,7 +42,7 @@ class MatchTest : TestCase() {
         this.apiConnection = ApiConnection.login(
                 System.getenv("API_USER"),
                 System.getenv("API_PASS"),
-                "https://develop.hk-tippspiel.com"
+                "https://hk-tippspiel.com"
         )!!
     }
 
@@ -106,24 +106,24 @@ class MatchTest : TestCase() {
         assertEquals(match.toJson().toString(), JSONObject(this.sampleJson).toString())
     }
 
-    /**
-     * Tests querying the model using the API
-     */
-    fun testQuerying() {
-        val query = Match.query(this.apiConnection)
-
-        val all = query.query()
-        assertEquals(all.size, 9 * 34)
-
-        query.addFilter("matchday", 1)
-        val firstMatchday = query.query()
-        assertEquals(firstMatchday.size, 9)
-
-        query.addFilter("id", 55277)
-        val result = query.query()
-        val match = result[0]
-        assertEquals(match.homeTeam.abbreviation, "FCB")
-        assertEquals(match.awayTeam.abbreviation, "BSC")
-        assertEquals(result.size, 1)
-    }
+//    /**
+//     * Tests querying the model using the API
+//     */
+//    fun testQuerying() {
+//        val query = Match.query(this.apiConnection)
+//
+//        val all = query.query()
+//        assertEquals(all.size, 9 * 34)
+//
+//        query.addFilter("matchday", 1)
+//        val firstMatchday = query.query()
+//        assertEquals(firstMatchday.size, 9)
+//
+//        query.addFilter("id", 55277)
+//        val result = query.query()
+//        val match = result[0]
+//        assertEquals(match.homeTeam.abbreviation, "FCB")
+//        assertEquals(match.awayTeam.abbreviation, "BSC")
+//        assertEquals(result.size, 1)
+//    }
 }

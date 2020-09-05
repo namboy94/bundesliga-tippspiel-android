@@ -1,3 +1,5 @@
+V 1.2.3:
+  - Fixed API compatibility issues
 V 1.2.2:
   - Now uses docker for Ci
   - Added tests for loading leaderboard data

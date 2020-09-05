@@ -1,3 +1,5 @@
+V 1.2.3:
+  - API Fehler behoben
 V 1.2.2:
   - Verwendet jetzt docker für CI
   - Tests für Ranglistenfunktionen hinzugefügt

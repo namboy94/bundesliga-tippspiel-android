@@ -18,9 +18,9 @@ along with bundesliga-tippspiel-android.  If not, see <http://www.gnu.org/licens
 */
 
 package net.namibsun.hktipp.api
-import android.util.Base64
 import android.util.Log
 import net.namibsun.hktipp.activities.BaseActivity
+import net.namibsun.hktipp.models.User
 import okhttp3.Headers
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -29,7 +29,6 @@ import okhttp3.RequestBody
 import org.json.JSONObject
 import java.io.IOException
 import java.net.SocketTimeoutException
-import net.namibsun.hktipp.models.User
 
 /**
  * Class that allows interaction with the hk-tippspiel API
@@ -58,7 +57,7 @@ class ApiConnection(
      * @param context: If provided, deletes the API key information from the shared preferences
      */
     fun logout(context: BaseActivity? = null) {
-        this.delete("api_key", mapOf("api_key" to this.apiKey))
+        this.delete("key", mapOf("api_key" to this.apiKey))
 
         if (context != null) {
             val editor = context.sharedPreferences.edit()
@@ -123,7 +122,7 @@ class ApiConnection(
             val resp = this.request(
                     serverUrl,
                     HttpMethod.POST,
-                    "api_key",
+                    "key",
                     mapOf("username" to username, "password" to password)
             )
             return if (resp.getString("status") == "ok") {
@@ -165,10 +164,7 @@ class ApiConnection(
 
             builder = builder.url(endpointUrl)
             if (apiKey != null) {
-                var encoded = Base64.encodeToString(apiKey.toByteArray(), 0)
-                if (encoded == null) {
-                    encoded = apiKey // Don't Base64-encode API key in unit tests
-                }
+                val encoded = this.base64Encode(apiKey)
                 val headers = Headers.of(mutableMapOf("Authorization" to "Basic $encoded"))
                 builder = builder.headers(headers)
             }
@@ -193,6 +189,43 @@ class ApiConnection(
             } catch (e: SocketTimeoutException) {
                 throw IOException("timeout")
             }
+        }
+
+        /**
+         * Base64-encodes a string. Must be applied to API keys
+         * @param string: The string to encode
+         * @return The base64-encoded string
+         */
+        private fun base64Encode(string: String): String {
+            val b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+
+            var glue = ""
+            for (char in string) {
+                val ascii = char.toByte().toInt()
+                var binary = ascii.toString(2)
+                while (binary.length < 8) {
+                    binary = "0$binary"
+                }
+                glue += binary
+            }
+
+            var encoded = ""
+            var block = ""
+            for (char in glue) {
+                block += char
+                if (block.length == 6) {
+                    val index = block.toInt(2)
+                    encoded += b64chars[index]
+                    block = ""
+                }
+            }
+            if (block.isNotEmpty()) {
+                while (block.length < 6) {
+                    block += "0"
+                }
+                encoded += b64chars[block.toInt(2)]
+            }
+            return encoded
         }
 
         /**
@@ -244,7 +277,7 @@ class ApiConnection(
      * @param params: The parameters to send
      */
     fun get(endpoint: String, params: Map<String, Any>): JSONObject {
-        return ApiConnection.request(serverUrl, HttpMethod.GET, endpoint, params, this.apiKey)
+        return request(serverUrl, HttpMethod.GET, endpoint, params, this.apiKey)
     }
 
     /**
@@ -253,7 +286,7 @@ class ApiConnection(
      * @param params: The parameters to send
      */
     fun put(endpoint: String, params: Map<String, Any>): JSONObject {
-        return ApiConnection.request(serverUrl, HttpMethod.PUT, endpoint, params, this.apiKey)
+        return request(serverUrl, HttpMethod.PUT, endpoint, params, this.apiKey)
     }
 
     /**
@@ -262,6 +295,6 @@ class ApiConnection(
      * @param params: The parameters to send
      */
     private fun delete(endpoint: String, params: Map<String, Any>): JSONObject {
-        return ApiConnection.request(serverUrl, HttpMethod.DELETE, endpoint, params, this.apiKey)
+        return request(serverUrl, HttpMethod.DELETE, endpoint, params, this.apiKey)
     }
 }

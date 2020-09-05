@@ -41,7 +41,7 @@ class TeamTest : TestCase() {
         this.apiConnection = ApiConnection.login(
                 System.getenv("API_USER"),
                 System.getenv("API_PASS"),
-                "https://develop.hk-tippspiel.com"
+                "https://hk-tippspiel.com"
         )!!
     }
 
